@@ -21,17 +21,30 @@ def load_images(image_path):
     return np.array(images, dtype=object), np.array(labels, dtype=np.int32) #altrimenti np.array(img, dtype=np.float32) / 255.0 se vogliamo normalizzare i pixel tra 0 e 1 per un modello di Machine Learning
 
 def load_labels(labels_path):
-    '''Function reading all the labels in a csv file'''
+    '''Function reading all the labels in a csv file, columns must be ID, boneage, male (True/False)'''
+
+    req_columns = ['id', 'boneage', 'male']
+    path = pathlib.Path(labels_path)
+
+    try:
+        df = pd.read_csv(path)
+    except FileNotFoundError:
+        print(f"File {labels_path} does not exist")
+        return None
+
+    df.columns = df.columns.str.lower()
+    miss_cols = [col for col in req_columns if col not in df.columns]
+
+    if miss_cols:
+        raise ValueError(f'The file must contain {miss_cols} column(s)')
     
-    path = pathlib.Path(labels)
+    id = df['id'].to_numpy()
+    boneage = df['boneage'].to_numpy()
+    gender = df['male'].astype(int).to_numpy() #1 if True 0 if False
 
-    df = pd.read_csv(path)
+    return id, boneage, gender
+    
 
-    pass
+#images, labels = load_images('/Users/moseguerini/Desktop/Test_dataset/Training')
 
-images, labels = load_images('/Users/moseguerini/Desktop/Test_dataset/Training')
-
-imm = np.asarray(images[1], dtype=np.float32)
-plt.imshow(imm)
-plt.title(labels[1])
-plt.show()
+#id, boneage, gender = load_labels('/Users/moseguerini/Desktop/Dataset/Bone_Age_Validation_Set/Validation_Dataset.csv')

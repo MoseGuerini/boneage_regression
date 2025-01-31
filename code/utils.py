@@ -5,7 +5,15 @@ import numpy as np
 import pandas as pd
 
 def load_images(image_path):
-    '''Function reading all the images in a directory and returns sorted images and id's'''
+    """
+    Load and return images and their corresponding IDs from a specified directory.
+
+    :param image_path: Path to the directory containing image files.
+    :type image_path: str or pathlib.Path
+    :raises FileNotFoundError: If the specified directory does not exist.
+    :return: A tuple containing a NumPy array of loaded images and a NumPy array of image IDs.
+    :rtype: tuple[np.ndarray, np.ndarray]
+    """
     
     path = pathlib.Path(image_path)
 
@@ -46,8 +54,16 @@ def load_labels(labels_path):
     return id, boneage, gender
     
 def return_dataset(image_path, labels_path):
-    '''Function that returns the dataset as Y array (labels) and X array (features) 
-       and checks that they correspond with each other'''
+    """
+    Load and return labels from a CSV file. The CSV must contain 'id', 'boneage', and 'male' columns.
+
+    :param labels_path: Path to the CSV file containing label data.
+    :type labels_path: str or pathlib.Path
+    :raises FileNotFoundError: If the specified CSV file does not exist.
+    :raises ValueError: If the CSV file does not contain the required columns.
+    :return: A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).
+    :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+    """
 
     feature, names = load_images(image_path)
     id, labels, gender = load_labels(labels_path)

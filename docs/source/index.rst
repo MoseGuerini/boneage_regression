@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to boneage_regression documentation
-================================
+==============================================
 
 Add your content using ``reStructuredText`` syntax. See the
 `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
@@ -14,7 +14,7 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-utils
+   utils
 
 Indices and tables
 ==================

@@ -1,7 +1,7 @@
-utils module
-============
+Utilities for BoneAge Regression
+===============================
+
+This module contains utility functions for the BoneAge Regression project.
 
 .. automodule:: boneage_regression.utils
    :members:
-   :undoc-members:
-   :show-inheritance:

@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-boneage_regression documentation
+Welcome to boneage_regression documentation
 ================================
 
 Add your content using ``reStructuredText`` syntax. See the
@@ -14,10 +14,7 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: boneage_regression
-   :members:
-   :undoc-members:
-   :show-inheritance:
+utils
 
 Indices and tables
 ==================

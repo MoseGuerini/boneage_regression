@@ -6,15 +6,6 @@ def cnn ():
     inputs=Input(shape=(128,128,1,))
     hidden=  Conv2D(5,(5,5), activation='relu')(inputs)     
     hidden= MaxPooling2D((3,3))(hidden)
-    hidden=  Conv2D(3,(3,3), activation='relu')(hidden)
-    hidden= MaxPooling2D((3,3))(hidden)
-    hidden=  Conv2D(3,(3,3), activation='relu')(hidden)
-    hidden= MaxPooling2D((3,3))(hidden)
-    hidden=  Conv2D(3,(3,3), activation='relu')(hidden)
-    hidden = BatchNormalization()(hidden)
-    hidden= MaxPooling2D((3,3))(hidden)
-    hidden=  Conv2D(3,(3,3), activation='relu')(hidden)
-    hidden= MaxPooling2D((3,3))(hidden)
     hidden= Flatten()(hidden)
     
     for _ in range(5):
@@ -40,3 +31,5 @@ def cnn ():
     model.compile(loss=loss, optimizer='adam',metrics=['accuracy'])
 
     model.summary()
+    
+print('finito')

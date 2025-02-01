@@ -72,24 +72,3 @@ def return_dataset(image_path, labels_path):
         raise ValueError('Image dataset does not correspond to labels dataset!')
     
     return feature, labels, gender
-
-def run_preliminary_test():
-    '''
-    This function run a test with reduced dataset 
-    The user has to be in some location in bonage_regression folder
-    The test material has to be organized as follows: 
-    ---Test_dataset---> 'Training' (folder with png images)
-                   ---> 'training.csv' (csv file with corresponding labels)
-    '''
-    
-    current_path = pathlib.Path(__file__).resolve()
-    
-    while current_path.name != 'boneage_regression':
-        current_path = current_path.parent
-    
-    print(f'La cartella boneage_regression è stata trovata in: {current_path}')
-    print(f'La cartella boneage_regression è stata trovata in: {current_path}')
-    
-    test_dataset_path = current_path / 'Test_dataset'
-    return_dataset(test_dataset_path / 'Training',test_dataset_path / 'training.csv')
-

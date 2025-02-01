@@ -14,6 +14,6 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: utils.py
+.. automodule:: boneage_regression.utils
    :members:
 

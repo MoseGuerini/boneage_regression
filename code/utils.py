@@ -29,7 +29,16 @@ def load_images(image_path):
     return np.array(images, dtype=object), np.array(id, dtype=np.int32) #altrimenti np.array(img, dtype=np.float32) / 255.0 se vogliamo normalizzare i pixel tra 0 e 1 per un modello di Machine Learning
 
 def load_labels(labels_path):
-    '''Function reading all the labels in a csv file, columns must be ID, boneage, male (True/False)'''
+    """
+    Load and return labels from a CSV file. The CSV must contain 'id', 'boneage', and 'male' columns.
+
+    :param labels_path: Path to the CSV file containing label data.
+    :type labels_path: str or pathlib.Path
+    :raises FileNotFoundError: If the specified CSV file does not exist.
+    :raises ValueError: If the CSV file does not contain the required columns.
+    :return: A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).
+    :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+    """
 
     req_columns = ['id', 'boneage', 'male']
     path = pathlib.Path(labels_path)
@@ -54,17 +63,7 @@ def load_labels(labels_path):
     return id, boneage, gender
     
 def return_dataset(image_path, labels_path):
-    """
-    Load and return labels from a CSV file. The CSV must contain 'id', 'boneage', and 'male' columns.
-
-    :param labels_path: Path to the CSV file containing label data.
-    :type labels_path: str or pathlib.Path
-    :raises FileNotFoundError: If the specified CSV file does not exist.
-    :raises ValueError: If the CSV file does not contain the required columns.
-    :return: A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).
-    :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
-    
-    """
+    '''Return arrays containing features and labels for training the CNN'''
 
     feature, names = load_images(image_path)
     id, labels, gender = load_labels(labels_path)
@@ -74,19 +73,23 @@ def return_dataset(image_path, labels_path):
     
     return feature, labels, gender
 
-current_path = pathlib.Path(__file__).resolve()
+def run_preliminary_test():
+    '''
+    This function run a test with reduced dataset 
+    The user has to be in some location in bonage_regression folder
+    The test material has to be organized as follows: 
+    ---Test_dataset---> 'Training' (folder with png images)
+                   ---> 'training.csv' (csv file with corresponding labels)
+    '''
     
-while current_path.name != 'boneage_regression':
-    current_path = current_path.parent
-
-print(f'La cartella boneage_regression è stata trovata in: {current_path}')
+    current_path = pathlib.Path(__file__).resolve()
     
-print(f'La cartella boneage_regression è stata trovata in: {current_path}')
+    while current_path.name != 'boneage_regression':
+        current_path = current_path.parent
+    
+    print(f'La cartella boneage_regression è stata trovata in: {current_path}')
+    print(f'La cartella boneage_regression è stata trovata in: {current_path}')
+    
+    test_dataset_path = current_path / 'Test_dataset'
+    return_dataset(test_dataset_path / 'Training',test_dataset_path / 'training.csv')
 
-test_dataset_path = current_path / 'Test_dataset'
-#images, labels = load_images('/Users/moseguerini/Desktop/Test_dataset/Training')
-
-#id, boneage, gender = load_labels('/Users/moseguerini/Desktop/Dataset/Bone_Age_Validation_Set/Validation_Dataset.csv')
-
-#return_dataset('/Users/moseguerini/Desktop/Test_dataset/Training','/Users/moseguerini/Desktop/Test_dataset/training.csv')
-return_dataset(test_dataset_path / 'Training',test_dataset_path / 'training.csv')

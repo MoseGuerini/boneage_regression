@@ -2,3 +2,6 @@ loguru
 matplotlib
 numpy
 pandas
+sphinx
+sphinx-rtd-theme
+

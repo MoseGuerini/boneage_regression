@@ -63,6 +63,7 @@ def return_dataset(image_path, labels_path):
     :raises ValueError: If the CSV file does not contain the required columns.
     :return: A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).
     :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+    
     """
 
     feature, names = load_images(image_path)
@@ -73,8 +74,19 @@ def return_dataset(image_path, labels_path):
     
     return feature, labels, gender
 
+current_path = pathlib.Path(__file__).resolve()
+    
+while current_path.name != 'boneage_regression':
+    current_path = current_path.parent
+
+print(f'La cartella boneage_regression è stata trovata in: {current_path}')
+    
+print(f'La cartella boneage_regression è stata trovata in: {current_path}')
+
+test_dataset_path = current_path / 'Test_dataset'
 #images, labels = load_images('/Users/moseguerini/Desktop/Test_dataset/Training')
 
 #id, boneage, gender = load_labels('/Users/moseguerini/Desktop/Dataset/Bone_Age_Validation_Set/Validation_Dataset.csv')
 
-return_dataset('/Users/moseguerini/Desktop/Test_dataset/Training','/Users/moseguerini/Desktop/Test_dataset/training.csv')
+#return_dataset('/Users/moseguerini/Desktop/Test_dataset/Training','/Users/moseguerini/Desktop/Test_dataset/training.csv')
+return_dataset(test_dataset_path / 'Training',test_dataset_path / 'training.csv')

@@ -29,7 +29,16 @@ def load_images(image_path):
     return np.array(images, dtype=object), np.array(id, dtype=np.int32) #altrimenti np.array(img, dtype=np.float32) / 255.0 se vogliamo normalizzare i pixel tra 0 e 1 per un modello di Machine Learning
 
 def load_labels(labels_path):
-    '''Function reading all the labels in a csv file, columns must be ID, boneage, male (True/False)'''
+    """
+    Load and return labels from a CSV file. The CSV must contain 'id', 'boneage', and 'male' columns.
+
+    :param labels_path: Path to the CSV file containing label data.
+    :type labels_path: str or pathlib.Path
+    :raises FileNotFoundError: If the specified CSV file does not exist.
+    :raises ValueError: If the CSV file does not contain the required columns.
+    :return: A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).
+    :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
+    """
 
     req_columns = ['id', 'boneage', 'male']
     path = pathlib.Path(labels_path)
@@ -54,16 +63,7 @@ def load_labels(labels_path):
     return id, boneage, gender
     
 def return_dataset(image_path, labels_path):
-    """
-    Load and return labels from a CSV file. The CSV must contain 'id', 'boneage', and 'male' columns.
-
-    :param labels_path: Path to the CSV file containing label data.
-    :type labels_path: str or pathlib.Path
-    :raises FileNotFoundError: If the specified CSV file does not exist.
-    :raises ValueError: If the CSV file does not contain the required columns.
-    :return: A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).
-    :rtype: tuple[np.ndarray, np.ndarray, np.ndarray]
-    """
+    '''Return arrays containing features and labels for training the CNN'''
 
     feature, names = load_images(image_path)
     id, labels, gender = load_labels(labels_path)
@@ -72,9 +72,3 @@ def return_dataset(image_path, labels_path):
         raise ValueError('Image dataset does not correspond to labels dataset!')
     
     return feature, labels, gender
-
-#images, labels = load_images('/Users/moseguerini/Desktop/Test_dataset/Training')
-
-#id, boneage, gender = load_labels('/Users/moseguerini/Desktop/Dataset/Bone_Age_Validation_Set/Validation_Dataset.csv')
-
-return_dataset('/Users/moseguerini/Desktop/Test_dataset/Training','/Users/moseguerini/Desktop/Test_dataset/training.csv')

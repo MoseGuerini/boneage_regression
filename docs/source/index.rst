@@ -14,6 +14,14 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: boneage_regression.utils
+.. automodule:: boneage_regression
    :members:
+   :undoc-members:
+   :show-inheritance:
 
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

@@ -21,9 +21,6 @@ def conv_nn():
     inputs = Flatten()(inputs)
     inputs = Dense(128, activation='relu')(inputs)
     inputs = Dense(64, activation='relu')(inputs)
-<<<<<<< HEAD
-    outputs = Dense(1, activation='linear')(inputs)  # Usa sigmoid per classificazione binaria
-=======
     outputs = Dense(1)(inputs)  # Usa attivazione lineare per regressione
      '''
      
@@ -40,7 +37,6 @@ def conv_nn():
     #hidden=  Dense(40, activation='relu')(hidden)
     #hidden=  Dense(30, activation='relu')(hidden)
     outputs = Dense(1)(hidden)  # Usa attivazione lineare per regressione
->>>>>>> d3e5aba19785e2fc73cf584663b89df7af12cdbd
     
     model = Model(inputs=inputs, outputs=outputs)
     

@@ -23,6 +23,17 @@ x = MaxPooling2D((2, 2))(x)
 model_temp = Model(inputs=inputs, outputs=x)
 model_temp.summary()  # Stampa la dimensione delle feature map
 
+<<<<<<< HEAD
+    # MaxPooling (2x2x2)
+    inputs = MaxPooling3D(pool_size=(2, 2), strides=2, padding='same')(inputs)
+        
+# Flatten e layer fully connected (Dense)
+inputs = Flatten()(inputs)
+inputs = Dense(128, activation='relu')(inputs)
+inputs = Dense(64, activation='relu')(inputs)
+outputs = Dense(1, activation='linear')(inputs)
+    
+=======
 # Seconda parte della CNN
 for _ in range(3):  # Ridotto da 5 a 3 per evitare shrinking eccessivo
     x = Conv2D(5, (3, 3), strides=1, padding='same')(x)
@@ -39,6 +50,7 @@ x = Dense(64, activation='relu')(x)
 outputs = Dense(1, activation='sigmoid')(x)
 
 # Creazione del modello
+>>>>>>> d3e5aba19785e2fc73cf584663b89df7af12cdbd
 model = Model(inputs=inputs, outputs=outputs)
 
 # Compilazione

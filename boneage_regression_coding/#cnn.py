@@ -25,7 +25,7 @@ def cnn ():
     inputs = Flatten()(inputs)
     inputs = Dense(128, activation='relu')(inputs)
     inputs = Dense(64, activation='relu')(inputs)
-    outputs = Dense(1, activation='sigmoid')(inputs)
+    outputs = Dense(1, activation='linear')(inputs)
     
     model = Model(inputs=inputs, outputs=outputs)
     model.compile(loss=loss, optimizer='adam',metrics=['accuracy'])

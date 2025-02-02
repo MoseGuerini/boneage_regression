@@ -1,0 +1,26 @@
+
+version: 2.1  # Definisce la versione della configurazione CircleCI
+
+orbs:
+  python: circleci/python@2.1.1  # Usa l'orb per Python
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/python:3.10.7  # Contenitore Docker con Python 3.10
+    steps:
+      - checkout  # Clona il codice dal repository
+      - python/install-packages:
+          pkg-manager: pip
+          pip-dependency-file: requirements.txt  # Installa le dipendenze
+
+      # Esegui i test uno alla volta, con comandi separati per ciascun file di test
+      - run:
+          name: Run tests for utils_test.py
+          command: python -m unittest tests.utils_test  # Comando per eseguire i test di utils_test
+
+workflows:
+  version: 2  # Versione del workflow
+  test:
+    jobs:
+      - build-and-test  # Esegui il job 'build-and-test'

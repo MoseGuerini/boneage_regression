@@ -36,7 +36,7 @@ def conv_nn():
     hidden=  Dense(20, activation='relu')(hidden)
     #hidden=  Dense(40, activation='relu')(hidden)
     #hidden=  Dense(30, activation='relu')(hidden)
-    outputs = Dense(1)(inputs)  # Usa attivazione lineare per regressione
+    outputs = Dense(1)(hidden)  # Usa attivazione lineare per regressione
     
     model = Model(inputs=inputs, outputs=outputs)
     

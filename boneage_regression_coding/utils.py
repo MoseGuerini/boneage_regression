@@ -3,6 +3,7 @@ from loguru import logger
 from  matplotlib import pyplot as plt
 import numpy as np 
 import pandas as pd
+import tensorflow as tf
 
 def load_images(image_path):
     """
@@ -81,5 +82,32 @@ def run_preliminary_test():
         current_path = current_path.parent
 
     return return_dataset('../Test_dataset/Training', '../Test_dataset/training.csv')
+
+def preprocessing_image(images):
+    '''Hopefully we will use matlab soon'''
+    
+    print(f"Shape delle immagini prima del preprocessing: {images.shape}")
+    target_size = (128, 128)  # Imposta una dimensione fissa
+
+    # Assicurati che le immagini siano in scala di grigi e poi espandi a 3 canali
+    image_rgb = []
+    for img in images:
+        if len(img.shape) == 2:  # Se l'immagine è in scala di grigi (1 canale)
+            img_rgb = np.stack([img] * 3, axis=-1)  # Crea 3 canali duplicati
+        else:
+            img_rgb = img  # Se già ha 3 canali (RGB), la lascio così com'è
+        image_rgb_resized = tf.image.resize(img_rgb, target_size).numpy()
+        image_rgb.append(image_rgb_resized)
+
+    # Converti in un array NumPy
+    image_rgb = np.array(image_rgb, dtype=np.float32)
+    
+    # Verifica la forma
+    print(f"Shape delle immagini preprocessate: {image_rgb.shape}")
+    
+    return image_rgb
+
+    
+    
 
 

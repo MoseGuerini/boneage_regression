@@ -13,5 +13,5 @@ import utils
 class UtilsTest(unittest.TestCase):
 
     def test_load_images(self):
-        with self.assertRaises(FileExistsError):
+        with self.assertRaises(FileNotFoundError):
             utils.load_images('This_directory_does_not_exist')

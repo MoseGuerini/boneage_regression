@@ -1,10 +1,16 @@
 #trying to build a CNN
 
-from utils import run_preliminary_test, preprocessing_image
 from cnn import conv_nn
 import numpy as np
+import sys
+from pathlib import Path
 import tensorflow as tf
 from matplotlib import pyplot as plt
+
+utils_path = Path(__file__).resolve().parent.parent / "boneage_regression"
+sys.path.insert(0, str(utils_path))
+
+from utils import run_preliminary_test, preprocessing_image
 '''
 image_train, real_age_train, gender_train = run_preliminary_test() 
 
@@ -31,7 +37,7 @@ import matlab.engine
 eng = matlab.engine.start_matlab()
 
 # Percorsi delle cartelle con i dati non processati e della cartella che conterrà i dati processati
-input_folder_char = r'C:\Users\nicco\boneage_regression\Test_dataset'
+input_folder_char = r'C:\Users\nicco\boneage_regression\Test_dataset\Training'
 output_folder_char = r'C:\Users\nicco\boneage_regression\Preprocessed_images'
 print(f"Input folder: {input_folder_char}")  # Verifica se il percorso è corretto
 print(f"Output folder: {output_folder_char}")  # Verifica se il percorso è corretto

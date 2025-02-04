@@ -1,4 +1,7 @@
 function matlab_images_preprocessing(input_folder, output_folder)
+    % Aggiungi il percorso della cartella al MATLAB path per il parfor
+    addpath(genpath(pwd));  % Aggiungi il percorso della cartella corrente se necessario
+
     % Crea la cartella di output se non esiste
     if ~exist(output_folder, 'dir')
         mkdir(output_folder);
@@ -23,6 +26,7 @@ function matlab_images_preprocessing(input_folder, output_folder)
     % Loop parallelo su tutte le immagini
     parfor i = 1:num_images
         disp(['Processing image: ', num2str(i)]);
+
         % Ottieni il percorso completo dell'immagine
         img_path = fullfile(input_folder, image_files(i).name);
 
@@ -30,7 +34,7 @@ function matlab_images_preprocessing(input_folder, output_folder)
         img = imread(img_path);
 
         % Converti in grayscale se necessario
-        if size(img,3) == 3
+        if size(img, 3) == 3
             img = rgb2gray(img);
         end
 
@@ -62,14 +66,47 @@ function matlab_images_preprocessing(input_folder, output_folder)
         % Ritaglia l'immagine
         img_cropped = imcrop(img_norm, bbox);
 
-        % Salva l'immagine elaborata nella cell array
-        processed_images{i} = img_cropped;
+        %img_squared = add_padding_to_square2(img_cropped)
 
         % Salva l'immagine preprocessata nella cartella di output
         output_path = fullfile(output_folder, image_files(i).name);
-        imwrite(img_cropped, output_path);
+        imwrite(img_cropped, output_path);  % Salva img_resized
     end
 
     disp('Elaborazione completata!');
-
 end
+
+function add_padding_to_square2(img)
+
+    % Stampa la dimensione dell'immagine di partenza
+    %disp(['Dimensione dell''immagine di partenza: ', mat2str(size(img))]);
+
+    % Ottieni le dimensioni dell'immagine
+    [height, width, channels] = size(img);
+
+    % Calcola la dimensione del quadrato
+    new_size = max(height, width);
+
+    % Crea un'immagine quadrata nera (tutta 0)
+    img_square = zeros(new_size, new_size, channels, 'like', img);
+
+    % Calcola la posizione di partenza per centrare l'immagine originale
+    row_start = floor((new_size - height) / 2) + 1;
+    col_start = floor((new_size - width) / 2) + 1;
+
+    % Copia l'immagine originale nel centro della nuova immagine quadrata
+    img_square(row_start:row_start + height - 1, col_start:col_start + width - 1, :) = img;
+
+    % Visualizza l'immagine quadrata
+    figure;
+    imshow(img_square);
+
+    % Stampa la dimensione dell'immagine quadrata
+    disp(['Dimensione dell''immagine quadrata: ', mat2str(size(img_square))]);
+
+    % Salva l'immagine modificata (se desiderato)
+    %imwrite(img_square, ['squared_' img_path]); % Per salvare l'immagine con il prefisso "squared_"
+end
+
+% Chiamata alla funzione
+matlab_images_preprocessing('C:\Users\nicco\Desktop\foto', 'C:\Users\nicco\Desktop\Preprocessed_foto');

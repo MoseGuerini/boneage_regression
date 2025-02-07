@@ -38,7 +38,7 @@ def build_model(hp):
 
     # Number of convolutional layers (hyperparameter)
     hp_num_conv_layers = hp.Int('num_conv_layers', min_value=3, max_value=5, step=1)
-    hp_filters = hp.Int(f'filters', min_value=32, max_value=128, step=32)
+    hp_filters = hp.Int(f'filters', min_value=16, max_value=64, step=16)
 
     for i in range(hp_num_conv_layers):
         x = layers.Conv2D(hp_filters*(i+1), (3, 3), activation='relu', padding='same')(x)
@@ -140,9 +140,6 @@ def run_hyperparameter_tuning(x_train,
     logger.info('Summary of the best network architecture:')
     best_model.summary()
 
-    #Fitting the model
-    best_model.fit(x_train, y_train, epochs=50, validation_split=0.2, callbacks=[stop_early])
-
     return best_model, best_hps
 
 def k_fold_validation(model_fn, x_train, x_gender_train, y_train, best_hps, k=5, epochs=10, batch_size=32):
@@ -201,7 +198,7 @@ def k_fold_validation(model_fn, x_train, x_gender_train, y_train, best_hps, k=5,
     return mean_mae
 
 
-def train_and_plot(model, x_train, x_gender_train, y_train, x_val, y_val, x_test,x_gender_test, y_test, epochs=50, batch_size=32, save_model=False, model_dir='trained_models'):
+def train_and_plot(model, x_train, x_gender_train, y_train, x_test,x_gender_test, y_test, epochs=2, batch_size=32, save_model=False, model_dir='trained_models'):
     """
     Funzione per allenare il modello, monitorare la training loss e la validation loss e testare sul set di test.
     
@@ -223,12 +220,13 @@ def train_and_plot(model, x_train, x_gender_train, y_train, x_val, y_val, x_test
         [x_train, x_gender_train], y_train,
         epochs=epochs,
         batch_size=batch_size,
-        validation_data=(x_val, y_val),
+        validation_split=0.2,
         callbacks=[early_stopping],
         verbose=1
     )
 
     # Tracciamento della loss durante il training
+    plt.ion()
     plt.figure(figsize=(10, 6))
     plt.plot(history.history['loss'], label='Training Loss')
     plt.plot(history.history['val_loss'], label='Validation Loss')
@@ -271,6 +269,7 @@ def plot_predictions_vs_actuals(model, x_test,x_gender_test, y_test):
     y_pred = model.predict([x_test, x_gender_test])
 
     # Crea il grafico
+    plt.ion()
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test, y_pred, label="Predictions", alpha=0.7)
     
@@ -299,8 +298,10 @@ def run():
     x_gender_test = (x_gender[80:100])
     # Esegui la ricerca degli iperparametri
     best_model, best_hps = run_hyperparameter_tuning(x_val, x_gender_val, y_val, epochs=10, batch_size=32)
-    train_and_plot(best_model, x_train, x_gender_train, y_train, x_test, y_test)
+    train_and_plot(best_model, x_train, x_gender_train, y_train, x_test, x_gender_test, y_test)
+    logger.info("Training completed")
     plot_predictions_vs_actuals(best_model, x_test,x_gender_test, y_test)
+    logger.info("Plotting done")
     # Esegui la validazione incrociata con k-fold
     #mean_mae = k_fold_validation(build_model, x_train, x_gender_train, y_train, best_hps, k=5, epochs=10, batch_size=32)
 

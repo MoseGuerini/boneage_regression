@@ -89,7 +89,7 @@ def preprocessing_image(images):
     '''Hopefully we will use matlab soon'''
     
     print(f"Shape delle immagini prima del preprocessing: {images.shape}")
-    target_size = (128, 128)  # Imposta una dimensione fissa
+    target_size = (256, 256)  # Imposta una dimensione fissa
 
     # Assicurati che le immagini siano in scala di grigi e poi espandi a 3 canali
     image_rgb = []

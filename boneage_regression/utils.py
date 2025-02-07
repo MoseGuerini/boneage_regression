@@ -43,7 +43,7 @@ def load_images(image_path, num_images=None):
     # Estrai gli ID dalle immagini
     id = [name.stem for name in names_sorted]
 
-    return np.array(images, dtype=object), np.array(id, dtype=np.int32)
+    return np.array(images, dtype=np.uint8), np.array(id, dtype=np.int32)
 
 
 def load_labels(labels_path, num_path=None):
@@ -128,7 +128,9 @@ def return_dataset(image_path, labels_path, num_images=None):
                          image[{diff[0]}] = {names[diff[0]]} while labels[{diff[0]}] = {id_filtered[diff[0]]}!''')
 
     # Restituisci i dati filtrati
-    return feature, labels_filtered, gender_filtered
+    gender_array = np.array(gender_filtered)  # Converte in array NumPy
+    labels_array = np.array(labels_filtered)  # Converte in array NumPy
+    return feature, labels_array, gender_array
 
 
 
@@ -145,7 +147,7 @@ def preprocessing_image(images):
     '''Hopefully we will use matlab soon'''
     
     print(f"Shape delle immagini prima del preprocessing: {images.shape}")
-    target_size = (128, 128)  # Imposta una dimensione fissa
+    target_size = (256, 256)  # Imposta una dimensione fissa
 
     # Assicurati che le immagini siano in scala di grigi e poi espandi a 3 canali
     image_rgb = []

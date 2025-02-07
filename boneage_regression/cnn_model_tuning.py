@@ -287,7 +287,16 @@ def plot_predictions_vs_actuals(model, x_test,x_gender_test, y_test):
 
 def run():
 
-    x, y, x_gender = return_dataset('/Users/moseguerini/Desktop/Test_dataset/Validation', '/Users/moseguerini/Desktop/Test_dataset/Validation_Dataset.csv')
+    x, y, x_gender = return_dataset(r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto', r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv')
+    print(f"x shape: {x.shape}, y shape: {y.shape}")
+    """
+    x = x[..., np.newaxis]  # Aggiunge un asse di dimensione 1
+    x = np.array(x, dtype=np.float32)
+    y = np.array(y, dtype=np.int32)  # Se le etichette sono numeriche
+    print(f"x shape after expansion: {x.shape}")  # Dovrebbe essere (18, 128, 128, 1)
+    for i, img in enumerate(x):
+        print(f"Image {i} shape: {img.shape}")
+    """
     x_train = preprocessing_image(x[:60])
     x_val = preprocessing_image(x[60:80])
     x_test = preprocessing_image(x[80:100])
@@ -298,7 +307,7 @@ def run():
     x_gender_val = (x_gender[60:80])
     x_gender_test = (x_gender[80:100])
     # Esegui la ricerca degli iperparametri
-    best_model, best_hps = run_hyperparameter_tuning(x_val, x_gender_val, y_val, epochs=10, batch_size=32)
+    best_model, best_hps = run_hyperparameter_tuning(x_val, x_gender_val, y_val, epochs=10, batch_size=9)
     train_and_plot(best_model, x_train, x_gender_train, y_train, x_test, y_test)
     plot_predictions_vs_actuals(best_model, x_test,x_gender_test, y_test)
     # Esegui la validazione incrociata con k-fold

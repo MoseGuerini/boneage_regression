@@ -1,7 +1,8 @@
 from utils import return_dataset, load_images, load_labels
+import numpy as np
 
-image_path = r"C:\Users\nicco\Desktop\Test_dataset\Training"  # Inserisci il percorso alla cartella delle immagini
-labels_path = r"C:\Users\nicco\Desktop\Test_dataset\training.csv.csv"  # Inserisci il percorso al file delle etichette
+image_path = r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto'  # Inserisci il percorso alla cartella delle immagini
+labels_path = r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\training.csv'  # Inserisci il percorso al file delle etichette
 
 num_images = 30; #specifica quante immagini correi che fossero caricate
 
@@ -9,7 +10,17 @@ num_images = 30; #specifica quante immagini correi che fossero caricate
 try:
     # Carica una parte delle immagini e i nomi
     features, names = load_images(image_path)
-    feature, labels_filtered, gender_filtered = return_dataset(image_path, labels_path, num_images)
+    feature, labels_filtered, gender_filtered = return_dataset(image_path, labels_path)
+    print(f"Names: {type(labels_filtered)}; genders: {type(gender_filtered)}")
+    print(f"feature type: {type(feature)}, labels type: {type(labels_filtered)}")
+    print([type(x) for x in labels_filtered[:10]])  # Controlla i primi 10 elementi
+    print([type(x) for x in gender_filtered[:10]])
+    print([type(x) for x in feature[:10]])
+    """
+    gender_filtered = np.array(gender_filtered)  # Conversione in array NumPy
+    labels_filtered = np.array(labels_filtered)  # Converte in array NumPy
+    """
+    print(feature.dtype, gender_filtered.dtype, labels_filtered.dtype)
     #print(f"Features: {features}")
     print(f"Names: {names}")
     print(f"Ages: {labels_filtered}")

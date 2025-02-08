@@ -1,8 +1,9 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-
+import pathlib
 from loguru import logger
+
 from keras import layers, models, optimizers, callbacks
 import keras_tuner as kt
 
@@ -41,46 +42,81 @@ class Model:
     _selected_model : str
         Path del modello salvato (per il successivo caricamento).
     """
-    def __init__(self, x, y, x_gender, fast=True, max_trials=10, k=5, batch_size=32,
-                 tuner_dir='tuner_results', model_dir='trained_models'):
-        self.x = x
-        self.y = y
-        self.x_gender = x_gender
+    def __init__(self, data, overwrite=False, max_trials=10, k=5, batch_size=32,
+                model_dir='trained_models'):
+        self._X = data.x
+        self._X_gender = data.X_gender
+        self._y = data.y
         self.max_trials = max_trials
-        self.overwrite = not fast  # Se fast=True, si evita il tuning completo
+        self.overwrite = overwrite
         self.model_builder = build_model
         self.k = k
         self.batch_size = batch_size
-        self.tuner_dir = tuner_dir
         self.model_dir = model_dir
         self._selected_model = None
 
-    def hyperparameter_tuning(self, epochs=10):
+    @property
+    def X(self):
+        return self._X
+    
+    @X.setter
+    def X(self, X_new):
+        logger.warning('X dataset cannot be modified!')
+    
+    @property
+    def X_gender(self):
+        return self._X_gender
+    
+    @X_gender.setter
+    def X(self, X_gender_new):
+        logger.warning('X_gender dataset cannot be modified!')
+    
+    @property
+    def y(self):
+        return self._y
+    
+    @y.setter
+    def y(self, y_new):
+        logger.warning('y dataset cannot be modified!')
+
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=50, batch_size=64):
         """
         Esegue l'hyperparameter tuning e
         impiegando un validation_split interno per la valutazione.
         """
+
+        tuner_dir = pathlib.Path(__file__).resolve().parent.parent / 'tuner'
+        tuner_dir.mkdir(parents=True, exist_ok=True)
+        
+        if self.overwrite:
+            project_name = 'tuner_new'
+        else:
+            project_name = 'tuner_old'
+
         tuner = kt.BayesianOptimization(
-            self.build_model,
+            model_builder,
             objective='val_mae',
-            max_epochs=epochs,
-            hyperband_iterations=3,
-            directory=self.tuner_dir,
-            project_name='cnn_regression_tuning'
+            max_trials = self.max_trials,
+            overwrite = self.overwrite,
+            directory=tuner_dir,
+            project_name=project_name
         )
+
         stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=3)
-        tuner.search([self.x, self.x_gender], self.y,
+
+        tuner.search([X_val, X_gender_val], y_val,
                      epochs=epochs,
                      validation_split=0.2,
-                     batch_size=self.batch_size,
+                     batch_size=batch_size,
                      callbacks=[stop_early])
+        
         best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
         best_model = tuner.get_best_models()[0]
 
         logger.info("Best Hyperparameters:")
         for param, value in best_hps.values.items():
-            logger.info(f"{param}: {value}")
+            logger.info(f"Parameter: {param}, Value: {value}")
 
         # Printing model summary
         logger.info('Summary of the best network architecture:')

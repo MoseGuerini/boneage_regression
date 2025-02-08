@@ -23,4 +23,6 @@ image_rgb = np.array(image_rgb, dtype=np.float32)
 images_resized = tf.image.resize(image_rgb, target_size).numpy()
 print(images_resized.shape)  # Dovrebbe essere (num_immagini, 128, 128, 3)
 
+utils_path = Path(__file__).resolve().parent.parent / "boneage_regression"
+sys.path.insert(0, str(utils_path))
 

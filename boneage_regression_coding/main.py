@@ -31,7 +31,7 @@ boneage_prediction = model.predict(image_train_resized)
 # Stampiamo i primi 10 risultati
 for true_age, pred_age in zip(real_age_train[:10], boneage_prediction[:10]):
     print(f"Età corretta: {true_age} - Età inferita: {pred_age[0]}")
-
+'''
 #import matlab.engine
 #eng = matlab.engine.start_matlab()
 #print(eng.sqrt(4))  # Test: dovrebbe stampare 2.0

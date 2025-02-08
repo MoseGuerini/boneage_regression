@@ -1,5 +1,12 @@
 from utils import return_dataset, load_images, load_labels
 import numpy as np
+import tensorflow as tf
+
+# Controlla se una GPU è disponibile
+if tf.config.list_physical_devices('GPU'):
+    print("GPU disponibile")
+else:
+    print("GPU non disponibile")
 
 image_path = r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto'  # Inserisci il percorso alla cartella delle immagini
 labels_path = r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\training.csv'  # Inserisci il percorso al file delle etichette

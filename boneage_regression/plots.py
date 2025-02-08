@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 def plot_loss_metrics(history):
 
@@ -33,3 +34,40 @@ def plot_loss_metrics(history):
 
     # Mostra il grafico
     plt.show()  
+
+def plot_predictions(y_true, y_pred):
+    """
+    Crea un grafico delle predizioni vs i valori veri (true values), 
+    con una linea di riferimento y = x.
+
+    Parameters
+    ----------
+    y_true : numpy.array
+        I valori veri (target).
+    y_pred : numpy.array
+        I valori predetti dal modello.
+    """
+    
+    # Creare la figura e l'asse
+    plt.figure(figsize=(8, 6))
+
+    # Plot delle predizioni contro i valori veri
+    plt.scatter(y_true, y_pred, color='blue', alpha=0.5, label='Predizioni')
+
+    # Aggiungere la linea y = x (riferimento)
+    lim = np.max([np.max(y_true), np.max(y_pred)])  # Limiti per la linea y=x
+    plt.plot([0, lim], [0, lim], color='red', label='y = x', linestyle='--')
+
+    # Aggiungere etichette e titolo
+    plt.xlabel('Valori Veri (True Values)')
+    plt.ylabel('Valori Predetti (Predicted Values)')
+    plt.title('Predizioni vs Valori Veri')
+
+    # Aggiungere una griglia
+    plt.grid(True)
+
+    # Aggiungere la legenda
+    plt.legend()
+
+    # Mostrare il grafico
+    plt.show()

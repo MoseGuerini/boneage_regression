@@ -1,15 +1,14 @@
-import os
 import sys
-import numpy as np
-import matplotlib.pyplot as plt
 import pathlib
 from loguru import logger
 
-from keras import layers, models, optimizers, callbacks
+import keras
+from keras import callbacks
 import keras_tuner as kt
+from keras.models import load_model
 
 from hyperparameters import build_model
-from plots import plot_loss_metrics
+from plots import plot_loss_metrics, plot_predictions
 
 # Setting logger configuration 
 logger.remove()  
@@ -19,51 +18,16 @@ logger.add(
     level="INFO"
 )
 
-class Model:
-    """
-    Classe per la regressione dell'età da radiografie della mano tramite CNN.
+class CNN_Model:
 
-    Gestisce il tuning degli iperparametri, l'allenamento e la valutazione del modello.
-
-    Attributi
-    ---------
-    x : np.ndarray
-        Array contenente le immagini preprocessate (dimensione 256x256x3).
-    y : np.ndarray
-        Array contenente le età dei pazienti (target).
-    x_gender : np.ndarray
-        Array contenente le feature relative al genere.
-    max_trials : int
-        Numero massimo di tentativi per l'hyperparameter tuning.
-    overwrite : bool
-        Se True forza il tuning completo (cioè non utilizza iperparametri pre-salvati).
-    k : int
-        Numero di fold per eventuali validazioni incrociate (non utilizzato esplicitamente qui).
-    batch_size : int
-        Batch size per l'allenamento.
-    tuner_dir : str
-        Directory in cui salvare i risultati del tuning.
-    model_dir : str
-        Directory in cui salvare il modello allenato.
-    best_model : keras.Model
-        Modello ottenuto con i migliori iperparametri.
-    best_hps : keras_tuner.HyperParameters
-        Iperparametri ottimali trovati.
-    _selected_model : str
-        Path del modello salvato (per il successivo caricamento).
-    """
-    def __init__(self, data, overwrite=False, max_trials=10, k=5, batch_size=32,
-                model_dir='trained_models'):
+    def __init__(self, data, overwrite=False, max_trials=10):
         self._X = data.x
         self._X_gender = data.X_gender
         self._y = data.y
         self.max_trials = max_trials
         self.overwrite = overwrite
         self.model_builder = build_model
-        self.k = k
-        self.batch_size = batch_size
-        self.model_dir = model_dir
-        self._selected_model = None
+        self._trained_model = None
 
     @property
     def X(self):
@@ -78,7 +42,7 @@ class Model:
         return self._X_gender
     
     @X_gender.setter
-    def X(self, X_gender_new):
+    def X_gender(self, X_gender_new):
         logger.warning('X_gender dataset cannot be modified!')
     
     @property
@@ -88,6 +52,29 @@ class Model:
     @y.setter
     def y(self, y_new):
         logger.warning('y dataset cannot be modified!')
+
+    @property
+    def trained_model(self):
+        if self._trained_model is None:
+            raise ValueError("Il modello non è ancora stato allenato. Esegui train() prima.")
+        return self._trained_model
+    
+    @trained_model.setter
+    def trained_model(self, model):
+        """
+        Set the trained model. This setter can include checks to validate the model.
+        """
+        if not isinstance(model, keras.Model):
+            raise ValueError("The model must be an instance of keras.Model.")
+        self._trained_model = model
+    
+    def train(self):
+        """
+        Esegue in sequenza il tuning degli iperparametri e l'allenamento del modello, plottando le predizioni.
+        """
+        self.hyperparameter_tuning()
+        self.train_model()
+        self.predict()
 
     def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=50, batch_size=64):
         """
@@ -161,32 +148,40 @@ class Model:
         plot_loss_metrics(history)
 
         loss, mae, mse = best_model.evaluate([X_test, X_gender_test], y_test, verbose=2)
-        logger.info(f"Valutazione sul dataset completo: Loss = {loss:.4f}, MAE = {mae:.4f}, MSE = {mse:.4f}")
+        logger.info(f"Evaluation on the complete dataset: Loss = {loss:.4f}, MAE = {mae:.4f}, MSE = {mse:.4f}")
 
-    def train(self, epochs=10):
-        """
-        Esegue in sequenza il tuning degli iperparametri e l'allenamento del modello.
-        """
-        self.hyperparameter_tuning(epochs=epochs)
-        self.train_model(epochs=epochs, save_model=True)
+        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'model'
+        model_dir.mkdir(parents=True, exist_ok=True)
 
-    def get_predictions(self, x=None, x_gender=None):
+        model_path = model_dir / "best_model.h5"
+
+        best_model.save(model_path)
+        logger.info(f"Modello saved at {model_path}")
+        self._trained_model = best_model
+
+    def predict(self, model = None):
         """
         Restituisce le predizioni del modello per i dati in input.
         Se x o x_gender non sono specificati, usa i dati completi memorizzati in self.x e self.x_gender.
         """
-        if x is None or x_gender is None:
-            x = self.x
-            x_gender = self.x_gender
-        return self.best_model.predict([x, x_gender])
+        model = model if model is not None else self._trained_model
 
-    @property
-    def selected_model(self):
+        if model is None:
+            raise ValueError("No model available for prediction.")
+    
+        X_test, X_gender_test, y_test = 0, 0, 0
+
+        # Ottieni le predizioni dal modello
+        y_pred = model.predict([X_test, X_gender_test])
+
+        plot_predictions(y_test, y_pred)
+
+        return y_pred
+
+    def load_trained_model(self, model_path):
         """
-        Restituisce il path del modello salvato. Se il modello non è stato ancora allenato,
-        solleva un'eccezione.
+        Load a trained model from a file.
         """
-        if self._selected_model is None:
-            raise ValueError("Il modello non è ancora stato allenato. Esegui train() prima.")
-        return self._selected_model
+        self._trained_model = load_model(model_path)
+        logger.info(f"Model loaded from {model_path}")
 

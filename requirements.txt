@@ -4,4 +4,6 @@ numpy
 pandas
 sphinx
 sphinx-rtd-theme
-
+keras_tuner
+keras
+tensorflow

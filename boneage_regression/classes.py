@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pathlib
@@ -8,6 +9,15 @@ from keras import layers, models, optimizers, callbacks
 import keras_tuner as kt
 
 from hyperparameters import build_model
+from plots import plot_loss_metrics
+
+# Setting logger configuration 
+logger.remove()  
+logger.add(
+    sys.stdout,
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+    level="INFO"
+)
 
 class Model:
     """
@@ -87,7 +97,7 @@ class Model:
 
         tuner_dir = pathlib.Path(__file__).resolve().parent.parent / 'tuner'
         tuner_dir.mkdir(parents=True, exist_ok=True)
-        
+
         if self.overwrite:
             project_name = 'tuner_new'
         else:
@@ -124,44 +134,34 @@ class Model:
 
         return best_model, best_hps
 
-    def train_model(self, epochs=10, save_model=True):
+    def train_model(self, epochs=10):
         """
         Allena il modello (definito dai migliori iperparametri) sui dati completi,
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,
         valuta il modello e, se richiesto, lo salva su disco.
         """
+        X_val, X_gender_val, y_val = 0, 0, 0
+        X_train, X_gender_train, y_train = 0, 0, 0
+        X_test, X_gender_test, y_test = 0, 0, 0
+
+        _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
+
         early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-        history = self.best_model.fit(
-            [self.x, self.x_gender],
-            self.y,
+        
+        history = best_model.fit(
+            [X_train, X_gender_train],
+            y_train,
             epochs=epochs,
-            batch_size=self.batch_size,
+            batch_size=64,
             validation_split=0.2,
             callbacks=[early_stop],
-            verbose=1
+            verbose=2
         )
 
-        # Plot delle curve di loss
-        plt.figure(figsize=(10,6))
-        plt.plot(history.history['loss'], label='Training Loss')
-        plt.plot(history.history['val_loss'], label='Validation Loss')
-        plt.title('Training e Validation Loss')
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-        plt.legend()
-        plt.grid(True)
-        plt.show()
+        plot_loss_metrics(history)
 
-        loss, mae = self.best_model.evaluate([self.x, self.x_gender], self.y, verbose=0)
-        print(f"Valutazione sul dataset completo: Loss = {loss:.4f}, MAE = {mae:.4f}")
-
-        if save_model:
-            if not os.path.exists(self.model_dir):
-                os.makedirs(self.model_dir)
-            model_path = os.path.join(self.model_dir, 'best_model.h5')
-            self.best_model.save(model_path)
-            self._selected_model = model_path
-            print(f"Modello salvato in {model_path}")
+        loss, mae, mse = best_model.evaluate([X_test, X_gender_test], y_test, verbose=2)
+        logger.info(f"Valutazione sul dataset completo: Loss = {loss:.4f}, MAE = {mae:.4f}, MSE = {mse:.4f}")
 
     def train(self, epochs=10):
         """

@@ -23,7 +23,7 @@ class DataLoader:
     """
     Class for loading and preprocessing the BoneAge dataset.
     """
-    def __init__(self, image_path, labels_path, target_size=(128, 128), num_images=None, preprocessing=False, num_workers=12):
+    def __init__(self, image_path, labels_path, target_size=(128, 128), num_images=None, preprocessing=True, num_workers=12):
         """
         Initialize the DataLoader for the BoneAge dataset.
 
@@ -41,6 +41,10 @@ class DataLoader:
         self.preprocessing = preprocessing
         self.num_workers = num_workers
         self.X, self.ids, self.X_gender, self.y = self.load_images()
+
+        if self.preprocessing:
+            self.preprocess_images()
+
     # Getter and Setter: image_path
     @property
     def image_path(self):
@@ -132,9 +136,6 @@ class DataLoader:
         """
 
         path = self.image_path
-        
-        if self.preprocessing:
-            self.preprocess_images()
 
         # Ordering file names
         image_files = [f for f in path.iterdir() if f.is_file() and is_numeric(f.stem)]
@@ -238,15 +239,15 @@ class DataLoader:
         return label_pairs, missing_ids
     
 # Importiamo la classe DataLoader
-dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
+#dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
 
 # Stampiamo le dimensioni dei dati caricati
-print(f"✔ Immagini caricate: {dataloader.X.shape}")
-print(f"✔ ID immagini: {dataloader.ids}")
-print(f"✔ Boneage: {dataloader.y}")  # Età ossea
-print(f"✔ Genere: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
+#print(f"✔ Immagini caricate: {dataloader.X.shape}")
+#print(f"✔ ID immagini: {dataloader.ids}")
+#print(f"✔ Boneage: {dataloader.y}")  # Età ossea
+#print(f"✔ Genere: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
 
 # Visualizziamo un'immagine con i suoi dati
-plt.imshow(dataloader.X[2])
-plt.title(f"ID: {dataloader.ids[2]}, Boneage: {dataloader.y[2]}, Gender: {dataloader.X_gender[2]}")
-plt.show()
+#plt.imshow(dataloader.X[2])
+#plt.title(f"ID: {dataloader.ids[2]}, Boneage: {dataloader.y[2]}, Gender: {dataloader.X_gender[2]}")
+#plt.show()

@@ -40,7 +40,7 @@ class DataLoader:
         self.num_images = num_images
         self.preprocessing = preprocessing
         self.num_workers = num_workers
-        
+        self.X, self.ids, self.X_gender, self.y = self.load_images()
     # Getter and Setter: image_path
     @property
     def image_path(self):
@@ -153,9 +153,13 @@ class DataLoader:
             # Switch to RGB if needed (RGB are better from CNN point of view)
             if len(img.shape) == 2:  # BW images
                 img = np.stack([img] * 3, axis=-1)
-
-            # Resizing
-            img_resized = tf.image.resize(img, self.target_size).numpy()
+                
+            # Assicuriamoci che i valori siano tra 0-255 (evitiamo problemi di visualizzazione)
+            if img.dtype == np.float32 or img.dtype == np.float64:
+                img = (img * 255).astype(np.uint8)  # Convertiamo in uint8
+            
+            # Ridimensioniamo l'immagine
+            img_resized = tf.image.resize(img, self.target_size).numpy().astype(np.uint8)
             
             images_rgb.append(img_resized)
             ids.append(img_id)
@@ -173,7 +177,15 @@ class DataLoader:
 
         logger.info(f"{len(filtered_images_rgb)} images are ready to be used.")
 
-        return np.array(filtered_images_rgb, dtype=np.uint8), np.array(filtered_ids, dtype=np.int32), labels
+        if labels is not None:
+            boneage, gender = zip(*labels)  # Separiamo gli elementi delle coppie
+            boneage = np.array(boneage, dtype=np.float32)
+            gender = np.array(gender, dtype=np.int32)
+        else:
+            boneage, gender = None, None  # Se labels è None, restituiamo anche questi come None
+
+        return np.array(filtered_images_rgb, dtype=np.uint8)/255, np.array(filtered_ids, dtype=np.int32), np.array(gender, dtype=np.int32), np.array(boneage, dtype=np.int32)
+
     
     
     def load_labels(self, image_ids):
@@ -224,7 +236,17 @@ class DataLoader:
         label_pairs = np.array(list(zip(boneage, gender)))
 
         return label_pairs, missing_ids
-
     
-loader = DataLoader(r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv", preprocessing=False, num_images=10)
-ids, images, labels = loader.load_images()
+# Importiamo la classe DataLoader
+dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
+
+# Stampiamo le dimensioni dei dati caricati
+print(f"✔ Immagini caricate: {dataloader.X.shape}")
+print(f"✔ ID immagini: {dataloader.ids}")
+print(f"✔ Boneage: {dataloader.y}")  # Età ossea
+print(f"✔ Genere: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
+
+# Visualizziamo un'immagine con i suoi dati
+plt.imshow(dataloader.X[2])
+plt.title(f"ID: {dataloader.ids[2]}, Boneage: {dataloader.y[2]}, Gender: {dataloader.X_gender[2]}")
+plt.show()

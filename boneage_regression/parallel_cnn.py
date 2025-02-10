@@ -33,12 +33,12 @@ def build_model(hp):
     """
     
     # First Branch (images features)
-    input_image = layers.Input(shape=(256, 256, 3))
+    input_image = layers.Input(shape=(64, 64, 3))
     x = input_image
 
     # Number of convolutional layers (hyperparameter)
-    hp_num_conv_layers = hp.Int('num_conv_layers', min_value=3, max_value=5, step=1)
-    hp_filters = hp.Int(f'filters', min_value=16, max_value=64, step=16)
+    hp_num_conv_layers = hp.Int('num_conv_layers', min_value=3, max_value=3, step=1)
+    hp_filters = hp.Int(f'filters', min_value=32, max_value=32, step=32)
 
     for i in range(hp_num_conv_layers):
         x = layers.Conv2D(hp_filters*(i+1), (3, 3), activation='relu', padding='same')(x)
@@ -48,7 +48,7 @@ def build_model(hp):
     x = layers.Flatten()(x)
 
     # Dense layer before concatenation
-    x = layers.Dense(hp.Int('dense_units', min_value=32, max_value=128, step=32), activation='relu')(x)
+    x = layers.Dense(hp.Int('dense_units', min_value=32, max_value=32, step=32), activation='relu')(x)
     x = layers.BatchNormalization()(x)
 
     # Second Branch (gender features)
@@ -59,9 +59,9 @@ def build_model(hp):
     concatenated = layers.concatenate([x, y])
 
     # Fully connected layers
-    num_dense = hp.Int('dense_units_2', min_value=32, max_value=128, step=32)
+    num_dense = hp.Int('dense_units_2', min_value=32, max_value=32, step=32)
     x = layers.Dense(num_dense, activation='relu')(concatenated)
-    x = layers.Dropout(hp.Float('dropout', min_value=0.1, max_value=0.5, step=0.1))(x)
+    x = layers.Dropout(hp.Float('dropout', min_value=0.1, max_value=0.1, step=0.1))(x)
     x = layers.Dense(int(num_dense/2), activation='relu')(x)
 
     # Output layer for regression
@@ -72,107 +72,54 @@ def build_model(hp):
 
     # Compile with hyperparameter tuning for learning rate
     model.compile(
-        optimizer=optimizers.Adam(hp.Float('learning_rate', min_value=1e-4, max_value=1e-2, sampling='log')),
+        optimizer=optimizers.Adam(hp.Float('learning_rate', min_value=1e-2, max_value=1e-2, sampling='log')),
         loss='mean_squared_error',
         metrics=['mae']
     )
 
     return model
 
-def run_hyperparameter_tuning(x_train, 
-                              x_gender_train, 
-                              y_train, epochs=10, 
-                              batch_size=32): 
-
-    """
-    Executes hyperparameter tuning using RandomSearch for a CNN regression model.
-
-    :param x_train: Array or tensor containing the training images.
-    :type x_train: numpy.ndarray or tensorflow.Tensor
-    :param x_gender_train: Array or tensor containing the training gender data.
-    :type x_gender_train: numpy.ndarray or tensorflow.Tensor
-    :param y_train: Array containing the training labels (e.g., ages).
-    :type y_train: numpy.ndarray
-    :param epochs: Number of training epochs for each configuration, defaults to 10.
-    :type epochs: int, optional
-    :param batch_size: Batch size for training, defaults to 32.
-    :type batch_size: int, optional
-
-    :raises ValueError: If the dimensions of `x_train`, `x_gender_train`, and `y_train` do not match.
-
-    :return: A tuple containing the best model built with the optimal hyperparameters and the optimal hyperparameters object.
-    :rtype: tuple(keras.Model, keras_tuner.HyperParameters)
-    """
-
-    # Definizione del tuner
+def run_hyperparameter_tuning_parallel(x_train, x_gender_train, y_train, epochs=1, batch_size=64): 
     tuner = Hyperband(
         build_model,
-        objective='val_mae',  # Obiettivo: minimizzare l'errore assoluto medio di validazione
-        max_epochs=10,
-        hyperband_iterations=3,  # Numero di esecuzioni per configurazione
+        objective='val_mae',
+        max_epochs=1,
+        executions_per_trial=2,  # Esegui più prove per trial in parallelo
         directory='../tuner_results',
         project_name='cnn_regression_tuning'
     )
     
     logger.info('Starting tuning')
 
-    #Early stopping set up
+    # Setup per EarlyStopping
     stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=3)
 
-    # Esecuzione del tuning
+    # Esegui la ricerca degli iperparametri in parallelo
     tuner.search([x_train, x_gender_train], y_train,
                  epochs=epochs,
                  validation_split=0.2,
                  batch_size=batch_size,
                  callbacks=[stop_early])
-    
-    # Recupero dei migliori iperparametri trovati
+
     best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
-    
-    # Costruzione del modello con i migliori iperparametri
-    best_model = build_model(best_hps)
-    
-    logger.info("Best Hyperparameters:")
-    for param, value in best_hps.values.items():
-        logger.info(f"{param}: {value}")
+    return best_hps
 
-    # Printing model summary
-    logger.info('Summary of the best network architecture:')
-    best_model.summary()
+from concurrent.futures import ProcessPoolExecutor
+import numpy as np
 
-    return best_model, best_hps
-
-def k_fold_validation(model_fn, x_train, x_gender_train, y_train, best_hps, k=5, epochs=10, batch_size=32):
+def k_fold_validation_parallel(model_fn, x_train, x_gender_train, y_train, best_hps, k=5, epochs=10, batch_size=32):
     """
-    Esegue la validazione incrociata con k-fold sul modello per stimare la sua performance.
-    
-    :param model_fn: Funzione per costruire il modello (ad esempio `build_model`).
-    :type model_fn: function
-    :param x_train: Dati di input (immagini).
-    :type x_train: numpy.ndarray o tensorflow.Tensor
-    :param x_gender_train: Dati di genere.
-    :type x_gender_train: numpy.ndarray o tensorflow.Tensor
-    :param y_train: Etichette di addestramento (ad esempio, età).
-    :type y_train: numpy.ndarray
-    :param best_hps: I migliori iperparametri ottenuti dal tuning.
-    :type best_hps: keras_tuner.HyperParameters
-    :param k: Numero di fold per la validazione incrociata, defaults to 5.
-    :type k: int, optional
-    :param epochs: Numero di epoche per l'addestramento in ogni fold, defaults to 10.
-    :type epochs: int, optional
-    :param batch_size: Dimensione del batch per l'addestramento, defaults to 32.
-    :type batch_size: int, optional
-    
-    :return: Il MAE medio sui k fold.
-    :rtype: float
+    Esegue la validazione incrociata con k-fold in parallelo per ogni fold.
     """
-    
     logger.info(f'Inizio validazione k-fold con k={k}, epochs={epochs}, batch_size={batch_size}')
     
-    kf = KFold(n_splits=k, shuffle=True, random_state=42)  # KFold per suddividere i dati in k fold
+    kf = KFold(n_splits=k, shuffle=True, random_state=5)  # KFold per suddividere i dati in k fold
     mae_scores = []
     
-    for fold, (train_idx, val_idx) in enumerate(kf.split(x_train), start=1):
+    def train_fold(train_idx, val_idx, fold):
+        """
+        Funzione per allenare e valutare il modello per un singolo fold.
+        """
         logger.info(f'Fold {fold}/{k}: Creazione partizioni di training e validazione')
         
         # Creazione delle partizioni per il training e la validazione
@@ -189,8 +136,18 @@ def k_fold_validation(model_fn, x_train, x_gender_train, y_train, best_hps, k=5,
         
         logger.info(f'Fold {fold}: Valutazione modello')
         _, mae = model.evaluate([x_val_fold, x_gender_val_fold], y_val_fold, verbose=0)
-        mae_scores.append(mae)
-        logger.info(f'Fold {fold}: MAE = {mae:.4f}')
+        return mae
+
+    # Usa un ProcessPoolExecutor per parallelizzare i fold
+    with ProcessPoolExecutor() as executor:
+        futures = []
+        for fold, (train_idx, val_idx) in enumerate(kf.split(x_train), start=1):
+            futures.append(executor.submit(train_fold, train_idx, val_idx, fold))
+
+        for future in futures:
+            mae = future.result()
+            mae_scores.append(mae)
+            logger.info(f'Fold {fold}: MAE = {mae:.4f}')
     
     mean_mae = np.mean(mae_scores)
     logger.info(f'Validazione k-fold completata. MAE medio: {mean_mae:.4f}')
@@ -198,7 +155,8 @@ def k_fold_validation(model_fn, x_train, x_gender_train, y_train, best_hps, k=5,
     return mean_mae
 
 
-def train_and_plot(model, x_train, x_gender_train, y_train, x_test,x_gender_test, y_test, epochs=2, batch_size=32, save_model=False, model_dir='trained_models'):
+
+def train_and_plot(model, x_train, x_gender_train, y_train, x_val, y_val, x_test,x_gender_test, y_test, epochs=5, batch_size=64, save_model=False, model_dir='trained_models'):
     """
     Funzione per allenare il modello, monitorare la training loss e la validation loss e testare sul set di test.
     
@@ -220,13 +178,12 @@ def train_and_plot(model, x_train, x_gender_train, y_train, x_test,x_gender_test
         [x_train, x_gender_train], y_train,
         epochs=epochs,
         batch_size=batch_size,
-        validation_split=0.2,
+        validation_data=(x_val, y_val),
         callbacks=[early_stopping],
         verbose=1
     )
 
     # Tracciamento della loss durante il training
-    plt.ion()
     plt.figure(figsize=(10, 6))
     plt.plot(history.history['loss'], label='Training Loss')
     plt.plot(history.history['val_loss'], label='Validation Loss')
@@ -269,7 +226,6 @@ def plot_predictions_vs_actuals(model, x_test,x_gender_test, y_test):
     y_pred = model.predict([x_test, x_gender_test])
 
     # Crea il grafico
-    plt.ion()
     plt.figure(figsize=(8, 8))
     plt.scatter(y_test, y_pred, label="Predictions", alpha=0.7)
     
@@ -288,6 +244,14 @@ def run():
 
     x, y, x_gender = return_dataset(r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto', r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv')
     print(f"x shape: {x.shape}, y shape: {y.shape}")
+    """
+    x = x[..., np.newaxis]  # Aggiunge un asse di dimensione 1
+    x = np.array(x, dtype=np.float32)
+    y = np.array(y, dtype=np.int32)  # Se le etichette sono numeriche
+    print(f"x shape after expansion: {x.shape}")  # Dovrebbe essere (18, 128, 128, 1)
+    for i, img in enumerate(x):
+        print(f"Image {i} shape: {img.shape}")
+    """
     x_train = preprocessing_image(x[:60])
     x_val = preprocessing_image(x[60:80])
     x_test = preprocessing_image(x[80:100])
@@ -298,11 +262,9 @@ def run():
     x_gender_val = (x_gender[60:80])
     x_gender_test = (x_gender[80:100])
     # Esegui la ricerca degli iperparametri
-    best_model, best_hps = run_hyperparameter_tuning(x_val, x_gender_val, y_val, epochs=10, batch_size=32)
-    train_and_plot(best_model, x_train, x_gender_train, y_train, x_test, x_gender_test, y_test)
-    logger.info("Training completed")
+    best_model, best_hps = run_hyperparameter_tuning_parallel(x_val, x_gender_val, y_val, epochs=10, batch_size=9)
+    train_and_plot(best_model, x_train, x_gender_train, y_train, x_test, y_test)
     plot_predictions_vs_actuals(best_model, x_test,x_gender_test, y_test)
-    logger.info("Plotting done")
     # Esegui la validazione incrociata con k-fold
     #mean_mae = k_fold_validation(build_model, x_train, x_gender_train, y_train, best_hps, k=5, epochs=10, batch_size=32)
 

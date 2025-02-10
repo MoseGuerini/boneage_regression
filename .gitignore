@@ -27,3 +27,4 @@ dist/
 # File generati da sistemi operativi
 .DS_Store       # macOS
 Thumbs.db       # Windows
+__pycache__/

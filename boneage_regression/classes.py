@@ -3,9 +3,9 @@ import pathlib
 from loguru import logger
 
 import keras
-from keras import callbacks
+from keras import callbacks, models
 import keras_tuner as kt
-from keras.models import load_model
+from sklearn.model_selection import train_test_split
 
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions
@@ -20,39 +20,69 @@ logger.add(
 
 class CNN_Model:
 
-    def __init__(self, data, overwrite=False, max_trials=10):
-        self._X = data.x
-        self._X_gender = data.X_gender
-        self._y = data.y
+    def __init__(self, data_train, data_test, overwrite=False, max_trials=10):
+
+        self._X_train = data_train.X
+        self._X_gender_train = data_train.X_gender
+        self._y_train = data_train.y
+
+        self._X_test = data_test.X
+        self._X_gender_test = data_test.X_gender
+        self._y_test = data_test.y
+
         self.max_trials = max_trials
         self.overwrite = overwrite
         self.model_builder = build_model
         self._trained_model = None
 
     @property
-    def X(self):
-        return self._X
+    def X_train(self):
+        return self._X_train
     
-    @X.setter
-    def X(self, X_new):
-        logger.warning('X dataset cannot be modified!')
-    
-    @property
-    def X_gender(self):
-        return self._X_gender
-    
-    @X_gender.setter
-    def X_gender(self, X_gender_new):
-        logger.warning('X_gender dataset cannot be modified!')
+    @X_train.setter
+    def X_train(self, X_train_new):
+        logger.warning('X_train dataset cannot be modified!')
     
     @property
-    def y(self):
-        return self._y
+    def X_gender_train(self):
+        return self._X_gender_train
     
-    @y.setter
-    def y(self, y_new):
-        logger.warning('y dataset cannot be modified!')
+    @X_gender_train.setter
+    def X_gender_train(self, X_gender_train_new):
+        logger.warning('X_gender_train dataset cannot be modified!')
+    
+    @property
+    def y_train(self):
+        return self._y_train
+    
+    @y_train.setter
+    def y_train(self, y_train_new):
+        logger.warning('y_train dataset cannot be modified!')
 
+    @property
+    def X_test(self):
+        return self._X_test
+    
+    @X_test.setter
+    def X_test(self, X_test_new):
+        logger.warning('X_test dataset cannot be modified!')
+    
+    @property
+    def X_gender_test(self):
+        return self._X_gender_test
+    
+    @X_gender_test.setter
+    def X_gender_test(self, X_gender_test_new):
+        logger.warning('X_gender_test dataset cannot be modified!')
+    
+    @property
+    def y_test(self):
+        return self._y_test
+    
+    @y_test.setter
+    def y_test(self, y_test_new):
+        logger.warning('y_test dataset cannot be modified!')
+    
     @property
     def trained_model(self):
         if self._trained_model is None:
@@ -72,7 +102,6 @@ class CNN_Model:
         """
         Esegue in sequenza il tuning degli iperparametri e l'allenamento del modello, plottando le predizioni.
         """
-        self.hyperparameter_tuning()
         self.train_model()
         self.predict()
 
@@ -99,7 +128,7 @@ class CNN_Model:
             project_name=project_name
         )
 
-        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=3)
+        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=3) ########
 
         tuner.search([X_val, X_gender_val], y_val,
                      epochs=epochs,
@@ -119,7 +148,7 @@ class CNN_Model:
         logger.info('Summary of the best network architecture:')
         best_model.summary()
 
-        return best_model, best_hps
+        return  best_hps, best_model
 
     def train_model(self, epochs=10):
         """
@@ -127,9 +156,7 @@ class CNN_Model:
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,
         valuta il modello e, se richiesto, lo salva su disco.
         """
-        X_val, X_gender_val, y_val = 0, 0, 0
-        X_train, X_gender_train, y_train = 0, 0, 0
-        X_test, X_gender_test, y_test = 0, 0, 0
+        X_train, X_gender_train, y_train, X_val, X_gender_val, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.2, random_state=1)
 
         _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
 
@@ -147,17 +174,23 @@ class CNN_Model:
 
         plot_loss_metrics(history)
 
-        loss, mae, mse = best_model.evaluate([X_test, X_gender_test], y_test, verbose=2)
+        loss, mae, mse = best_model.evaluate([self.X_test, self.X_gender_test], self.y_test, verbose=2)
         logger.info(f"Evaluation on the complete dataset: Loss = {loss:.4f}, MAE = {mae:.4f}, MSE = {mse:.4f}")
 
+        self._trained_model = best_model
+
+        self.save_model()
+
+
+    def save_model(self, filename="best_model.h5"):
+        """Salva il modello addestrato."""
         model_dir = pathlib.Path(__file__).resolve().parent.parent / 'model'
         model_dir.mkdir(parents=True, exist_ok=True)
 
-        model_path = model_dir / "best_model.h5"
+        model_path = model_dir / filename
+        self._trained_model.save(model_path)
+        logger.info(f"Modello salvato in {model_path}")
 
-        best_model.save(model_path)
-        logger.info(f"Modello saved at {model_path}")
-        self._trained_model = best_model
 
     def predict(self, model = None):
         """
@@ -168,13 +201,11 @@ class CNN_Model:
 
         if model is None:
             raise ValueError("No model available for prediction.")
-    
-        X_test, X_gender_test, y_test = 0, 0, 0
 
         # Ottieni le predizioni dal modello
-        y_pred = model.predict([X_test, X_gender_test])
+        y_pred = model.predict([self.X_test, self.X_gender_test])
 
-        plot_predictions(y_test, y_pred)
+        plot_predictions(self.y_test, y_pred)
 
         return y_pred
 
@@ -182,6 +213,6 @@ class CNN_Model:
         """
         Load a trained model from a file.
         """
-        self._trained_model = load_model(model_path)
+        self._trained_model = models.load_model(model_path)
         logger.info(f"Model loaded from {model_path}")
 

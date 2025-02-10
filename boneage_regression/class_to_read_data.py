@@ -34,8 +34,8 @@ class DataLoader:
         :param preprocessing: Boolean indicating whether preprocessing is required (default: False).
         :param num_workers: Number of workers for parallel preprocessing in MATLAB (default: 12).
         """
-        self.image_path = pathlib.Path(image_path)
-        self.labels_path = pathlib.Path(labels_path) if labels_path else None
+        self._image_path = pathlib.Path(image_path)
+        self._labels_path = pathlib.Path(labels_path)
         self.target_size = target_size
         self.num_images = num_images
         self.preprocessing = preprocessing
@@ -51,7 +51,19 @@ class DataLoader:
         path = pathlib.Path(value)
         if not path.exists() or not path.is_dir():
             raise FileNotFoundError(f"Invalid path: {value}. The directory does not exist.")
-        self._image_path = path
+        self.__dict__["image_path"] = path  # ✅ Assegna direttamente, evitando la ricorsione
+
+        
+    @property
+    def labels_path(self):
+        return self._labels_path
+        
+    @labels_path.setter
+    def labels_path(self, value):
+        path = pathlib.Path(value)
+        if not path.exists():  # Verifica solo l'esistenza, non se è una directory
+            raise FileNotFoundError(f"Invalid path: {value}. The file does not exist.")
+        self.__dict__["labels_path"] = path
 
     # Getter and Setter: target_size
     @property
@@ -236,9 +248,10 @@ class DataLoader:
         label_pairs = np.array(list(zip(boneage, gender)))
 
         return label_pairs, missing_ids
+
     
 # Importiamo la classe DataLoader
-dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
+dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", preprocessing=False)
 
 # Stampiamo le dimensioni dei dati caricati
 print(f"✔ Immagini caricate: {dataloader.X.shape}")

@@ -49,7 +49,7 @@ class DataLoaderTests(unittest.TestCase):
 
     def test_load_labels_missing_columns(self):
         """Test load_labels con colonne mancanti nel CSV."""
-        loader = DataLoader(image_path=r'C:\Users\nicco\Desktop\Test_folder\test_image_path\valid_path', labels_path="C:/Users/nicco/Desktop/labels.csv")
+        loader = DataLoader(image_path=r'C:\Users\nicco\Desktop\Test_folder\test_image_path\valid_path', labels_path=r"C:\Users\nicco\Desktop\Test_folder\test_label_path\train_missing_gender")
 
         # Mock di un CSV senza la colonna 'male'
         mock_df = pd.DataFrame({

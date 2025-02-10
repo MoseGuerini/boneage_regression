@@ -1,6 +1,14 @@
-function preprocessing(input_folder, output_folder)
+function preprocessing(input_folder, output_folder,num_workers)
+
+    % Se num_workers non è stato specificato, imposta il valore di default a 12
+    
+    if ~exist('num_workers','var')
+         % third parameter does not exist, so default it to something
+        num_workers = 12;
+    end
+
     % Aggiungi il percorso della cartella al MATLAB path per il parfor
-    addpath(genpath(pwd));  % Aggiungi il percorso della cartella corrente se necessario
+    addpath(genpath(pwd));
 
     % Crea la cartella di output se non esiste
     if ~exist(output_folder, 'dir')
@@ -11,18 +19,22 @@ function preprocessing(input_folder, output_folder)
     delete(fullfile(output_folder, '*.png'));
 
     % Ottiene la lista di tutti i file immagine nella cartella
-    image_files = dir(fullfile(input_folder, '*.png')); % Cambia l'estensione se necessario
+    image_files = dir(fullfile(input_folder, '*.png')); 
     
     % Prealloca cell array per le immagini elaborate
     num_images = length(image_files);
     processed_images = cell(1, num_images);
 
-    % Avvia il parallel pool se non è attivo
-    poolobj = gcp('nocreate');
-    if isempty(poolobj)
-        parpool; % Avvia un pool di worker
+    max_workers = parcluster('local').NumWorkers;
+    num_workers = min(num_workers, max_workers); % Limita il numero di worker
+
+    poolobj = gcp('nocreate'); 
+    if isempty(poolobj) || poolobj.NumWorkers ~= num_workers
+        delete(poolobj); % Chiude eventuali pool aperti con numero errato
+        parpool(num_workers); % Avvia il pool con il numero corretto di worker
     end
 
+    tic;  % Inizia il timer
     % Loop parallelo su tutte le immagini
     parfor i = 1:num_images
         disp(['Processing image: ', num2str(i)]);
@@ -39,15 +51,17 @@ function preprocessing(input_folder, output_folder)
         % Padding e ridimensionamento dell'immagine
         img_padded = add_padding_to_square(img_cropped);
 
-        %Come output da immagini 128x128
+        % Uscita in 128x128
         processed_images{i} = image_resizing(img_padded, 128);
 
         % Salva l'immagine preprocessata nella cartella di output
         output_path = fullfile(output_folder, image_files(i).name);
-        imwrite(processed_images{i}, output_path);  % Salva img_resized
+        imwrite(processed_images{i}, output_path);
     end
     
     disp('Elaborazione completata!');
+    
+    % Ferma il timer e mostra il tempo trascorso
+    elapsed_time = toc;
+    disp(['Tempo trascorso: ', num2str(elapsed_time), ' secondi']);
 end
-
-preprocessing('C:\Users\nicco\Desktop\Training', 'C:\Users\nicco\Desktop\Preprocessed_foto')

@@ -1,6 +1,7 @@
 """Main"""
 import numpy as np
 import argparse
+import pathlib
 
 #from utils import wave_dict, hyperp_dict, str2bool, rate, delete_directory
 from hyperparameters import hyperp_space_size
@@ -86,10 +87,16 @@ if __name__=='__main__':
 
     args = parser.parse_args()
 
-    # Dataset part
-    data_train = DataLoader()
-    data_test = DataLoader()
-    
+    #1. Dataset part
+    test_data_dir = pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
+    train_data = test_data_dir / 'Training'
+    train_csv = test_data_dir / 'training.csv'
+    test_data = test_data_dir / 'Validation'
+    test_csv = test_data_dir / 'Validation_dataset.csv'
+
+    data_train = DataLoader(train_data, train_csv)
+    data_test = DataLoader(test_data, test_csv)
+
     #2. set chosen hyperparameters and get number of trials
     hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)
     space_size = hyperp_space_size()

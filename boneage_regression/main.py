@@ -1,30 +1,27 @@
 """Main"""
 import numpy as np
 import argparse
-import os
-import time
-import keras
-import shutup
-import warnings 
+
 #from utils import wave_dict, hyperp_dict, str2bool, rate, delete_directory
 from hyperparameters import hyperp_space_size
-from classes import  Model
+from classes import  CNN_Model
+from class_to_read_data import DataLoader
 
-warnings.filterwarnings('ignore')
-shutup.please()
+from utils import hyperp_dict
+
+
 if __name__=='__main__':
-    start = time.time()
-    os.chdir('..')
+
     parser = argparse.ArgumentParser(
         description="Bone Age Regressor"
     )
     
     parser.add_argument(
-        "-fast",
-        "--fast_execution",
+        "-o",
+        "--overwrite",
         metavar="",
         type=bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
-        help="If True avoid hyperparameters search and use the pre-saved hyperpar. Default: False",
+        help="If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False",
         default=False,
     )
     
@@ -90,23 +87,14 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     # Dataset part
-
+    data_train = DataLoader()
+    data_test = DataLoader()
+    
     #2. set chosen hyperparameters and get number of trials
-    hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dropout_rate, args.dense_units, args.dense_depth)
+    hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)
     space_size = hyperp_space_size()
     max_trials = np.rint(args.searching_fraction*space_size)
 
     #3. create and train the model
-    model = Model(data=data, fast=args.fast_execution, max_trials=max_trials)
+    model = CNN_Model(data_train=data_train, data_test=data_test, overwrite=args.overwrite, max_trials=max_trials)
     model.train()
-
-    #4. check what the most reliable model has learnt using gradCAM
-    best_model = keras.models.load_model(model.selected_model)
-    num_images = args.gradcam
-    if num_images > 25:
-        print('Showing 25 images using gradCAM')
-        num_images = 25
-    rand_images, _ = data.get_random_images(size=num_images, classes=[1])
-    preds = best_model.predict(rand_images)
-    get_gcam_images(rand_images, best_model)
-    gCAM_show(preds=preds)

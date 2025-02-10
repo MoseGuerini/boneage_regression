@@ -9,6 +9,8 @@ import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
 
+from hyperparameters import set_hyperp
+
 def load_images(image_path, num_images=None):
     """
     Load a subset of images and return them with their corresponding IDs from a specified directory.
@@ -166,3 +168,17 @@ def preprocessing_image(images):
     print(f"Shape delle immagini preprocessate: {image_rgb.shape}")
     
     return image_rgb
+
+def hyperp_dict(conv_layers, conv_filters, dense_units, dense_depth, dropout_rate):
+    """Creates dictionary containing user-selected hps keeping only unique values in each list 
+    and sets it to be a global variable with set_hyperp"""
+    hyperp_dict = {
+            'conv_layers' : list(set(conv_layers)),
+            'conv_filters': list(set(conv_filters)),
+            'dense_units' : list(set(dense_units)),
+            'dense_depth' : list(set(dense_depth)),
+            'dropout_rate': list(set(dropout_rate))
+
+    }
+    set_hyperp(hyperp_dict)
+    return hyperp_dict

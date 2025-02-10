@@ -14,7 +14,7 @@ def set_hyperp(hyperp_dict):
     global hyperp
     hyperp  = hyperp_dict
 
-def hyperp_space_size(hyperp):
+def hyperp_space_size():
     """Calculate hyperparameters space size (based on the user-selected combinations)."""
     size = 1
     for key in hyperp:

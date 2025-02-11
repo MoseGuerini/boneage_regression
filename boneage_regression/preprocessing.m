@@ -1,10 +1,15 @@
-function preprocessing(input_folder, output_folder,num_workers)
+function preprocessing(input_folder, output_folder,num_workers,target_size)
 
     % Se num_workers non è stato specificato, imposta il valore di default a 12
     
     if ~exist('num_workers','var')
          % third parameter does not exist, so default it to something
         num_workers = 12;
+    end
+
+    if ~exist('target_size','var')
+         % third parameter does not exist, so default it to something
+        target_size = 128;
     end
 
     % Aggiungi il percorso della cartella al MATLAB path per il parfor
@@ -52,7 +57,7 @@ function preprocessing(input_folder, output_folder,num_workers)
         img_padded = add_padding_to_square(img_cropped);
 
         % Uscita in 128x128
-        processed_images{i} = image_resizing(img_padded, 128);
+        processed_images{i} = image_resizing(img_padded, target_size);
 
         % Salva l'immagine preprocessata nella cartella di output
         output_path = fullfile(output_folder, image_files(i).name);

@@ -23,7 +23,7 @@ class DataLoader:
     """
     Class for loading and preprocessing the BoneAge dataset.
     """
-    def __init__(self, image_path, labels_path, target_size=(128, 128), num_images=None, preprocessing=True, num_workers=12):
+    def __init__(self, image_path, labels_path, target_size=(128, 128), num_images=None, preprocessing=False, num_workers=12):
         """
         Initialize the DataLoader for the BoneAge dataset.
 
@@ -41,9 +41,6 @@ class DataLoader:
         self.preprocessing = preprocessing
         self.num_workers = num_workers
         self.X, self.ids, self.X_gender, self.y = self.load_images()
-
-        if self.preprocessing:
-            self.preprocess_images()
 
     # Getter and Setter: image_path
     @property
@@ -76,10 +73,12 @@ class DataLoader:
 
     @target_size.setter
     def target_size(self, value):
-        if isinstance(value, tuple) and len(value) == 2 and all(isinstance(i, int) and i > 0 for i in value):
+        if (isinstance(value, tuple) and len(value) == 2 and 
+            all(isinstance(i, int) and i > 0 for i in value) and 
+            value[0] == value[1]):  # Controllo che i due numeri siano uguali
             self._target_size = value
         else:
-            raise ValueError(f"Invalid target_size: {value}. target_size must be a tuple of two positive integers.")
+            raise ValueError(f"Invalid target_size: {value}. target_size must be a tuple of two identical positive integers.")
 
     # Getter and Setter: num_images
     @property
@@ -123,11 +122,11 @@ class DataLoader:
         logger.info("Performing MATLAB preprocessing...")
 
         eng = matlab.engine.start_matlab()
-        eng.addpath(r'C:\Users\nicco\boneage_regression\boneage_regression_coding')
-        eng.preprocessing(str(self.image_path), str(r'C:\Users\nicco\Desktop\output_images'), self.num_workers, self.target_size(1), nargout = 0) 
+        eng.addpath(r'C:\Users\nicco\boneage_regression\boneage_regression')
+        eng.preprocessing(str(self.image_path), str(r'C:\Users\nicco\Desktop\output_images'), self.num_workers, self.target_size[1], nargout = 0) 
         #Number of workers for parallel preprocessing and dimension of images can also be set. Defualt values are 12 and 128.
         self.image_path = pathlib.Path(str(r'C:\Users\nicco\Desktop\output_images'))
-        self.preprocessing = False  # Flag deactivation after preprocessing.
+        #self.preprocessing = False  # Flag deactivation after preprocessing.
         eng.quit()
 
     def load_images(self):
@@ -229,10 +228,10 @@ class DataLoader:
         missing_images = [label_id for label_id in df['id'].to_numpy() if label_id not in image_ids]
 
         if missing_ids:
-            logger.warning(f"Warning: The following image IDs are missing in the label file: {missing_ids}")
+            logger.warning(f"Warning: The following image IDs are missing in the label file: {', '.join(map(str, missing_ids))}")
 
         if missing_images:
-            logger.warning(f"Warning: The following labels do not correspond to any image: {missing_images}")
+            logger.warning(f"Warning: The following labels do not correspond to any image: {', '.join(map(str, missing_images))}")
         
         # Searching for missing informations
         required_columns = ['id', 'boneage', 'male']

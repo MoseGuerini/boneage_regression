@@ -118,16 +118,15 @@ class DataLoader:
 
         :raises FileNotFoundError: If the specified image path does not exist.
         """
-
+        file_path = pathlib.Path(__file__).resolve()
         logger.info("Performing MATLAB preprocessing...")
 
         eng = matlab.engine.start_matlab()
         
-        eng.addpath(str(pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'))
-        eng.preprocessing(str(pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'), str(pathlib.Path(__file__).resolve().parent.parent / 'processed_images'), self.num_workers, self.target_size[1], nargout = 0) 
+        eng.addpath(str(file_path.parent / 'matlab_funcions'))
+        eng.preprocessing(str(file_path.parent.parent / 'Test_dataset'), str(file_path.parent.parent / 'processed_images'), self.num_workers, self.target_size[1], nargout = 0) 
         #Number of workers for parallel preprocessing and dimension of images can also be set. Defualt values are 12 and 128.
-        self.image_path = str(pathlib.Path(__file__).resolve().parent.parent / 'processed_images')
-        self.preprocessing = False  # Flag deactivation after preprocessing.
+        self.image_path = str(file_path.parent.parent / 'processed_images')
         eng.quit()
 
     def load_images(self):

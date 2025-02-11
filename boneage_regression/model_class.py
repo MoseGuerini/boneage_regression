@@ -115,9 +115,9 @@ class CNN_Model:
         tuner_dir.mkdir(parents=True, exist_ok=True)
 
         if self.overwrite:
-            project_name = 'tuner_new'
+            project_name = 'new_tuner'
         else:
-            project_name = 'tuner_old'
+            project_name = 'best_tuner'
 
         tuner = kt.BayesianOptimization(
             model_builder,

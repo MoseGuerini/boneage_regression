@@ -22,7 +22,6 @@ if __name__=='__main__':
         "-n",
         "--num_images",
         metavar="",
-        nargs='+',
         type=int,
         help="Number of images to be imported, if none all the images will be imported",
         default=None,

@@ -9,7 +9,7 @@ function preprocessing(input_folder, output_folder,num_workers,target_size)
 
     if ~exist('target_size','var')
          % third parameter does not exist, so default it to something
-        target_size = 128;
+        target_size = 256;
     end
 
     % Aggiungi il percorso della cartella al MATLAB path per il parfor
@@ -70,3 +70,5 @@ function preprocessing(input_folder, output_folder,num_workers,target_size)
     elapsed_time = toc;
     disp(['Tempo trascorso: ', num2str(elapsed_time), ' secondi']);
 end
+
+preprocessing('C:\Users\nicco\Desktop\Bone+Age+Training+Set\boneage-training-dataset', 'C:\Users\nicco\boneage_regression\Preprocessed_images_training')

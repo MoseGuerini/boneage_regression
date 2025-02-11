@@ -3,7 +3,7 @@ import pathlib
 from unittest.mock import patch, mock_open
 import numpy as np
 import pandas as pd
-from class_to_read_data import DataLoader  # Sostituisci con il tuo modulo
+from data_class import DataLoader  # Sostituisci con il tuo modulo
 
 class DataLoaderTests(unittest.TestCase):
 

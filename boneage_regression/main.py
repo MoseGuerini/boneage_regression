@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 #from utils import wave_dict, hyperp_dict, str2bool, rate, delete_directory
 from hyperparameters import hyperp_space_size
-from classes import  CNN_Model
-from class_to_read_data import DataLoader
+from model_class import  CNN_Model
+from data_class import DataLoader
 
 from utils import hyperp_dict
 

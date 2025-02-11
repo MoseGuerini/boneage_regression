@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matlab.engine
 from unittest.mock import patch, MagicMock, mock_open
-from class_to_read_data import DataLoader, is_numeric  # Sostituisci con il modulo corretto
+from data_class import DataLoader, is_numeric  # Sostituisci con il modulo corretto
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 

@@ -5,19 +5,7 @@ import matplotlib.pyplot as plt
 from loguru import logger
 import matlab.engine
 import pandas as pd
-
-def is_numeric(s):
-    """Check if a given string represents a valid integer.
-
-    :param s: The string to verify.
-    :return: True if the string is an integer, False otherwise.
-    """
-    try:
-        int(s)
-        return True
-    except ValueError:
-        logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
-        return False
+from utils import is_numeric, sorting_and_preprocessing
 
 class DataLoader:
     """
@@ -157,27 +145,8 @@ class DataLoader:
 
         if self.num_images:
             image_files = image_files[:self.num_images]
-
-        images_rgb = []
-        ids = []
-
-        for img_path in image_files:
-            img = plt.imread(img_path)
-            img_id = int(img_path.stem)
-
-            # Switch to RGB if needed (RGB are better from CNN point of view)
-            if len(img.shape) == 2:  # BW images
-                img = np.stack([img] * 3, axis=-1)
-                
-            # Assicuriamoci che i valori siano tra 0-255 (evitiamo problemi di visualizzazione)
-            if img.dtype == np.float32 or img.dtype == np.float64:
-                img = (img * 255).astype(np.uint8)  # Convertiamo in uint8
             
-            # Ridimensioniamo l'immagine
-            img_resized = tf.image.resize(img, self.target_size).numpy().astype(np.uint8)
-            
-            images_rgb.append(img_resized)
-            ids.append(img_id)
+        images_rgb, ids = sorting_and_preprocessing(image_files, self.target_size)
 
         logger.info(f"{len(images_rgb)} images loaded.")
         

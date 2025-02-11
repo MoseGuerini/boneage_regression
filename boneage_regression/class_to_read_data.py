@@ -257,15 +257,15 @@ class DataLoader:
 
     
 # Importiamo la classe DataLoader
-#dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
+dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
 
 # Stampiamo le dimensioni dei dati caricati
-#print(f"✔ Immagini caricate: {dataloader.X.shape}")
-#print(f"✔ ID immagini: {dataloader.ids}")
-#print(f"✔ Boneage: {dataloader.y}")  # Età ossea
-#print(f"✔ Genere: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
+print(f"✔ Immagini caricate: {dataloader.X.shape}")
+print(f"✔ ID immagini: {dataloader.ids}")
+print(f"✔ Boneage: {dataloader.y}")  # Età ossea
+print(f"✔ Genere: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
 
 # Visualizziamo un'immagine con i suoi dati
-#plt.imshow(dataloader.X[2])
-#plt.title(f"ID: {dataloader.ids[2]}, Boneage: {dataloader.y[2]}, Gender: {dataloader.X_gender[2]}")
-#plt.show()
+plt.imshow(dataloader.X[3])
+plt.title(f"ID: {dataloader.ids[3]}, Boneage: {dataloader.y[3]}, Gender: {dataloader.X_gender[3]}")
+plt.show()

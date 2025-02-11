@@ -2,6 +2,7 @@
 import numpy as np
 import argparse
 import pathlib
+import matplotlib.pyplot as plt
 
 #from utils import wave_dict, hyperp_dict, str2bool, rate, delete_directory
 from hyperparameters import hyperp_space_size
@@ -23,7 +24,7 @@ if __name__=='__main__':
         metavar="",
         type=bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
         help="If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False",
-        default=False,
+        default=True,
     )
     
     parser.add_argument(
@@ -100,8 +101,10 @@ if __name__=='__main__':
     #2. set chosen hyperparameters and get number of trials
     hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)
     space_size = hyperp_space_size()
-    max_trials = np.rint(args.searching_fraction*space_size)
+    max_trials = 3
+    #max_trials = np.rint(args.searching_fraction*space_size)
 
     #3. create and train the model
     model = CNN_Model(data_train=data_train, data_test=data_test, overwrite=args.overwrite, max_trials=max_trials)
     model.train()
+    plt.show()

@@ -105,7 +105,7 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=50, batch_size=64):
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=5, batch_size=64):
         """
         Esegue l'hyperparameter tuning e
         impiegando un validation_split interno per la valutazione.
@@ -121,7 +121,7 @@ class CNN_Model:
 
         tuner = kt.BayesianOptimization(
             model_builder,
-            objective='val_mae',
+            objective='val_mean_absolute_error',
             max_trials = self.max_trials,
             overwrite = self.overwrite,
             directory=tuner_dir,
@@ -150,18 +150,18 @@ class CNN_Model:
 
         return  best_hps, best_model
 
-    def train_model(self, epochs=10):
+    def train_model(self, epochs=50):
         """
         Allena il modello (definito dai migliori iperparametri) sui dati completi,
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,
         valuta il modello e, se richiesto, lo salva su disco.
         """
-        X_train, X_gender_train, y_train, X_val, X_gender_val, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.2, random_state=1)
+        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.2, random_state=1)
 
         _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
 
         early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
-        
+
         history = best_model.fit(
             [X_train, X_gender_train],
             y_train,

@@ -3,16 +3,17 @@ import numpy as np
 
 def plot_loss_metrics(history):
 
+    # Estrai i dati
     mae = history.history['mean_absolute_error']
     mse = history.history['mean_squared_error']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
-    # Crea la figura e i subplot
-    plt.figure(figsize=(14, 6))
+    # Crea la figura e i subplot (3 in una riga)
+    plt.figure(figsize=(18, 6))
 
     # Primo subplot: Loss e Validation Loss
-    plt.subplot(1, 2, 1)
+    plt.subplot(1, 3, 1)
     plt.plot(loss, label='Training Loss')
     plt.plot(val_loss, label='Validation Loss')
     plt.title('Loss and Validation Loss')
@@ -20,21 +21,25 @@ def plot_loss_metrics(history):
     plt.ylabel('Losses')
     plt.legend()
 
-    # Secondo subplot: MAE e MSE
-    plt.subplot(1, 2, 2)
+    # Secondo subplot: MAE
+    plt.subplot(1, 3, 2)
     plt.plot(mae, label='Mean Absolute Error')
-    plt.plot(mse, label='Mean Squared Error')
-    plt.title('MAE and MSE')
+    plt.title('Mean Absolute Error (MAE)')
     plt.xlabel('Epochs')
-    plt.ylabel('Metrics')
+    plt.ylabel('MAE')
     plt.legend()
-
-    # Aggiungi tight_layout per evitare sovrapposizioni
-    plt.tight_layout()
+    
+    # Terzo subplot: MSE
+    plt.subplot(1, 3, 3)
+    plt.plot(mse, label='Mean Squared Error')
+    plt.title('Mean Squared Error (MSE)')
+    plt.xlabel('Epochs')
+    plt.ylabel('MSE')
+    plt.legend()
 
     # Mostra il grafico
     plt.show(block=False)
-    plt.pause(0.1) 
+    plt.pause(0.1)
 
 def plot_predictions(y_true, y_pred):
     """

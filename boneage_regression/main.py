@@ -17,7 +17,26 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(
         description="Bone Age Regressor"
     )
-    
+
+    parser.add_argument(
+        "-n",
+        "--num_images",
+        metavar="",
+        nargs='+',
+        type=int,
+        help="Number of images to be imported, if none all the images will be imported",
+        default=None,
+    )
+
+    parser.add_argument(
+        "-p",
+        "--preprocessing",
+        metavar="",
+        type=bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
+        help="If False avoid image preprocessing",
+        default=True,
+    )
+
     parser.add_argument(
         "-o",
         "--overwrite",
@@ -95,8 +114,8 @@ if __name__=='__main__':
     test_data = test_data_dir / 'Validation'
     test_csv = test_data_dir / 'Validation_dataset.csv'
 
-    data_train = DataLoader(train_data, train_csv)
-    data_test = DataLoader(test_data, test_csv)
+    data_train = DataLoader(train_data, train_csv, num_images=args.num_images, preprocessing=args.preprocessing)
+    data_test = DataLoader(test_data, test_csv, num_images=args.num_images, preprocessing=args.preprocessing)
 
     #2. set chosen hyperparameters and get number of trials
     hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)

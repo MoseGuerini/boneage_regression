@@ -128,13 +128,13 @@ class CNN_Model:
             project_name=project_name
         )
 
-        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=3) ########
+        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=5)
 
         tuner.search([X_val, X_gender_val], y_val,
                      epochs=epochs,
                      validation_split=0.2,
                      batch_size=batch_size,
-                     callbacks=[stop_early])
+                     callbacks=stop_early)
         
         best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
@@ -160,7 +160,7 @@ class CNN_Model:
 
         _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
 
-        early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+        early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 
         history = best_model.fit(
             [X_train, X_gender_train],
@@ -168,7 +168,7 @@ class CNN_Model:
             epochs=epochs,
             batch_size=64,
             validation_split=0.2,
-            callbacks=[early_stop],
+            callbacks=early_stop,
             verbose=2
         )
 

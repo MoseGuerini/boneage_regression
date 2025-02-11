@@ -17,6 +17,26 @@ def hyperp_dict(conv_layers, conv_filters, dense_units, dense_depth, dropout_rat
     return hyperp_dict
 
 def check_rate(value):
-    if value < 0 or value > 1:
-        raise argparse.ArgumentTypeError(f'Value must be between 0 and 1, input value:{value}')
+    """Check if the value is a float between 0 and 1"""
+    try:
+        value = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Invalid value, input type: {type(value)}. Expected float.")
     
+    if not (0 <= value <= 1):
+        raise argparse.ArgumentTypeError(f"Value out of range: {value}. Must be between 0 and 1.")
+    
+    return value
+
+def str2bool(value):
+    """Convert a string to a boolean value."""
+    if isinstance(value, bool):
+        return value
+    if value.lower() in ['true', 't', 'yes', 'y', '1']:
+        return True
+    elif value.lower() in ['false', 'f', 'no', 'n', '0']:
+        return False
+    else:
+        raise argparse.ArgumentTypeError(
+            f"Invalid value '{value}' for boolean argument. Expected values: 'True', 'False', 'Yes', 'No', '1', '0'."
+        )

@@ -9,7 +9,7 @@ from hyperparameters import hyperp_space_size
 from model_class import  CNN_Model
 from data_class import DataLoader
 
-from utils import hyperp_dict
+from utils import hyperp_dict, check_rate, str2bool
 
 
 if __name__=='__main__':
@@ -31,7 +31,7 @@ if __name__=='__main__':
         "-p",
         "--preprocessing",
         metavar="",
-        type=bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
+        type=str2bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
         help="If False avoid image preprocessing",
         default=True,
     )
@@ -40,7 +40,7 @@ if __name__=='__main__':
         "-o",
         "--overwrite",
         metavar="",
-        type=bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
+        type=str2bool,      
         help="If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False",
         default=True,
     )
@@ -86,11 +86,11 @@ if __name__=='__main__':
         default=[1, 2, 3],
     )
     parser.add_argument(
-        "-dp",
+        "-dr",
         "--dropout_rate",
         metavar="",
         nargs='+',
-        type=float,     #aggiungere controllo in modo che sia solo tra 0 e 1
+        type=check_rate,     
         help="List of values for the hypermodel's dropout rate",
         default=[0.1, 0.2, 0.3],
     )
@@ -99,7 +99,7 @@ if __name__=='__main__':
         "-sf",
         "--searching_fraction",
         metavar="",
-        type=float,     #aggiungere controllo in modo che sia solo tra 0 e 1
+        type=check_rate,     
         help="Fraction of the hyperparamiters space explored during hypermodel search. Default: 0.25",
         default=0.25,
     )

@@ -33,7 +33,8 @@ def plot_loss_metrics(history):
     plt.tight_layout()
 
     # Mostra il grafico
-    plt.show()  
+    plt.show(block=False)
+    plt.pause(0.1) 
 
 def plot_predictions(y_true, y_pred):
     """
@@ -70,4 +71,5 @@ def plot_predictions(y_true, y_pred):
     plt.legend()
 
     # Mostrare il grafico
-    plt.show()
+    plt.show(block=False)
+    plt.pause(0.1)

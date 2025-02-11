@@ -23,7 +23,7 @@ class DataLoader:
     """
     Class for loading and preprocessing the BoneAge dataset.
     """
-    def __init__(self, image_path, labels_path, target_size=(128, 128), num_images=None, preprocessing=False, num_workers=12):
+    def __init__(self, image_path, labels_path, target_size=(256, 256), num_images=None, preprocessing=False, num_workers=12):
         """
         Initialize the DataLoader for the BoneAge dataset.
 
@@ -122,11 +122,12 @@ class DataLoader:
         logger.info("Performing MATLAB preprocessing...")
 
         eng = matlab.engine.start_matlab()
-        eng.addpath(r'C:\Users\nicco\boneage_regression\boneage_regression')
-        eng.preprocessing(str(self.image_path), str(r'C:\Users\nicco\Desktop\output_images'), self.num_workers, self.target_size[1], nargout = 0) 
+        
+        eng.addpath(str(pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'))
+        eng.preprocessing(str(pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'), str(pathlib.Path(__file__).resolve().parent.parent / 'processed_images'), self.num_workers, self.target_size[1], nargout = 0) 
         #Number of workers for parallel preprocessing and dimension of images can also be set. Defualt values are 12 and 128.
-        self.image_path = pathlib.Path(str(r'C:\Users\nicco\Desktop\output_images'))
-        #self.preprocessing = False  # Flag deactivation after preprocessing.
+        self.image_path = str(pathlib.Path(__file__).resolve().parent.parent / 'processed_images')
+        self.preprocessing = False  # Flag deactivation after preprocessing.
         eng.quit()
 
     def load_images(self):
@@ -199,7 +200,9 @@ class DataLoader:
         else:
             boneage, gender = None, None  # Se labels è None, restituiamo anche questi come None
 
-        return np.array(filtered_images_rgb, dtype=np.uint8)/255, np.array(filtered_ids, dtype=np.int32), np.array(gender, dtype=np.int32), np.array(boneage, dtype=np.int32)
+        print("Shape of X:", (np.array(filtered_images_rgb, dtype=np.float32)/255).shape)
+
+        return np.array(filtered_images_rgb, dtype=np.float32)/255, np.array(filtered_ids, dtype=np.int32), np.array(gender, dtype=np.int32).reshape(-1, 1), np.array(boneage, dtype=np.int32)
 
     
     
@@ -254,7 +257,7 @@ class DataLoader:
 
     
 # Importiamo la classe DataLoader
-dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
+#dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
 
 # Stampiamo le dimensioni dei dati caricati
 #print(f"✔ Immagini caricate: {dataloader.X.shape}")

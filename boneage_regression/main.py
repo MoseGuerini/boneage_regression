@@ -71,7 +71,7 @@ if __name__=='__main__':
         "--dense_units",
         metavar="",
         nargs='+',
-        type=float,     
+        type=int,     
         help="List of values for the hypermodel's dense units",
         default=[64, 128, 256],
     )
@@ -81,7 +81,7 @@ if __name__=='__main__':
         "--dense_depth",
         metavar="",
         nargs='+',
-        type=float,     
+        type=int,     
         help="List of values for the hypermodel's depth of final dense layers",
         default=[1, 2, 3],
     )

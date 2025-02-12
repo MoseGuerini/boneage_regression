@@ -61,6 +61,8 @@ class DataLoader:
 
     @target_size.setter
     def target_size(self, value):
+        if hasattr(self, "_target_size"):  # Prevent modification after the first assignment
+            raise AttributeError("target_size cannot be modified after having been assignmed.")    
         if (isinstance(value, tuple) and len(value) == 2 and 
             all(isinstance(i, int) and i > 0 for i in value) and 
             value[0] == value[1]):  # Controllo che i due numeri siano uguali
@@ -75,6 +77,8 @@ class DataLoader:
 
     @num_images.setter
     def num_images(self, value):
+        if hasattr(self, "_num_images"):  # Prevent modification after the first assignment
+            raise AttributeError("num_images cannot be modified after having been assignmed.")   
         if value is not None and (not isinstance(value, int) or value <= 0):
             raise ValueError(f"Invalid num_images: {value}. num_images must be a positive integer or None.")
         self._num_images = value
@@ -163,7 +167,7 @@ class DataLoader:
 
         if labels is not None:
             boneage, gender = zip(*labels)  # Separiamo gli elementi delle coppie
-            boneage = np.array(boneage, dtype=np.float32)
+            boneage = np.array(boneage, dtype=np.int32)
             gender = np.array(gender, dtype=np.int32)
         else:
             boneage, gender = None, None  # Se labels è None, restituiamo anche questi come None
@@ -225,15 +229,15 @@ class DataLoader:
 
     
 # Importiamo la classe DataLoader
-dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False)
+#dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False, target_size=(1024, 1024))
 
 # Stampiamo le dimensioni dei dati caricati
-print(f"✔ Immagini caricate: {dataloader.X.shape}")
-print(f"✔ ID immagini: {dataloader.ids}")
-print(f"✔ Boneage: {dataloader.y}")  # Età ossea
-print(f"✔ Genere: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
+#print(f"✔ Loaded images: {dataloader.X.shape}")
+#print(f"✔ Images IDs: {dataloader.ids}")
+#print(f"✔ Boneage: {dataloader.y}")  # Età ossea
+#print(f"✔ Gender: {dataloader.X_gender}")  # Genere (1 = Maschio, 0 = Femmina)
 
 # Visualizziamo un'immagine con i suoi dati
-plt.imshow(dataloader.X[3])
-plt.title(f"ID: {dataloader.ids[3]}, Boneage: {dataloader.y[3]}, Gender: {dataloader.X_gender[3]}")
-plt.show()
+#plt.imshow(dataloader.X[3])
+#plt.title(f"ID: {dataloader.ids[3]}, Boneage: {dataloader.y[3]}, Gender: {dataloader.X_gender[3]}")
+#plt.show()

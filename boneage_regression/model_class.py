@@ -105,7 +105,7 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=5, batch_size=64):
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=10, batch_size=64):
         """
         Esegue l'hyperparameter tuning e
         impiegando un validation_split interno per la valutazione.

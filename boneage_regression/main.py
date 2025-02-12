@@ -31,9 +31,9 @@ if __name__=='__main__':
         "-p",
         "--preprocessing",
         metavar="",
-        type=str2bool,      #aggiungere controllo ad esempio stringa to bool per poter immettere stringhe
+        type=str2bool,     
         help="If False avoid image preprocessing",
-        default=True,
+        default=False,
     )
 
     parser.add_argument(
@@ -71,7 +71,7 @@ if __name__=='__main__':
         "--dense_units",
         metavar="",
         nargs='+',
-        type=float,     
+        type=int,     
         help="List of values for the hypermodel's dense units",
         default=[64, 128, 256],
     )
@@ -81,7 +81,7 @@ if __name__=='__main__':
         "--dense_depth",
         metavar="",
         nargs='+',
-        type=float,     
+        type=int,     
         help="List of values for the hypermodel's depth of final dense layers",
         default=[1, 2, 3],
     )
@@ -107,20 +107,20 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     #1. Dataset part
-    test_data_dir = pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
+    test_data_dir = pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
-    test_data = test_data_dir / 'Validation'
-    test_csv = test_data_dir / 'Validation_dataset.csv'
+    test_data = test_data_dir / 'Test'
+    test_csv = test_data_dir / 'test.csv'
 
-    data_train = DataLoader(train_data, train_csv, num_images=args.num_images, preprocessing=args.preprocessing)
-    data_test = DataLoader(test_data, test_csv, num_images=args.num_images, preprocessing=args.preprocessing)
+    data_train = DataLoader(train_data, train_csv, num_images=1000, preprocessing=args.preprocessing)
+    data_test = DataLoader(test_data, test_csv, num_images=100, preprocessing=args.preprocessing)
 
     #2. set chosen hyperparameters and get number of trials
     hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)
     space_size = hyperp_space_size()
-    max_trials = 3
-    #max_trials = np.rint(args.searching_fraction*space_size)
+
+    max_trials = np.rint(args.searching_fraction*space_size)
 
     #3. create and train the model
     model = CNN_Model(data_train=data_train, data_test=data_test, overwrite=args.overwrite, max_trials=max_trials)

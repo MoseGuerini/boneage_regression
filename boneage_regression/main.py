@@ -22,7 +22,8 @@ if __name__=='__main__':
         "--num_images",
         metavar="",
         type=int,
-        help="Number of images to be imported, if none all the images will be imported",
+        help="Number of images to be imported,"
+        "if none all the images will be imported",
         default=None,
     )
 
@@ -40,7 +41,8 @@ if __name__=='__main__':
         "--overwrite",
         metavar="",
         type=str2bool,      
-        help="If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False",
+        help="If False avoid hyperparameters search"
+        "and use the pre-saved hyperpar. Default: False",
         default=True,
     )
     
@@ -62,15 +64,15 @@ if __name__=='__main__':
         nargs='+',
         type=int,
         help="List of values for the hypermodel's first conv2d number of filters",
-        default=[8,16,32],
+        default=[8, 16, 32],
     )
-    
+
     parser.add_argument(
         "-du",
         "--dense_units",
         metavar="",
         nargs='+',
-        type=int,     
+        type=int,
         help="List of values for the hypermodel's dense units",
         default=[64, 128, 256],
     )
@@ -80,7 +82,7 @@ if __name__=='__main__':
         "--dense_depth",
         metavar="",
         nargs='+',
-        type=int,     
+        type=int,  
         help="List of values for the hypermodel's depth of final dense layers",
         default=[1, 2, 3],
     )
@@ -89,7 +91,7 @@ if __name__=='__main__':
         "--dropout_rate",
         metavar="",
         nargs='+',
-        type=check_rate,     
+        type=check_rate,  
         help="List of values for the hypermodel's dropout rate",
         default=[0.1, 0.2, 0.3],
     )
@@ -98,71 +100,55 @@ if __name__=='__main__':
         "-sf",
         "--searching_fraction",
         metavar="",
-        type=check_rate,     
-        help="Fraction of the hyperparamiters space explored during hypermodel search. Default: 0.25",
+        type=check_rate,
+        help="Fraction of the hyperparamiters space explored"
+        "during hypermodel search. Default: 0.25",
         default=0.25,
     )
 
     args = parser.parse_args()
 
-    #1. Dataset part
+    # 1. Dataset part
     test_data_dir = pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
     test_data = test_data_dir / 'Test'
     test_csv = test_data_dir / 'test.csv'
 
-    data_train = DataLoader(train_data, train_csv, num_images=100, preprocessing=args.preprocessing)
-    data_test = DataLoader(test_data, test_csv, num_images=10, preprocessing=args.preprocessing)
+    data_train = DataLoader(
+        train_data,
+        train_csv,
+        num_images=100,
+        preprocessing=args.preprocessing
+        )
+    data_test = DataLoader(
+        test_data,
+        test_csv,
+        num_images=10,
+        preprocessing=args.preprocessing
+        )
 
-    #2. set chosen hyperparameters and get number of trials
-    hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)
+    # 2. set chosen hyperparameters and get number of trials
+    hyperp_dict = hyperp_dict(
+        args.conv_layers,
+        args.conv_filters,
+        args.dense_units,
+        args.dense_depth,
+        args.dropout_rate
+        )
     space_size = hyperp_space_size()
 
     max_trials = np.rint(args.searching_fraction*space_size)
 
-    #3. create and train the model
-    model = CNN_Model(data_train=data_train, data_test=data_test, overwrite=args.overwrite, max_trials=max_trials)
+    # 3. create and train the model
+    model = CNN_Model(
+        data_train=data_train,
+        data_test=data_test,
+        overwrite=args.overwrite,
+        max_trials=max_trials
+        )
     model.train()
     plt.show()
-    
-    #4. gradCAM
+
+    # 4. gradCAM
     visualize_gradcam(model, 3, 'conv2d_4')
-    
-""" 
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from scipy.ndimage import zoom
-    
-    # Modello per estrarre feature maps
-    conv_output = model.get_layer("conv2d_4").output #last convolutional output
-    pred_output = model.get_layer("dense_3").output #prediction output
-    model = Model(model.input, outputs=[conv_output, pred_output])
-
-    # Ottieni predizione e feature maps
-    conv, pred = model.predict(rand_image)
-
-    # Decodifica predizione
-    decoded_preds = decode_predictions(pred)
-    print(decoded_preds)
-
-    # Visualizzazione feature maps
-    scale = 224 / conv.shape[1]
-    plt.figure(figsize=(16, 16))
-    for i in range(36):
-        plt.subplot(6, 6, i + 1)
-        plt.imshow(rand_image)
-        plt.imshow(zoom(conv[0, :, :, i], zoom=(scale, scale)), cmap='jet', alpha=0.3)
-    plt.show()
-
-    # Calcolo Heatmap
-    target = np.argmax(pred, axis=1).squeeze()
-    w, b = model.get_layer("dense_3").get_weights()  # Ottieni pesi del layer di output
-    weights = w[:, target]  # Estrai i pesi della classe predetta
-    heatmap = np.dot(conv.squeeze(), weights)  # Prodotto scalare per ottenere la heatmap
-
-    # Visualizza heatmap
-    plt.figure(figsize=(12, 12))
-    plt.imshow(rand_image)
-    plt.imshow(zoom(heatmap, zoom=(scale, scale)), cmap='jet', alpha=0.5)
-    plt.show() """

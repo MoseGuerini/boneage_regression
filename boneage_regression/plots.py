@@ -1,24 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-import os
-import matplotlib.cm as cm
 from utils import make_gradcam_heatmap, overlay_heatmap
-from sklearn.metrics import confusion_matrix
-import seaborn as sns
+
 
 def plot_loss_metrics(history):
 
-    # Estrai i dati
+    # Data estraction
     mae = history.history['mean_absolute_error']
     mse = history.history['mean_squared_error']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
-    # Crea la figura e i subplot (3 in una riga)
+    # Create figure and subplots (3 whithin a row)
     plt.figure(figsize=(18, 6))
 
-    # Primo subplot: Loss e Validation Loss
+    # First subplot: Loss e Validation Loss
     plt.subplot(1, 3, 1)
     plt.plot(loss, label='Training Loss')
     plt.plot(val_loss, label='Validation Loss')
@@ -27,15 +23,15 @@ def plot_loss_metrics(history):
     plt.ylabel('Losses')
     plt.legend()
 
-    # Secondo subplot: MAE
+    # Second subplot: MAE
     plt.subplot(1, 3, 2)
     plt.plot(mae, label='Mean Absolute Error')
     plt.title('Mean Absolute Error (MAE)')
     plt.xlabel('Epochs')
     plt.ylabel('MAE')
     plt.legend()
-    
-    # Terzo subplot: MSE
+
+    # Third subplot: MSE
     plt.subplot(1, 3, 3)
     plt.plot(mse, label='Mean Squared Error')
     plt.title('Mean Squared Error (MSE)')
@@ -43,13 +39,14 @@ def plot_loss_metrics(history):
     plt.ylabel('MSE')
     plt.legend()
 
-    # Mostra il grafico
+    # Shiw the figure
     plt.show(block=False)
     plt.pause(0.1)
 
+
 def plot_predictions(y_true, y_pred):
     """
-    Crea un grafico delle predizioni vs i valori veri (true values), 
+    Crea un grafico delle predizioni vs i valori veri (true values),
     con una linea di riferimento y = x.
 
     Parameters
@@ -59,32 +56,32 @@ def plot_predictions(y_true, y_pred):
     y_pred : numpy.array
         I valori predetti dal modello.
     """
-    
-    # Creare la figura e l'asse
+
+    # Create figure and axis
     plt.figure(figsize=(8, 6))
 
-    # Plot delle predizioni contro i valori veri
-    plt.scatter(y_true, y_pred, color='blue', alpha=0.5, label='Predizioni')
+    # Plot: predicted vs real values
+    plt.scatter(y_true, y_pred, color='blue', alpha=0.5, label='Predicted')
 
-    # Aggiungere la linea y = x (riferimento)
-    lim = np.max([np.max(y_true), np.max(y_pred)])  # Limiti per la linea y=x
+    # Plotting y = x (ideal prediction line)
+    lim = np.max([np.max(y_true), np.max(y_pred)])  # y=x line limit
     plt.plot([0, lim], [0, lim], color='red', label='y = x', linestyle='--')
 
-    # Aggiungere etichette e titolo
-    plt.xlabel('Valori Veri (True Values)')
-    plt.ylabel('Valori Predetti (Predicted Values)')
-    plt.title('Predizioni vs Valori Veri')
+    # Adding labels and title
+    plt.xlabel('Real Values')
+    plt.ylabel('Predicted Values')
+    plt.title('Predicted vs real values')
 
-    # Aggiungere una griglia
+    # Adding grid
     plt.grid(True)
 
-    # Aggiungere la legenda
+    # Adding legend
     plt.legend()
 
-    # Mostrare il grafico
+    # Show the plot
     plt.show(block=False)
-    plt.pause(0.1)
-    
+
+
 def plot_gender(arr):
     """
     The function creates an histogram using gender real values.
@@ -94,15 +91,16 @@ def plot_gender(arr):
     arr : numpy.array
         Array con i valori di gender.
     """
-    
-    # Conta le occorrenze di ciascun valore
+
+    # Occurences of every values
     unique, counts = np.unique(arr, return_counts=True)
-    
-    # Mappa i valori numerici ai rispettivi labels (nel nostro caso abbiamo femmina = false = 0 è maschio = true = 1)
+
+    # According to our data description: female = false = 0 and
+    # male = true = 1)
     gender_labels = {0: 'Female', 1: 'Male'}
     unique_labels = [gender_labels[val] for val in unique]
-    
-    # Crea il grafico
+
+    # Create the plot
     plt.figure(figsize=(10, 6))
     plt.bar(unique_labels, counts, width=0.8, color='skyblue')
     plt.xlabel('Gender')
@@ -110,6 +108,7 @@ def plot_gender(arr):
     plt.title('Occurrences distributions')
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
     plt.show()
+
 
 def plot_boneage(arr):
     """
@@ -120,52 +119,55 @@ def plot_boneage(arr):
     arr : numpy.array
         Array con i valori di boneage.
     """
-    # Conta le occorrenze di ciascun valore
+    # Occurences of every values
     unique, counts = np.unique(arr, return_counts=True)
-    
+
     # Crea il grafico
     plt.figure(figsize=(10, 6))
     plt.bar(unique, counts, width=0.8, color='skyblue')
     plt.xlabel('Valori')
     plt.ylabel('Occorrenze')
     plt.title('Distribuzione delle Occorrenze')
-    plt.xticks(np.arange(0, 230, 10))  # Etichette sull'asse X da 1 a 216
+    plt.xticks(np.arange(0, 230, 10))  # Ticks from 0 to 230 (step of 10)
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
     plt.show()
-    
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 def visualize_gradcam(trained_model, img_idx, last_conv_layer_name):
     """
-    The functions visualizes the heatmap Grad-CAM overlayed on the original image.
+    This function visualizes the Grad-CAM heatmap overlayed on the original
+    image.
 
-    Parametri:
-    - trained_model: model instance after haveing been trained.
-    - img_idx: image index which has to be visualized.
-    - last_conv_layer_name: name of the very last model convolutional layer.
+    Parameters:
+    - trained_model: An instance of the model after being trained.
+    - img_idx: The index of the image to be visualized.
+    - last_conv_layer_name: The name of the last convolutional layer of the
+    model.
 
-    Ritorna:
-    - None (the funztion only visualizes the heatmap)
+    Returns:
+    - None (the function only visualizes the heatmap)
     """
 
-    # Prendi l'immagine di test e il corrispondente input di genere
-    img_array = [np.expand_dims(trained_model.X_test[img_idx], axis=0),
-                 np.expand_dims(trained_model.X_gender_test[img_idx], axis=0)]
+    # Extract the image and corresponding input gender
+    img_array = [
+        np.expand_dims(trained_model.X_test[img_idx], axis=0),
+        np.expand_dims(trained_model.X_gender_test[img_idx], axis=0)
+                 ]
 
-    # Genera la heatmap Grad-CAM
-    heatmap = make_gradcam_heatmap(img_array, trained_model.trained_model, last_conv_layer_name)
+    # Generate Grad-CAM heatmap
+    heatmap = make_gradcam_heatmap(img_array, trained_model.trained_model,
+                                   last_conv_layer_name)
 
-    # Prepara l'immagine originale (se normalizzata tra 0 e 1, scala a 0-255)
+    # Quick original image processing (scale to 0-255)
     original_img = (trained_model.X_test[img_idx] * 255).astype(np.uint8)
 
-    # Sovrapponi la heatmap
+    # Overlay the heatmap on the original image
     superimposed_img = overlay_heatmap(original_img, heatmap)
 
-    # Mostra le immagini originali e con heatmap sovrapposta
+    # Display the original and superimposed images
     fig, ax = plt.subplots(1, 2, figsize=(12, 5))
     ax[0].imshow(original_img)
-    ax[0].set_title("Immagine Originale")
+    ax[0].set_title("Original Image")
     ax[0].axis("off")
 
     ax[1].imshow(superimposed_img)
@@ -173,26 +175,45 @@ def visualize_gradcam(trained_model, img_idx, last_conv_layer_name):
     ax[1].axis("off")
 
     plt.show()
-    
 
-def plot_accuracy_threshold(y_pred, y_test, threshold = 5):
-    # Calcola l'errore assoluto tra la previsione e il valore reale
+
+def plot_accuracy_threshold(y_pred, y_test, threshold=5):
+    """
+    Plots the distribution of prediction errors and calculates the accuracy
+    within a given threshold.
+
+    This function computes the absolute error between predictions and actual
+    values,
+    determines the percentage of predictions within the specified threshold,
+    and visualizes the error distribution using a histogram.
+
+    :param y_pred: np.ndarray
+        Array of predicted values.
+    :param y_test: np.ndarray
+        Array of actual values.
+    :param threshold: int or float, optional (default=5)
+        The threshold (in months) within which a prediction is considered
+        accurate.
+
+    :return: None
+    """
+    # Compute absolute errors
     errors = np.abs(y_pred - y_test)
-    
-    # Controlla quante predizioni sono dentro la soglia (5 mesi)
+
+    # Compute accuracy within threshold
     correct_predictions = np.sum(errors <= threshold)
     total_predictions = len(y_test)
-    accuracy = correct_predictions / total_predictions * 100
+    accuracy = (correct_predictions / total_predictions) * 100
 
-    print(f"Accuratezza: {accuracy:.2f}%")
+    print(f"Accuracy: {accuracy:.2f}%")
 
-    # Mostra l'errore per ogni previsione
+    # Plot error distribution
     plt.figure(figsize=(10, 6))
-    plt.hist(errors, bins=50)  # Usa un singolo colore per il dataset
-    plt.axvline(threshold, color='red', linestyle='dashed', linewidth=2, label=f"Threshold: {threshold} month")
-    plt.title('Prediction errors occurences (month)')
-    plt.xlabel('Errors (month)')
-    plt.ylabel('Occurences')
+    plt.hist(errors, bins=50, color='blue', alpha=0.7)
+    plt.axvline(threshold, color='red', linestyle='dashed', linewidth=2,
+                label=f"Threshold: {threshold} months")
+    plt.title('Prediction Error Occurrences (Months)')
+    plt.xlabel('Error (Months)')
+    plt.ylabel('Occurrences')
     plt.legend()
     plt.show()
-    

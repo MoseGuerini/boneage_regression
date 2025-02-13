@@ -134,7 +134,7 @@ class CNN_Model:
                      epochs=epochs,
                      validation_split=0.2,
                      batch_size=batch_size,
-                     callbacks=stop_early)
+                     callbacks=[stop_early])
         
         best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
@@ -168,7 +168,7 @@ class CNN_Model:
             epochs=epochs,
             batch_size=64,
             validation_split=0.2,
-            callbacks=early_stop,
+            callbacks=[early_stop],
             verbose=2
         )
 
@@ -215,4 +215,3 @@ class CNN_Model:
         """
         self._trained_model = models.load_model(model_path)
         logger.info(f"Model loaded from {model_path}")
-

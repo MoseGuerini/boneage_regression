@@ -4,12 +4,11 @@ import argparse
 import pathlib
 import matplotlib.pyplot as plt
 
-#from utils import wave_dict, hyperp_dict, str2bool, rate, delete_directory
 from hyperparameters import hyperp_space_size
 from model_class import  CNN_Model
 from data_class import DataLoader
-
 from utils import hyperp_dict, check_rate, str2bool
+from plots import visualize_gradcam
 
 
 if __name__=='__main__':
@@ -113,8 +112,8 @@ if __name__=='__main__':
     test_data = test_data_dir / 'Test'
     test_csv = test_data_dir / 'test.csv'
 
-    data_train = DataLoader(train_data, train_csv, num_images=1000, preprocessing=args.preprocessing)
-    data_test = DataLoader(test_data, test_csv, num_images=100, preprocessing=args.preprocessing)
+    data_train = DataLoader(train_data, train_csv, num_images=100, preprocessing=args.preprocessing)
+    data_test = DataLoader(test_data, test_csv, num_images=10, preprocessing=args.preprocessing)
 
     #2. set chosen hyperparameters and get number of trials
     hyperp_dict=hyperp_dict(args.conv_layers, args.conv_filters, args.dense_units, args.dense_depth, args.dropout_rate)
@@ -126,3 +125,44 @@ if __name__=='__main__':
     model = CNN_Model(data_train=data_train, data_test=data_test, overwrite=args.overwrite, max_trials=max_trials)
     model.train()
     plt.show()
+    
+    #4. gradCAM
+    visualize_gradcam(model, 3, 'conv2d_4')
+    
+""" 
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from scipy.ndimage import zoom
+    
+    # Modello per estrarre feature maps
+    conv_output = model.get_layer("conv2d_4").output #last convolutional output
+    pred_output = model.get_layer("dense_3").output #prediction output
+    model = Model(model.input, outputs=[conv_output, pred_output])
+
+    # Ottieni predizione e feature maps
+    conv, pred = model.predict(rand_image)
+
+    # Decodifica predizione
+    decoded_preds = decode_predictions(pred)
+    print(decoded_preds)
+
+    # Visualizzazione feature maps
+    scale = 224 / conv.shape[1]
+    plt.figure(figsize=(16, 16))
+    for i in range(36):
+        plt.subplot(6, 6, i + 1)
+        plt.imshow(rand_image)
+        plt.imshow(zoom(conv[0, :, :, i], zoom=(scale, scale)), cmap='jet', alpha=0.3)
+    plt.show()
+
+    # Calcolo Heatmap
+    target = np.argmax(pred, axis=1).squeeze()
+    w, b = model.get_layer("dense_3").get_weights()  # Ottieni pesi del layer di output
+    weights = w[:, target]  # Estrai i pesi della classe predetta
+    heatmap = np.dot(conv.squeeze(), weights)  # Prodotto scalare per ottenere la heatmap
+
+    # Visualizza heatmap
+    plt.figure(figsize=(12, 12))
+    plt.imshow(rand_image)
+    plt.imshow(zoom(heatmap, zoom=(scale, scale)), cmap='jet', alpha=0.5)
+    plt.show() """

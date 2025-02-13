@@ -6,6 +6,7 @@ from loguru import logger
 import matlab.engine
 import pandas as pd
 from utils import is_numeric, sorting_and_preprocessing
+from plots import plot_gender, plot_boneage
 
 class DataLoader:
     """
@@ -173,6 +174,9 @@ class DataLoader:
             boneage, gender = None, None  # Se labels è None, restituiamo anche questi come None
 
         print("Shape of X:", (np.array(filtered_images_rgb, dtype=np.float32)/255).shape)
+        
+        #plot_gender(np.array(gender, dtype=np.int32))###################################################################################
+        #plot_boneage(np.array(boneage, dtype=np.int32))#################################################################################
 
         return np.array(filtered_images_rgb, dtype=np.float32)/255, np.array(filtered_ids, dtype=np.int32), np.array(gender, dtype=np.int32).reshape(-1, 1), np.array(boneage, dtype=np.int32)
 
@@ -193,7 +197,7 @@ class DataLoader:
         :raises ValueError: If required columns ('id', 'boneage', 'male') are missing from the CSV.
         """
         
-        df = pd.read_csv(self.labels_path)
+        df = pd.read_csv(self.labels_path, nrows=self.num_images)
         df.columns = df.columns.str.lower()
 
         # Searching for images with no corresponding labels
@@ -229,7 +233,7 @@ class DataLoader:
 
     
 # Importiamo la classe DataLoader
-#dataloader = DataLoader(image_path=r"C:\Users\nicco\Desktop\Preprocessed_dataset_prova\Preprocessed_foto", labels_path=r'C:\Users\nicco\Desktop\Preprocessed_dataset_prova\train.csv', preprocessing=False, target_size=(1024, 1024))
+dataloader = DataLoader(image_path=r"C:\Users\nicco\boneage_regression\Preprocessed_images\Training", labels_path=r'C:\Users\nicco\boneage_regression\Preprocessed_images\training.csv', preprocessing=False, num_images=1000)
 
 # Stampiamo le dimensioni dei dati caricati
 #print(f"✔ Loaded images: {dataloader.X.shape}")

@@ -4,10 +4,14 @@ import numpy as np
 import pandas as pd
 import matlab.engine
 from unittest.mock import patch, MagicMock, mock_open
-from data_class import DataLoader, is_numeric  # Sostituisci con il modulo corretto
 import matplotlib.pyplot as plt
 from unittest.mock import patch
 import tempfile
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "boneage_regression")))
+from data_class import DataLoader, is_numeric 
 
 class TestDataLoader(unittest.TestCase):
     

@@ -4,6 +4,9 @@ from hyperparameters import set_hyperp
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import keras
+from PIL import Image
+
 
 def hyperp_dict(conv_layers, conv_filters, dense_units, dense_depth, dropout_rate):
     """Creates dictionary containing user-selected hps keeping only unique values in each list 
@@ -79,3 +82,51 @@ def str2bool(value):
         raise argparse.ArgumentTypeError(
             f"Invalid value '{value}' for boolean argument. Expected values: 'True', 'False', 'Yes', 'No', '1', '0'."
         )
+
+def get_last_conv_layer_name(model):
+    for layer in reversed(model.layers):
+        if isinstance(layer, keras.layers.Conv2D):
+            return layer.name
+    raise ValueError("No Conv2D layer found in the model.")
+
+def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
+    grad_model = keras.models.Model(
+        [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
+    )
+
+    with tf.GradientTape() as tape:
+        conv_outputs, predictions = grad_model(img_array, training=False)
+        loss = predictions[:, 0]  # Supponiamo che sia una rete di regressione/scoring
+
+    grads = tape.gradient(loss, conv_outputs)
+
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+
+    heatmap = tf.reduce_mean(tf.multiply(pooled_grads, conv_outputs), axis=-1).numpy()[0]
+
+    heatmap = np.maximum(heatmap, 0)  # ReLU
+    heatmap /= np.max(heatmap)  # Normalizza tra 0 e 1
+
+    return heatmap
+
+def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
+    # Ridimensiona la heatmap per avere le stesse dimensioni dell'immagine originale
+    heatmap_resized = np.array(Image.fromarray(heatmap).resize((img.shape[1], img.shape[0]), Image.BILINEAR))
+    
+    # Normalizza la heatmap tra 0 e 1
+    heatmap_resized = (heatmap_resized - np.min(heatmap_resized)) / (np.max(heatmap_resized) - np.min(heatmap_resized) + 1e-8)
+
+    # Applica la mappa di colori di Matplotlib
+    cmap = plt.get_cmap(colormap)
+    heatmap_colored = cmap(heatmap_resized)[:, :, :3]  # Prende solo i canali RGB
+
+    # Converte l'immagine originale in float tra 0 e 1 se non lo è già
+    img = img.astype(np.float32) / 255.0 if img.dtype == np.uint8 else img
+
+    # Combina immagine e heatmap con alpha blending
+    superimposed_img = (1 - alpha) * img + alpha * heatmap_colored
+
+    # Riporta l'immagine in formato uint8 (0-255)
+    superimposed_img = np.clip(superimposed_img * 255, 0, 255).astype(np.uint8)
+
+    return superimposed_img

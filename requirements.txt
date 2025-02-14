@@ -9,5 +9,5 @@ keras_tuner
 keras
 tensorflow
 argparse
-sklearn
+scikit-learn
 pillow

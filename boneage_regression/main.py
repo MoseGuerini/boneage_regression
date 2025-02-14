@@ -5,13 +5,13 @@ import pathlib
 import matplotlib.pyplot as plt
 
 from hyperparameters import hyperp_space_size
-from model_class import  CNN_Model
+from model_class import CNN_Model
 from data_class import DataLoader
 from utils import hyperp_dict, check_rate, str2bool
 from plots import visualize_gradcam
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description="Bone Age Regressor"
@@ -31,7 +31,7 @@ if __name__=='__main__':
         "-p",
         "--preprocessing",
         metavar="",
-        type=str2bool,     
+        type=str2bool,
         help="If False avoid image preprocessing",
         default=False,
     )
@@ -40,12 +40,12 @@ if __name__=='__main__':
         "-o",
         "--overwrite",
         metavar="",
-        type=str2bool,      
+        type=str2bool,
         help="If False avoid hyperparameters search"
         "and use the pre-saved hyperpar. Default: False",
         default=True,
     )
-    
+
     parser.add_argument(
         "-cl",
         "--conv_layers",
@@ -53,17 +53,17 @@ if __name__=='__main__':
         nargs='+',
         type=int,
         help="List of values for the hypermodel's number of conv2d layers",
-        default=[3,4,5],
+        default=[3, 4, 5],
     )
-    
-    
+
     parser.add_argument(
         "-cf",
         "--conv_filters",
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's first conv2d number of filters",
+        help="List of values for the hypermodel's"
+        "first conv2d number of filters",
         default=[8, 16, 32],
     )
 
@@ -82,7 +82,7 @@ if __name__=='__main__':
         "--dense_depth",
         metavar="",
         nargs='+',
-        type=int,  
+        type=int,
         help="List of values for the hypermodel's depth of final dense layers",
         default=[1, 2, 3],
     )
@@ -91,7 +91,7 @@ if __name__=='__main__':
         "--dropout_rate",
         metavar="",
         nargs='+',
-        type=check_rate,  
+        type=check_rate,
         help="List of values for the hypermodel's dropout rate",
         default=[0.1, 0.2, 0.3],
     )
@@ -109,7 +109,9 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     # 1. Dataset part
-    test_data_dir = pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
+    test_data_dir = (
+        pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
+    )
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
     test_data = test_data_dir / 'Test'

@@ -3,9 +3,8 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from loguru import logger
-import matlab.engine
 import pandas as pd
-from utils import is_numeric, sorting_and_preprocessing
+from utils import is_numeric, sorting_and_preprocessing, matlab_preprocessing
 from plots import plot_gender, plot_boneage
 
 
@@ -137,22 +136,8 @@ class DataLoader:
 
         :raises FileNotFoundError: If the specified image path does not exist.
         """
-        # Star a matlab process to augment contrast and center the images
-        file_path = pathlib.Path(__file__).resolve()
-        logger.info("Performing MATLAB preprocessing...")
-
-        eng = matlab.engine.start_matlab()
-
-        eng.addpath(str(file_path.parent / 'matlab_funcions'))
-        eng.preprocessing(
-            str(file_path.parent.parent / 'Test_dataset'),
-            str(file_path.parent.parent / 'processed_images'),
-            self.num_workers, self.target_size[1], nargout=0
-        )
-        # Number of workers for parallel preprocessing and dimension of images
-        # can also be set. Defualt values are 12 and 128.
-        self.image_path = str(file_path.parent.parent / 'processed_images')
-        eng.quit()
+        
+        matlab_preprocessing(self)
 
     def load_images(self):
         """

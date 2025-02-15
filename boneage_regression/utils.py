@@ -7,7 +7,11 @@ import tensorflow as tf
 import keras
 from PIL import Image
 import pathlib
-import matlab.engine
+
+try:
+    import matlab.engine
+except ImportError:
+    logger.info("Package not found.")
 
 
 def hyperp_dict(
@@ -159,6 +163,7 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
     return superimposed_img
 
 def matlab_preprocessing(self):
+
     # Star a matlab process to augment contrast and center the images
     file_path = pathlib.Path(__file__).resolve()
     logger.info("Performing MATLAB preprocessing...")

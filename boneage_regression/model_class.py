@@ -105,7 +105,7 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=10, batch_size=64):
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=30, batch_size=64):
         """
         Esegue l'hyperparameter tuning e
         impiegando un validation_split interno per la valutazione.
@@ -152,7 +152,7 @@ class CNN_Model:
 
         return  best_hps, best_model
 
-    def train_model(self, epochs=50):
+    def train_model(self, epochs=70):
         """
         Allena il modello (definito dai migliori iperparametri) sui dati completi,
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,

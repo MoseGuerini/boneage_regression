@@ -74,7 +74,7 @@ if __name__ == '__main__':
         nargs='+',
         type=int,
         help="List of values for the hypermodel's dense units",
-        default=[64, 128, 256],
+        default=256,
     )
 
     parser.add_argument(
@@ -120,13 +120,13 @@ if __name__ == '__main__':
     data_train = DataLoader(
         train_data,
         train_csv,
-        num_images=100,
+        num_images=args.num_images,
         preprocessing=args.preprocessing
         )
     data_test = DataLoader(
         test_data,
         test_csv,
-        num_images=10,
+        num_images=args.num_images,
         preprocessing=args.preprocessing
         )
 
@@ -140,7 +140,8 @@ if __name__ == '__main__':
         )
     space_size = hyperp_space_size()
 
-    max_trials = np.rint(args.searching_fraction*space_size)
+    max_trials = 1
+    #max_trials = np.rint(args.searching_fraction*space_size)
 
     # 3. create and train the model
     model = CNN_Model(

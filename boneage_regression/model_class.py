@@ -117,7 +117,7 @@ class CNN_Model:
         if self.overwrite:
             project_name = 'new_tuner'
         else:
-            project_name = 'best_tuner'
+            project_name = 'new_tuner'      # change later to 'best_tuner' 
 
         tuner = kt.BayesianOptimization(
             model_builder,
@@ -136,6 +136,8 @@ class CNN_Model:
                      batch_size=batch_size,
                      callbacks=[stop_early])
         
+        tuner.results_summary()
+
         best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
         best_model = tuner.get_best_models()[0]
@@ -182,7 +184,7 @@ class CNN_Model:
         self.save_model()
 
 
-    def save_model(self, filename="best_model.h5"):
+    def save_model(self, filename="best_model.keras"):
         """Salva il modello addestrato."""
         model_dir = pathlib.Path(__file__).resolve().parent.parent / 'model'
         model_dir.mkdir(parents=True, exist_ok=True)

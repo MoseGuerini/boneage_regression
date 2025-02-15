@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     # 1. Dataset part
     test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
+        pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
     )
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
@@ -153,4 +153,4 @@ if __name__ == '__main__':
     plt.show()
 
     # 4. gradCAM
-    visualize_gradcam(model, 3, 'conv2d_4')
+    #visualize_gradcam(model, 3, 'conv2d_4')

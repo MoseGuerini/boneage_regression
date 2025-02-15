@@ -7,15 +7,17 @@ def plot_loss_metrics(history):
 
     # Data estraction
     mae = history.history['mean_absolute_error']
+    val_mae = history.history['val_mean_absolute_error']
     mse = history.history['mean_squared_error']
+    val_mse = history.history['val_mean_squared_error']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
     # Create figure and subplots (3 whithin a row)
-    plt.figure(figsize=(18, 6))
+    plt.figure(figsize=(12, 6))
 
     # First subplot: Loss e Validation Loss
-    plt.subplot(1, 3, 1)
+    plt.subplot(1, 2, 1)
     plt.plot(loss, label='Training Loss')
     plt.plot(val_loss, label='Validation Loss')
     plt.title('Loss and Validation Loss')
@@ -24,24 +26,16 @@ def plot_loss_metrics(history):
     plt.legend()
 
     # Second subplot: MAE
-    plt.subplot(1, 3, 2)
+    plt.subplot(1, 2, 2)
     plt.plot(mae, label='Mean Absolute Error')
+    plt.plot(val_mae, label='Val. Mean Absolute Error')
     plt.title('Mean Absolute Error (MAE)')
     plt.xlabel('Epochs')
     plt.ylabel('MAE')
     plt.legend()
 
-    # Third subplot: MSE
-    plt.subplot(1, 3, 3)
-    plt.plot(mse, label='Mean Squared Error')
-    plt.title('Mean Squared Error (MSE)')
-    plt.xlabel('Epochs')
-    plt.ylabel('MSE')
-    plt.legend()
-
-    # Shiw the figure
+    # Show the figure
     plt.show(block=False)
-    plt.pause(0.1)
 
 
 def plot_predictions(y_true, y_pred):
@@ -102,12 +96,12 @@ def plot_gender(arr):
 
     # Create the plot
     plt.figure(figsize=(10, 6))
-    plt.bar(unique_labels, counts, width=0.8, color='skyblue')
+    plt.bar(unique_labels, counts, width=0.8, color=['b', 'r'])
     plt.xlabel('Gender')
     plt.ylabel('Occurences')
     plt.title('Occurrences distributions')
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-    plt.show()
+    plt.show(block=False)
 
 
 def plot_boneage(arr):
@@ -124,13 +118,13 @@ def plot_boneage(arr):
 
     # Crea il grafico
     plt.figure(figsize=(10, 6))
-    plt.bar(unique, counts, width=0.8, color='skyblue')
-    plt.xlabel('Valori')
-    plt.ylabel('Occorrenze')
-    plt.title('Distribuzione delle Occorrenze')
+    plt.bar(unique, counts, width=0.8, color='b')
+    plt.xlabel('Values')
+    plt.ylabel('Occurrences')
+    plt.title('Distribution of Occurrences')
     plt.xticks(np.arange(0, 230, 10))  # Ticks from 0 to 230 (step of 10)
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-    plt.show()
+    plt.show(block=False)
 
 
 def visualize_gradcam(trained_model, img_idx, last_conv_layer_name):
@@ -174,7 +168,7 @@ def visualize_gradcam(trained_model, img_idx, last_conv_layer_name):
     ax[1].set_title("Grad-CAM Overlay")
     ax[1].axis("off")
 
-    plt.show()
+    plt.show(block=False)
 
 
 def plot_accuracy_threshold(y_pred, y_test, threshold=5):
@@ -216,4 +210,4 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.xlabel('Error (Months)')
     plt.ylabel('Occurrences')
     plt.legend()
-    plt.show()
+    plt.show(block=False)

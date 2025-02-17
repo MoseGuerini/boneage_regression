@@ -1,38 +1,52 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from utils import make_gradcam_heatmap, overlay_heatmap
-
+from sklearn.metrics import mean_absolute_error, r2_score
+from loguru import logger
+from keras import layers
 
 def plot_loss_metrics(history):
 
     # Data estraction
     mae = history.history['mean_absolute_error']
     val_mae = history.history['val_mean_absolute_error']
-    mse = history.history['mean_squared_error']
-    val_mse = history.history['val_mean_squared_error']
+    r2 = history.history['r2_score']
+    val_r2 = history.history['val_r2_score']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
 
     # Create figure and subplots (3 whithin a row)
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(18, 6))
 
     # First subplot: Loss e Validation Loss
-    plt.subplot(1, 2, 1)
+    plt.subplot(1, 3, 1)
     plt.plot(loss, label='Training Loss')
     plt.plot(val_loss, label='Validation Loss')
     plt.title('Loss and Validation Loss')
     plt.xlabel('Epochs')
-    plt.ylabel('Losses')
+    plt.ylabel('Loss')
     plt.legend()
+    plt.grid(True)
 
     # Second subplot: MAE
-    plt.subplot(1, 2, 2)
+    plt.subplot(1, 3, 2)
     plt.plot(mae, label='Mean Absolute Error')
     plt.plot(val_mae, label='Val. Mean Absolute Error')
     plt.title('Mean Absolute Error (MAE)')
     plt.xlabel('Epochs')
     plt.ylabel('MAE')
     plt.legend()
+    plt.grid(True)
+
+    # Second subplot: r2 score
+    plt.subplot(1, 3, 3)
+    plt.plot(r2, label='R2 score')
+    plt.plot(val_r2, label='Val. R2 score')
+    plt.title('R2 score')
+    plt.xlabel('Epochs')
+    plt.ylabel('R2')
+    plt.legend()
+    plt.grid(True)
 
     # Show the figure
     plt.show(block=False)
@@ -50,28 +64,34 @@ def plot_predictions(y_true, y_pred):
     y_pred : numpy.array
         I valori predetti dal modello.
     """
+    mae = mean_absolute_error(y_true, y_pred)
+    r2 = r2_score(y_true, y_pred)
+
+    logger.info(f'Mean absolute error on predicted values: {mae:.1f}')
+    logger.info(f'r2 score on predicted values: {r2:.1f}')
 
     # Create figure and axis
     plt.figure(figsize=(8, 6))
 
     # Plot: predicted vs real values
-    plt.scatter(y_true, y_pred, color='blue', alpha=0.5, label='Predicted')
+    plt.scatter(y_true, y_pred, color='blue', alpha=0.5,
+                    label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.1f}')
 
     # Plotting y = x (ideal prediction line)
     lim = np.max([np.max(y_true), np.max(y_pred)])  # y=x line limit
     plt.plot([0, lim], [0, lim], color='red', label='y = x', linestyle='--')
 
     # Adding labels and title
-    plt.xlabel('Real Values')
-    plt.ylabel('Predicted Values')
-    plt.title('Predicted vs real values')
+    plt.xlabel('Actual age [months]')
+    plt.ylabel('Predicted age [months]')
+    plt.title('Predicted vs actual age')
 
     # Adding grid
     plt.grid(True)
 
     # Adding legend
     plt.legend()
-
+    plt.tight_layout()
     # Show the plot
     plt.show(block=False)
 
@@ -127,50 +147,6 @@ def plot_boneage(arr):
     plt.show(block=False)
 
 
-def visualize_gradcam(trained_model, img_idx, last_conv_layer_name):
-    """
-    This function visualizes the Grad-CAM heatmap overlayed on the original
-    image.
-
-    Parameters:
-    - trained_model: An instance of the model after being trained.
-    - img_idx: The index of the image to be visualized.
-    - last_conv_layer_name: The name of the last convolutional layer of the
-    model.
-
-    Returns:
-    - None (the function only visualizes the heatmap)
-    """
-
-    # Extract the image and corresponding input gender
-    img_array = [
-        np.expand_dims(trained_model.X_test[img_idx], axis=0),
-        np.expand_dims(trained_model.X_gender_test[img_idx], axis=0)
-                 ]
-
-    # Generate Grad-CAM heatmap
-    heatmap = make_gradcam_heatmap(img_array, trained_model.trained_model,
-                                   last_conv_layer_name)
-
-    # Quick original image processing (scale to 0-255)
-    original_img = (trained_model.X_test[img_idx] * 255).astype(np.uint8)
-
-    # Overlay the heatmap on the original image
-    superimposed_img = overlay_heatmap(original_img, heatmap)
-
-    # Display the original and superimposed images
-    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-    ax[0].imshow(original_img)
-    ax[0].set_title("Original Image")
-    ax[0].axis("off")
-
-    ax[1].imshow(superimposed_img)
-    ax[1].set_title("Grad-CAM Overlay")
-    ax[1].axis("off")
-
-    plt.show(block=False)
-
-
 def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     """
     Plots the distribution of prediction errors and calculates the accuracy
@@ -211,3 +187,60 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.ylabel('Occurrences')
     plt.legend()
     plt.show(block=False)
+
+def visualize_gradcam_batch(trained_model, last_conv_layer_name, num_images=6):
+    """
+    Visualizza le heatmap Grad-CAM sovrapposte su 6 immagini casuali del test set.
+
+    Parameters:
+    - trained_model: Modello addestrato.
+    - last_conv_layer_name: Nome dell'ultimo layer convoluzionale.
+    - num_images: Numero di immagini da visualizzare (default: 6).
+
+    Returns:
+    - None (visualizza le immagini con Grad-CAM overlay).
+    """
+
+    # Seleziona `num_images` indici casuali dal test set
+    indices = np.random.choice(len(trained_model.X_test), num_images, replace=False)
+
+    # Crea la figura con sottografici (2 righe x 3 colonne)
+    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+
+    for i, idx in enumerate(indices):
+        row, col = divmod(i, 3)  # Determina posizione nella griglia
+        
+        # Prepara l'immagine e il dato ausiliario per il modello
+        img_array = [
+            np.expand_dims(trained_model.X_test[idx], axis=0),
+            np.expand_dims(trained_model.X_gender_test[idx], axis=0)
+        ]
+        
+        # Genera la heatmap Grad-CAM
+        heatmap = make_gradcam_heatmap(img_array, trained_model.trained_model, last_conv_layer_name)
+
+        # Prepara l'immagine originale
+        original_img = (trained_model.X_test[idx] * 255).astype(np.uint8)
+
+        # Sovrappone la heatmap all'immagine originale
+        superimposed_img = overlay_heatmap(original_img, heatmap)
+
+        # Mostra l'immagine nel subplot corrispondente
+        axes[row, col].imshow(superimposed_img)
+        axes[row, col].set_title(f"Sample {idx}")
+        axes[row, col].axis("off")  # Rimuove gli assi per pulizia
+    
+    # Aggiunge uno spazio tra i subplot
+    plt.tight_layout()
+    plt.show(block=False)
+
+
+def get_last_conv_layer_name(model):
+    # Ispeziona tutti i layer e filtra quelli di tipo 'Conv2D'
+    conv_layers = [layer for layer in model.layers if isinstance(layer, layers.Conv2D)]
+    
+    # Prendi il nome dell'ultimo layer di tipo 'Conv2D'
+    if conv_layers:
+        return conv_layers[-1].name
+    else:
+        raise ValueError("No Conv2D layer found in the model.")

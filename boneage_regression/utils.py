@@ -8,12 +8,6 @@ import keras
 from PIL import Image
 import pathlib
 
-try:
-    import matlab.engine
-except ImportError:
-    logger.info("Package not found.")
-
-
 def hyperp_dict(
     conv_layers, conv_filters, dense_units, dense_depth,
     dropout_rate
@@ -115,7 +109,7 @@ def get_last_conv_layer_name(model):
 
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
     grad_model = keras.models.Model(
-        [model.inputs],
+        model.inputs,
         [model.get_layer(last_conv_layer_name).output, model.output]
     )
 
@@ -131,7 +125,8 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
     heatmap = tf.reduce_mean(tf.multiply(pooled_grads, conv_outputs), axis=-1)
     heatmap = heatmap.numpy()[0]
     heatmap = np.maximum(heatmap, 0)  # ReLU
-    heatmap /= np.max(heatmap)  # Normalizing between 0 and 1
+    heatmap /= (np.max(heatmap) + 1e-8)  # Avoid division by zero
+
 
     return heatmap
 
@@ -161,22 +156,3 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
     superimposed_img = np.clip(superimposed_img * 255, 0, 255).astype(np.uint8)
 
     return superimposed_img
-
-def matlab_preprocessing(self):
-
-    # Star a matlab process to augment contrast and center the images
-    file_path = pathlib.Path(__file__).resolve()
-    logger.info("Performing MATLAB preprocessing...")
-
-    eng = matlab.engine.start_matlab()
-
-    eng.addpath(str(file_path.parent / 'matlab_funcions'))
-    eng.preprocessing(
-        str(file_path.parent.parent / 'Test_dataset'),
-        str(file_path.parent.parent / 'processed_images'),
-        self.num_workers, self.target_size[1], nargout=0
-    )
-    # Number of workers for parallel preprocessing and dimension of images
-    # can also be set. Defualt values are 12 and 128.
-    self.image_path = str(file_path.parent.parent / 'processed_images')
-    eng.quit()

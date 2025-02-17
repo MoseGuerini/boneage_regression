@@ -79,7 +79,7 @@ def build_model(hp):
     model.compile(
         optimizer=optimizers.Adam(learning_rate=1e-3),
         loss='mean_squared_error',
-        metrics=['mean_absolute_error', 'mean_squared_error']
+        metrics=['mean_absolute_error', 'r2_score']
     )
 
     return model

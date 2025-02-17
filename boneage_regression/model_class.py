@@ -8,7 +8,7 @@ import keras_tuner as kt
 from sklearn.model_selection import train_test_split
 
 from hyperparameters import build_model
-from plots import plot_loss_metrics, plot_predictions
+from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
 
 # Setting logger configuration 
 logger.remove()  
@@ -105,7 +105,7 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=30, batch_size=64):
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=1, batch_size=64):
         """
         Esegue l'hyperparameter tuning e
         impiegando un validation_split interno per la valutazione.
@@ -152,7 +152,7 @@ class CNN_Model:
 
         return  best_hps, best_model
 
-    def train_model(self, epochs=70):
+    def train_model(self, epochs=5):
         """
         Allena il modello (definito dai migliori iperparametri) sui dati completi,
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,
@@ -162,7 +162,7 @@ class CNN_Model:
 
         _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
 
-        early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
 
         history = best_model.fit(
             [X_train, X_gender_train],
@@ -176,8 +176,8 @@ class CNN_Model:
 
         plot_loss_metrics(history)
 
-        loss, mae, mse = best_model.evaluate([self.X_test, self.X_gender_test], self.y_test, verbose=2)
-        logger.info(f"Evaluation on the complete dataset: Loss = {loss:.4f}, MAE = {mae:.4f}, MSE = {mse:.4f}")
+        loss, mae, r2 = best_model.evaluate([self.X_test, self.X_gender_test], self.y_test, verbose=2)
+        logger.info(f"Evaluation on the complete dataset: Loss = {loss:.4f}, MAE = {mae:.4f}, r2 = {r2:.4f}")
 
         self._trained_model = best_model
 
@@ -206,8 +206,10 @@ class CNN_Model:
 
         # Ottieni le predizioni dal modello
         y_pred = model.predict([self.X_test, self.X_gender_test])
+        y_pred = y_pred.flatten()
 
         plot_predictions(self.y_test, y_pred)
+        plot_accuracy_threshold(y_pred, self.y_test)
 
         return y_pred
 

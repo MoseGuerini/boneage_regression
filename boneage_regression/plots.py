@@ -5,9 +5,21 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from loguru import logger
 from keras import layers
 
-def plot_loss_metrics(history):
 
-    # Data estraction
+def plot_loss_metrics(history):
+    """
+    Plots training history metrics, including loss,
+    mean absolute error (MAE) and R2 score.
+
+    :param history: Training history object returned by Keras model.fit(),
+                    containing loss and metric values.
+    :type history: keras.callbacks.History
+
+    :return: None (displays the plots)
+    :rtype: None
+    """
+
+    # History data estraction
     mae = history.history['mean_absolute_error']
     val_mae = history.history['val_mean_absolute_error']
     r2 = history.history['r2_score']
@@ -38,7 +50,7 @@ def plot_loss_metrics(history):
     plt.legend()
     plt.grid(True)
 
-    # Second subplot: r2 score
+    # Second subplot: R2 score
     plt.subplot(1, 3, 3)
     plt.plot(r2, label='R2 score')
     plt.plot(val_r2, label='Val. R2 score')
@@ -54,108 +66,113 @@ def plot_loss_metrics(history):
 
 def plot_predictions(y_true, y_pred):
     """
-    Crea un grafico delle predizioni vs i valori veri (true values),
-    con una linea di riferimento y = x.
+    Create a scatter plot of predictions vs true values.
 
-    Parameters
-    ----------
-    y_true : numpy.array
-        I valori veri (target).
-    y_pred : numpy.array
-        I valori predetti dal modello.
+    :param y_true: The true values (targets).
+    :type y_true: numpy.array
+    :param y_pred: The predicted values by the model.
+    :type y_pred: numpy.array
+
+    :return: None, displays the plot with predicted vs actual values.
+    :rtype: None
     """
+    # Calculate Mean Absolute Error and R2 Score
     mae = mean_absolute_error(y_true, y_pred)
     r2 = r2_score(y_true, y_pred)
 
+    # Log MAE and R2 score values
     logger.info(f'Mean absolute error on predicted values: {mae:.1f}')
     logger.info(f'r2 score on predicted values: {r2:.1f}')
 
     # Create figure and axis
     plt.figure(figsize=(8, 6))
 
-    # Plot: predicted vs real values
+    # Scatter plot: predicted vs actual values
     plt.scatter(y_true, y_pred, color='blue', alpha=0.5,
-                    label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.1f}')
+                label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.1f}')
 
     # Plotting y = x (ideal prediction line)
-    lim = np.max([np.max(y_true), np.max(y_pred)])  # y=x line limit
+    lim = np.max([np.max(y_true), np.max(y_pred)])
     plt.plot([0, lim], [0, lim], color='red', label='y = x', linestyle='--')
 
-    # Adding labels and title
+    # Set axis labels, title, and grid
     plt.xlabel('Actual age [months]')
     plt.ylabel('Predicted age [months]')
     plt.title('Predicted vs actual age')
-
-    # Adding grid
     plt.grid(True)
 
-    # Adding legend
+    # Show the legend and adjust the layout
     plt.legend()
     plt.tight_layout()
-    # Show the plot
+
+    # Show the figure
     plt.show(block=False)
 
 
 def plot_gender(arr):
     """
-    The function creates an histogram using gender real values.
+    Creates a bar plot showing the distribution of gender values in the input
+    array.
 
-    Parameters
-    ----------
-    arr : numpy.array
-        Array con i valori di gender.
+    :param arr: Array containing the gender values (0 for female, 1 for male).
+    :type arr: numpy.array
+    :return: None (displays the plot).
+    :rtype: None
     """
-
-    # Occurences of every values
+    # Get occurrences of each unique value in the array
     unique, counts = np.unique(arr, return_counts=True)
 
-    # According to our data description: female = false = 0 and
-    # male = true = 1)
+    # Mapping gender values (0: Female, 1: Male)
     gender_labels = {0: 'Female', 1: 'Male'}
     unique_labels = [gender_labels[val] for val in unique]
 
-    # Create the plot
+    # Create and customize the bar plot
     plt.figure(figsize=(10, 6))
     plt.bar(unique_labels, counts, width=0.8, color=['b', 'r'])
+
+    # Set axis labels, title, and grid
     plt.xlabel('Gender')
     plt.ylabel('Occurences')
     plt.title('Occurrences distributions')
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
+
     plt.show(block=False)
 
 
 def plot_boneage(arr):
     """
-    The function creates an histogram using boneage real values.
+    Creates a bar plot showing the distribution of boneage values in the input
+    array.
 
-    Parameters
-    ----------
-    arr : numpy.array
-        Array con i valori di boneage.
+    :param arr: Array containing the boneage values.
+    :type arr: numpy.array
+    :return: None (displays the plot).
+    :rtype: None
     """
-    # Occurences of every values
+    # Get occurrences of each unique value in the array
     unique, counts = np.unique(arr, return_counts=True)
 
-    # Crea il grafico
+    # Create and customize the bar plot
     plt.figure(figsize=(10, 6))
     plt.bar(unique, counts, width=0.8, color='b')
+
+    # Set axis labels, title, ticks, and grid
     plt.xlabel('Values')
     plt.ylabel('Occurrences')
     plt.title('Distribution of Occurrences')
-    plt.xticks(np.arange(0, 230, 10))  # Ticks from 0 to 230 (step of 10)
+    plt.xticks(np.arange(0, 230, 10))
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
+
     plt.show(block=False)
 
 
 def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     """
-    Plots the distribution of prediction errors and calculates the accuracy
-    within a given threshold.
+    Plots the distribution of prediction errors.
 
     This function computes the absolute error between predictions and actual
-    values,
-    determines the percentage of predictions within the specified threshold,
-    and visualizes the error distribution using a histogram.
+    values, determines the percentage of predictions within the specified
+    threshold, and visualizes the error distribution using a histogram.
 
     :param y_pred: np.ndarray
         Array of predicted values.
@@ -166,6 +183,7 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
         accurate.
 
     :return: None
+    :rtype: None
     """
     # Compute absolute errors
     errors = np.abs(y_pred - y_test)
@@ -188,58 +206,88 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.legend()
     plt.show(block=False)
 
+
 def visualize_gradcam_batch(trained_model, last_conv_layer_name, num_images=6):
     """
-    Visualizza le heatmap Grad-CAM sovrapposte su 6 immagini casuali del test set.
+    Visualizes Grad-CAM heatmaps overlayed on 6 random images from the test set.
 
-    Parameters:
-    - trained_model: Modello addestrato.
-    - last_conv_layer_name: Nome dell'ultimo layer convoluzionale.
-    - num_images: Numero di immagini da visualizzare (default: 6).
+    This function selects `num_images` random images from the test set,
+    generates Grad-CAM heatmaps for each image, and overlays them on the original
+    image to visualize the areas of focus. The images are then displayed in a
+    grid layout.
 
-    Returns:
-    - None (visualizza le immagini con Grad-CAM overlay).
+    :param trained_model: object
+        The trained model to be used for generating Grad-CAM heatmaps. It should
+        contain the attributes `X_test` and `X_gender_test` for input data.
+    :param last_conv_layer_name: str
+        The name of the last convolutional layer in the model. This layer is
+        used to compute the Grad-CAM heatmaps.
+    :param num_images: int, optional (default=6)
+        The number of random images to visualize from the test set.
+
+    :return: None
+        This function only displays the Grad-CAM heatmap overlayed on images.
     """
+    # Select `num_images` random indices from the test set
+    indices = np.random.choice(len(trained_model.X_test),
+                               num_images,
+                               replace=False)
 
-    # Seleziona `num_images` indici casuali dal test set
-    indices = np.random.choice(len(trained_model.X_test), num_images, replace=False)
-
-    # Crea la figura con sottografici (2 righe x 3 colonne)
+    # Create figure with subplots (2 rows x 3 columns)
     fig, axes = plt.subplots(2, 3, figsize=(12, 8))
 
     for i, idx in enumerate(indices):
-        row, col = divmod(i, 3)  # Determina posizione nella griglia
-        
-        # Prepara l'immagine e il dato ausiliario per il modello
+        row, col = divmod(i, 3)
+
+        # Prepare the image and auxiliary data for the model
         img_array = [
             np.expand_dims(trained_model.X_test[idx], axis=0),
             np.expand_dims(trained_model.X_gender_test[idx], axis=0)
         ]
-        
-        # Genera la heatmap Grad-CAM
-        heatmap = make_gradcam_heatmap(img_array, trained_model.trained_model, last_conv_layer_name)
 
-        # Prepara l'immagine originale
+        # Generate Grad-CAM heatmap
+        heatmap = make_gradcam_heatmap(img_array,
+                                       trained_model.trained_model,
+                                       last_conv_layer_name)
+
+        # Prepare the original image
         original_img = (trained_model.X_test[idx] * 255).astype(np.uint8)
 
-        # Sovrappone la heatmap all'immagine originale
+        # Overlay the heatmap on the original image
         superimposed_img = overlay_heatmap(original_img, heatmap)
 
         # Mostra l'immagine nel subplot corrispondente
         axes[row, col].imshow(superimposed_img)
         axes[row, col].set_title(f"Sample {idx}")
         axes[row, col].axis("off")  # Rimuove gli assi per pulizia
-    
-    # Aggiunge uno spazio tra i subplot
+
+    # Adjust the layout and show the figure
     plt.tight_layout()
     plt.show(block=False)
 
 
 def get_last_conv_layer_name(model):
-    # Ispeziona tutti i layer e filtra quelli di tipo 'Conv2D'
-    conv_layers = [layer for layer in model.layers if isinstance(layer, layers.Conv2D)]
-    
-    # Prendi il nome dell'ultimo layer di tipo 'Conv2D'
+    """
+    Inspects the model's layers and returns the name of the last 'Conv2D'
+    layer.
+
+    This function filters all layers of type 'Conv2D' and returns the name
+    of the last such layer in the model. If no 'Conv2D' layers are found,
+    a ValueError is raised.
+
+    :param model: keras.Model
+        The trained Keras model from which to extract the last Conv2D layer.
+
+    :return: str
+        The name of the last 'Conv2D' layer.
+    :raises ValueError:
+        If no 'Conv2D' layers are found in the model.
+    """
+    # Inspect all layers and filter those of type 'Conv2D'
+    conv_layers = [layer for layer in model.layers
+                   if isinstance(layer, layers.Conv2D)]
+
+    # Return the name of the last 'Conv2D' layer
     if conv_layers:
         return conv_layers[-1].name
     else:

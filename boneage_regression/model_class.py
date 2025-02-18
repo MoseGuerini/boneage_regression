@@ -152,24 +152,27 @@ class CNN_Model:
 
         return  best_hps, best_model
 
-    def train_model(self, epochs=5):
+    def train_model(self, epochs=100):
         """
         Allena il modello (definito dai migliori iperparametri) sui dati completi,
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,
         valuta il modello e, se richiesto, lo salva su disco.
         """
-        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.2, random_state=1)
+        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.12, random_state=1)
 
         _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
 
-        early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True)
+        early_stop = callbacks.EarlyStopping(monitor='val_loss',
+                                             patience=15,
+                                             restore_best_weights=True,
+                                             start_from_epoch=30)
 
         history = best_model.fit(
             [X_train, X_gender_train],
             y_train,
             epochs=epochs,
             batch_size=64,
-            validation_split=0.2,
+            validation_split=0.1,
             callbacks=[early_stop],
             verbose=2
         )

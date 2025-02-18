@@ -157,7 +157,7 @@ def plot_boneage(arr):
     plt.bar(unique, counts, width=0.8, color='b')
 
     # Set axis labels, title, ticks, and grid
-    plt.xlabel('Values')
+    plt.xlabel('Values [Months]')
     plt.ylabel('Occurrences')
     plt.title('Distribution of Occurrences')
     plt.xticks(np.arange(0, 230, 10))
@@ -200,8 +200,8 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.hist(errors, bins=50, color='blue', alpha=0.7)
     plt.axvline(threshold, color='red', linestyle='dashed', linewidth=2,
                 label=f"Threshold: {threshold} months")
-    plt.title('Prediction Error Occurrences (Months)')
-    plt.xlabel('Error (Months)')
+    plt.title('Prediction Error Occurrences')
+    plt.xlabel('Error [months]')
     plt.ylabel('Occurrences')
     plt.legend()
     plt.show(block=False)

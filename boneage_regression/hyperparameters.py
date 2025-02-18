@@ -1,7 +1,7 @@
 """Hypermodel builder and hps setter"""
 from keras import layers, models, optimizers
 
-img_size = (256, 256, 3)
+img_size = (256, 256, 1)
 
 
 def set_hyperp(hyperp_dict):

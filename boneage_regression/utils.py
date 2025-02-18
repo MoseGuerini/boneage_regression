@@ -115,7 +115,7 @@ def sorting_and_preprocessing(image_files, target_size):
 
         # Switch to RGB if needed (RGB are better from CNN point of view)
         if len(img.shape) == 2:  # BW images
-            img = np.stack([img] * 3, axis=-1)
+            img = np.stack([img] * 1, axis=-1)
 
         # Assert values to be in 0-255 range (avoiding visualization problem)
         if img.dtype == np.float32 or img.dtype == np.float64:

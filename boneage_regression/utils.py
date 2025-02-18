@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import keras
 from PIL import Image
-import pathlib
 import matlab.engine
+import pathlib
 
 
 def hyperp_dict(

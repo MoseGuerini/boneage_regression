@@ -4,7 +4,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from loguru import logger
 import pandas as pd
-from utils import is_numeric, sorting_and_preprocessing, matlab_preprocessing
+from utils import is_numeric, sorting_and_preprocessing
+from utils import matlab_preprocessing
 from plots import plot_gender, plot_boneage
 
 
@@ -138,6 +139,7 @@ class DataLoader:
         """
         
         matlab_preprocessing(self)
+
 
     def load_images(self):
         """

@@ -277,24 +277,3 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
     superimposed_img = np.clip(superimposed_img * 255, 0, 255).astype(np.uint8)
 
     return superimposed_img
-<<<<<<< HEAD
-
-def matlab_preprocessing(self):
-    # Star a matlab process to augment contrast and center the images
-    file_path = pathlib.Path(__file__).resolve()
-    logger.info("Performing MATLAB preprocessing...")
-
-    eng = matlab.engine.start_matlab()
-
-    eng.addpath(str(file_path.parent / 'matlab_funcions'))
-    eng.preprocessing(
-        str(file_path.parent.parent / 'Test_dataset'),
-        str(file_path.parent.parent / 'processed_images'),
-        self.num_workers, self.target_size[1], nargout=0
-    )
-    # Number of workers for parallel preprocessing and dimension of images
-    # can also be set. Defualt values are 12 and 128.
-    self.image_path = str(file_path.parent.parent / 'processed_images')
-    eng.quit()
-=======
->>>>>>> e7955d1cb9b6f71b1837b73aa0ca222fa40684e4

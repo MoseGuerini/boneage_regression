@@ -18,8 +18,7 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Welcome to boneage_regression documentation" href="index.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,13 +41,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Utilities for BoneAge Regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#boneage_regression.utils.load_images"><code class="docutils literal notranslate"><span class="pre">load_images()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boneage_regression.utils.load_labels"><code class="docutils literal notranslate"><span class="pre">load_labels()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#boneage_regression.utils.return_dataset"><code class="docutils literal notranslate"><span class="pre">return_dataset()</span></code></a></li>
-</ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">boneage_regression</a></li>
 </ul>
 
         </div>
@@ -78,63 +72,12 @@
   <section id="utilities-for-boneage-regression">
 <h1>Utilities for BoneAge Regression<a class="headerlink" href="#utilities-for-boneage-regression" title="Link to this heading"></a></h1>
 <p>This module contains utility functions for the BoneAge Regression project.</p>
-<dl class="py function" id="module-boneage_regression.utils">
-<dt class="sig sig-object py" id="boneage_regression.utils.load_images">
-<span class="sig-prename descclassname"><span class="pre">boneage_regression.utils.</span></span><span class="sig-name descname"><span class="pre">load_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#boneage_regression.utils.load_images" title="Link to this definition"></a></dt>
-<dd><p>Load and return images and their corresponding IDs from a specified directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>image_path</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – Path to the directory containing image files.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>FileNotFoundError</strong> – If the specified directory does not exist.</p>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A tuple containing a NumPy array of loaded images and a NumPy array of image IDs.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[np.ndarray, np.ndarray]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boneage_regression.utils.load_labels">
-<span class="sig-prename descclassname"><span class="pre">boneage_regression.utils.</span></span><span class="sig-name descname"><span class="pre">load_labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#boneage_regression.utils.load_labels" title="Link to this definition"></a></dt>
-<dd><p>Load and return labels from a CSV file. The CSV must contain ‘id’, ‘boneage’, and ‘male’ columns.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>labels_path</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – Path to the CSV file containing label data.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>FileNotFoundError</strong> – If the specified CSV file does not exist.</p></li>
-<li><p><strong>ValueError</strong> – If the CSV file does not contain the required columns.</p></li>
-</ul>
-</dd>
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A tuple containing three NumPy arrays: IDs, bone age values, and gender labels (1 for male, 0 for female).</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple[np.ndarray, np.ndarray, np.ndarray]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="boneage_regression.utils.return_dataset">
-<span class="sig-prename descclassname"><span class="pre">boneage_regression.utils.</span></span><span class="sig-name descname"><span class="pre">return_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#boneage_regression.utils.return_dataset" title="Link to this definition"></a></dt>
-<dd><p>Return arrays containing features and labels for training the CNN</p>
-</dd></dl>
-
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to boneage_regression documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
+          <footer>
 
   <hr/>
 

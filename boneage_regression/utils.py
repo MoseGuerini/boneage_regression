@@ -6,11 +6,6 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import keras
 from PIL import Image
-<<<<<<< HEAD
-import matlab.engine
-import pathlib
-=======
->>>>>>> e7955d1cb9b6f71b1837b73aa0ca222fa40684e4
 
 
 def hyperp_dict(

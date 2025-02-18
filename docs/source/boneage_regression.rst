@@ -4,14 +4,6 @@ boneage\_regression package
 Submodules
 ----------
 
-boneage\_regression.Heat\_map\_test module
-------------------------------------------
-
-.. automodule:: boneage_regression.Heat_map_test
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 boneage\_regression.data\_class module
 --------------------------------------
 
@@ -52,13 +44,6 @@ boneage\_regression.plots module
    :undoc-members:
    :show-inheritance:
 
-boneage\_regression.reader\_test module
----------------------------------------
-
-.. automodule:: boneage_regression.reader_test
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 boneage\_regression.utils module
 --------------------------------

@@ -8,7 +8,7 @@ import keras_tuner as kt
 from sklearn.model_selection import train_test_split
 
 from hyperparameters import build_model
-from plots import plot_loss_metrics, plot_predictions
+from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
 
 # Setting logger configuration 
 logger.remove()  
@@ -105,7 +105,7 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=10, batch_size=64):
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=1, batch_size=64):
         """
         Esegue l'hyperparameter tuning e
         impiegando un validation_split interno per la valutazione.
@@ -117,7 +117,7 @@ class CNN_Model:
         if self.overwrite:
             project_name = 'new_tuner'
         else:
-            project_name = 'best_tuner'
+            project_name = 'new_tuner'      # change later to 'best_tuner' 
 
         tuner = kt.BayesianOptimization(
             model_builder,
@@ -136,6 +136,8 @@ class CNN_Model:
                      batch_size=batch_size,
                      callbacks=[stop_early])
         
+        tuner.results_summary()
+
         best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
         best_model = tuner.get_best_models()[0]
@@ -150,39 +152,42 @@ class CNN_Model:
 
         return  best_hps, best_model
 
-    def train_model(self, epochs=50):
+    def train_model(self, epochs=100):
         """
         Allena il modello (definito dai migliori iperparametri) sui dati completi,
         utilizzando un validation_split interno. Al termine, mostra il grafico della loss,
         valuta il modello e, se richiesto, lo salva su disco.
         """
-        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.2, random_state=1)
+        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val  = train_test_split(self.X_train, self.X_gender_train, self.y_train, test_size=0.12, random_state=1)
 
         _, best_model = self.hyperparameter_tuning(X_val, X_gender_val, y_val, self.model_builder)
 
-        early_stop = callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        early_stop = callbacks.EarlyStopping(monitor='val_loss',
+                                             patience=15,
+                                             restore_best_weights=True,
+                                             start_from_epoch=30)
 
         history = best_model.fit(
             [X_train, X_gender_train],
             y_train,
             epochs=epochs,
             batch_size=64,
-            validation_split=0.2,
+            validation_split=0.1,
             callbacks=[early_stop],
             verbose=2
         )
 
         plot_loss_metrics(history)
 
-        loss, mae, mse = best_model.evaluate([self.X_test, self.X_gender_test], self.y_test, verbose=2)
-        logger.info(f"Evaluation on the complete dataset: Loss = {loss:.4f}, MAE = {mae:.4f}, MSE = {mse:.4f}")
+        loss, mae, r2 = best_model.evaluate([self.X_test, self.X_gender_test], self.y_test, verbose=2)
+        logger.info(f"Evaluation on the complete dataset: Loss = {loss:.4f}, MAE = {mae:.4f}, r2 = {r2:.4f}")
 
         self._trained_model = best_model
 
         self.save_model()
 
 
-    def save_model(self, filename="best_model.h5"):
+    def save_model(self, filename="best_model.keras"):
         """Salva il modello addestrato."""
         model_dir = pathlib.Path(__file__).resolve().parent.parent / 'model'
         model_dir.mkdir(parents=True, exist_ok=True)
@@ -204,8 +209,10 @@ class CNN_Model:
 
         # Ottieni le predizioni dal modello
         y_pred = model.predict([self.X_test, self.X_gender_test])
+        y_pred = y_pred.flatten()
 
         plot_predictions(self.y_test, y_pred)
+        plot_accuracy_threshold(y_pred, self.y_test)
 
         return y_pred
 

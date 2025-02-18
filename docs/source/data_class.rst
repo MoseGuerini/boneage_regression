@@ -1,7 +1,7 @@
-boneage\_regression.data\_class module
+data_class module
 ======================================
 
-.. automodule:: boneage_regression.data_class
+.. automodule:: data_class
    :members:
    :undoc-members:
    :show-inheritance:

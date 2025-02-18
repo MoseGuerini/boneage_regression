@@ -1,7 +1,7 @@
-boneage\_regression.plots module
+plots module
 ================================
 
-.. automodule:: boneage_regression.plots
+.. automodule:: plots
    :members:
    :undoc-members:
    :show-inheritance:

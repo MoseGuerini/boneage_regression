@@ -14,7 +14,12 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+   data_class
+   model_class
+   hyperparameters
+   plots
+   utils
+   main
 
 Indices and tables
 ==================

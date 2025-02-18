@@ -1,7 +1,7 @@
-boneage\_regression.utils module
+utils module
 ================================
 
-.. automodule:: boneage_regression.utils
+.. automodule:: utils
    :members:
    :undoc-members:
    :show-inheritance:

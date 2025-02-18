@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="boneage_regression" href="modules.html" /> 
+    <link rel="next" title="data_class module" href="data_class.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,7 +43,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">boneage_regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_class.html">data_class module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_class.html">model_class module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hyperparameters.html">hyperparameters module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">plots module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
 </ul>
 
         </div>
@@ -78,10 +83,42 @@ documentation for details.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">boneage_regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="boneage_regression.html">boneage_regression package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_class.html">data_class module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_class.html#data_class.DataLoader"><code class="docutils literal notranslate"><span class="pre">DataLoader</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="model_class.html">model_class module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model_class.html#model_class.CNN_Model"><code class="docutils literal notranslate"><span class="pre">CNN_Model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="hyperparameters.html">hyperparameters module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hyperparameters.html#hyperparameters.build_model"><code class="docutils literal notranslate"><span class="pre">build_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperparameters.html#hyperparameters.hyperp_space_size"><code class="docutils literal notranslate"><span class="pre">hyperp_space_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="hyperparameters.html#hyperparameters.set_hyperp"><code class="docutils literal notranslate"><span class="pre">set_hyperp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plots.html">plots module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.get_last_conv_layer_name"><code class="docutils literal notranslate"><span class="pre">get_last_conv_layer_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.plot_accuracy_threshold"><code class="docutils literal notranslate"><span class="pre">plot_accuracy_threshold()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.plot_boneage"><code class="docutils literal notranslate"><span class="pre">plot_boneage()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.plot_gender"><code class="docutils literal notranslate"><span class="pre">plot_gender()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.plot_loss_metrics"><code class="docutils literal notranslate"><span class="pre">plot_loss_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.plot_predictions"><code class="docutils literal notranslate"><span class="pre">plot_predictions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plots.html#plots.visualize_gradcam_batch"><code class="docutils literal notranslate"><span class="pre">visualize_gradcam_batch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.check_rate"><code class="docutils literal notranslate"><span class="pre">check_rate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.get_last_conv_layer_name"><code class="docutils literal notranslate"><span class="pre">get_last_conv_layer_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.hyperp_dict"><code class="docutils literal notranslate"><span class="pre">hyperp_dict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.is_numeric"><code class="docutils literal notranslate"><span class="pre">is_numeric()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.make_gradcam_heatmap"><code class="docutils literal notranslate"><span class="pre">make_gradcam_heatmap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.overlay_heatmap"><code class="docutils literal notranslate"><span class="pre">overlay_heatmap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.sorting_and_preprocessing"><code class="docutils literal notranslate"><span class="pre">sorting_and_preprocessing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#utils.str2bool"><code class="docutils literal notranslate"><span class="pre">str2bool()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
 </ul>
 </div>
 </section>
@@ -98,7 +135,7 @@ documentation for details.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-right" title="boneage_regression" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="data_class.html" class="btn btn-neutral float-right" title="data_class module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

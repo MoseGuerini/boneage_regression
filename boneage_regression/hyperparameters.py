@@ -39,10 +39,11 @@ def build_model(hp):
     - An image-processing branch with convolutional layers.
     - A gender feature branch that is concatenated with the extracted
       image features.
+
     The final output is a regression prediction.
 
     :param hp: Hyperparameter tuning instance from Keras Tuner, used to define
-            model parameters.
+               model parameters.
     :type hp: keras_tuner.HyperParameters
 
     :return: Compiled Keras model built with the specified hyperparameters.

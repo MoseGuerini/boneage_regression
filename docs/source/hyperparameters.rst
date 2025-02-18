@@ -1,7 +1,7 @@
-boneage\_regression.hyperparameters module
+hyperparameters module
 ==========================================
 
-.. automodule:: boneage_regression.hyperparameters
+.. automodule:: hyperparameters
    :members:
    :undoc-members:
    :show-inheritance:

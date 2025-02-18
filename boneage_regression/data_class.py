@@ -131,8 +131,10 @@ class DataLoader:
         The `self.image_path` attribute is then updated accordingly.
 
         Notes:
+
             - Preprocessing includes pixel intensity normalization, resizing,
             and padding.
+
             - If your version of MATLAB does not support the specified number
             of workers, the default value from your MATLAB environment will
             be used.
@@ -171,10 +173,13 @@ class DataLoader:
         is executed.
 
         :return: tuple containing:
+
             - `filtered_images_rgb` (np.ndarray): NumPy array of the
             preprocessed images.
+
             - `filtered_ids` (np.ndarray): NumPy array of valid image IDs
             (those with a corresponding label).
+            
             - `labels` (np.ndarray or None): Corresponding labels for the
             images (or `None` if not available).
 

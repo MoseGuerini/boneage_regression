@@ -110,7 +110,7 @@ if __name__ == '__main__':
 
     # 1. Dataset part
     test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
+        pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
     )
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
@@ -152,6 +152,6 @@ if __name__ == '__main__':
     model.train()
 
     # 4. gradCAM
-    last_conv_layer_name = get_last_conv_layer_name(model.trained_model)
-    visualize_gradcam_batch(model, last_conv_layer_name, num_images=6)
+    #last_conv_layer_name = get_last_conv_layer_name(model.trained_model)
+    #visualize_gradcam_batch(model, last_conv_layer_name, num_images=6)
     plt.show()

@@ -17,7 +17,7 @@ jobs:
       # Esegui i test uno alla volta, con comandi separati per ciascun file di test
       - run:
           name: Run tests for hyperparameters.py
-          command: python -m unittest tests.hyperparameters_test  # Comando per eseguire i test di hyperparameters_test
+          command: python -m unittest discover -s tests -p "hyperparameters_test.py"  # Comando per eseguire i test di hyperparameters_test
 
 workflows:
   version: 2  # Versione del workflow

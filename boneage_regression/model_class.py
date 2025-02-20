@@ -282,12 +282,12 @@ class CNN_Model:
         )
 
         # Set up early stop
-        early_stop = callbacks.EarlyStopping(
-            monitor='val_loss',
-            patience=15,
-            restore_best_weights=True,
-            start_from_epoch=20
-        )
+        #early_stop = callbacks.EarlyStopping(
+        #    monitor='val_loss',
+        #    patience=15,
+        #    restore_best_weights=True,
+        #    start_from_epoch=20
+        #)
 
         # Training the model
         history = best_model.fit(
@@ -295,8 +295,7 @@ class CNN_Model:
             y_train,
             epochs=epochs,
             batch_size=64,
-            validation_split=0.1,
-            callbacks=[early_stop],
+            validation_split=0.1, ##rimetti callback=[early_stop]
             verbose=2
         )
 

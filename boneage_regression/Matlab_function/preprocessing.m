@@ -1,4 +1,4 @@
-function preprocessing(input_folder, output_folder,num_workers,target_size)
+function preprocessing2(input_folder, output_folder,num_workers,target_size)
 
     % Se num_workers non è stato specificato, imposta il valore di default a 12
     
@@ -70,5 +70,3 @@ function preprocessing(input_folder, output_folder,num_workers,target_size)
     elapsed_time = toc;
     disp(['Tempo trascorso: ', num2str(elapsed_time), ' secondi']);
 end
-
-preprocessing('C:\Users\nicco\Desktop\Bone+Age+Training+Set\boneage-training-dataset', 'C:\Users\nicco\boneage_regression\Preprocessed_images_training')

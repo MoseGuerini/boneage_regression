@@ -123,6 +123,7 @@ if __name__ == '__main__':
         num_images=args.num_images,
         preprocessing=args.preprocessing
         )
+
     data_test = DataLoader(
         test_data,
         test_csv,

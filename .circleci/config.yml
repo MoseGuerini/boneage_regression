@@ -14,6 +14,11 @@ jobs:
           pkg-manager: pip
           pip-dependency-file: requirements.txt  # Installa le dipendenze
 
+      # Debugging: Controlla la directory corrente
+      - run:
+          name: Debug current working directory
+          command: pwd
+        
       # Esegui i test uno alla volta, con comandi separati per ciascun file di test
       - run:
           name: Run tests for hyperparameters.py

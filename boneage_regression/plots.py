@@ -6,7 +6,7 @@ from loguru import logger
 from keras import layers
 
 
-def plot_loss_metrics(history):
+def plot_loss_metrics(history, fold):
     """
     Plots training history metrics, including loss,
     mean absolute error (MAE) and R2 score.
@@ -29,7 +29,7 @@ def plot_loss_metrics(history):
 
     # Create figure and subplots (3 whithin a row)
     plt.figure(figsize=(18, 6))
-
+    plt.title(f'Loss and metrics for fold {fold}')
     # First subplot: Loss e Validation Loss
     plt.subplot(1, 3, 1)
     plt.plot(loss, label='Training Loss')

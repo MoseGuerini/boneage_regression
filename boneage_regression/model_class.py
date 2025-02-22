@@ -206,7 +206,7 @@ class CNN_Model:
         :param model_builder: Function to build the model, used by Keras Tuner.
         :type model_builder: function
         :param epochs: The number of epochs to train the model during tuning.
-        :type epochs: int, optional, default is 1
+        :type epochs: int, optional, default is 60 ###########################################
         :param batch_size: The batch size to use during training.
         :type batch_size: int, optional, default is 64
 
@@ -269,7 +269,7 @@ class CNN_Model:
         with an internal validation split. After training, the loss curve is plotted,
         and the model is evaluated. If requested, the model is saved to disk.
 
-        :param epochs: The number of epochs to train the model. Defaults to 100.
+        :param epochs: The number of epochs to train the model. Defaults to 300. ###################
         :type epochs: int
 
         :return: None
@@ -358,6 +358,7 @@ class CNN_Model:
         min_mae_index = np.argmin(mae_list)  # Index of the model with minimum MAE
         self._trained_model = self.model_list[min_mae_index]  # Get the best model from self.model_list
         logger.info(f"Selected model from fold {min_mae_index+1} with MAE = {mae_list[min_mae_index]:.2f}")
+
 
 
     def save_model(self, filename="best_model.keras"):

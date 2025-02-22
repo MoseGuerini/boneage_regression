@@ -64,9 +64,13 @@ function preprocessing2(input_folder, output_folder,num_workers,target_size)
         imwrite(processed_images{i}, output_path);
     end
     
-    disp('Elaborazione completata!');
+    disp('Preprocessing completed. Preprocessed images: ', num2str(num_images)]);
     
     % Ferma il timer e mostra il tempo trascorso
     elapsed_time = toc;
+<<<<<<< HEAD
+    disp(['Elapsed time: ', num2str(elapsed_time), ' seconds']);
+=======
     disp(['Tempo trascorso: ', num2str(elapsed_time), ' secondi']);
+>>>>>>> 80dcaa3ac62bc6d84f6da6ed716f23ef4690155f
 end

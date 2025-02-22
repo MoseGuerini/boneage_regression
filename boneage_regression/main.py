@@ -8,7 +8,6 @@ from hyperparameters import hyperp_space_size
 from model_class import CNN_Model
 from data_class import DataLoader
 from utils import hyperp_dict, check_rate, str2bool
-from plots import visualize_gradcam_batch, get_last_conv_layer_name
 
 
 if __name__ == '__main__':
@@ -141,7 +140,8 @@ if __name__ == '__main__':
         )
     space_size = hyperp_space_size()
 
-    max_trials = np.rint(args.searching_fraction*space_size)
+    #max_trials = np.rint(args.searching_fraction*space_size)
+    max_trials = 1
 
     # 3. create and train the model
     model = CNN_Model(
@@ -150,9 +150,7 @@ if __name__ == '__main__':
         overwrite=args.overwrite,
         max_trials=max_trials
         )
+    
     model.train()
-
-    # 4. gradCAM
-    #last_conv_layer_name = get_last_conv_layer_name(model.trained_model)
-    #visualize_gradcam_batch(model, last_conv_layer_name, num_images=6)
+    
     plt.show()

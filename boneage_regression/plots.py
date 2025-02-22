@@ -6,7 +6,7 @@ from loguru import logger
 from keras import layers
 
 
-def plot_loss_metrics(history, fold):
+def plot_loss_metrics(history, title):
     """
     Plots training history metrics, including loss,
     mean absolute error (MAE) and R2 score.
@@ -29,12 +29,11 @@ def plot_loss_metrics(history, fold):
 
     # Create figure and subplots (3 whithin a row)
     plt.figure(figsize=(18, 6))
-    plt.title(f'Loss and metrics for fold {fold}')
     # First subplot: Loss e Validation Loss
     plt.subplot(1, 3, 1)
     plt.plot(loss, label='Training Loss')
     plt.plot(val_loss, label='Validation Loss')
-    plt.title('Loss and Validation Loss')
+    plt.title(title + 'Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
@@ -44,7 +43,7 @@ def plot_loss_metrics(history, fold):
     plt.subplot(1, 3, 2)
     plt.plot(mae, label='Mean Absolute Error')
     plt.plot(val_mae, label='Val. Mean Absolute Error')
-    plt.title('Mean Absolute Error (MAE)')
+    plt.title(title + 'MAE')
     plt.xlabel('Epochs')
     plt.ylabel('MAE')
     plt.legend()
@@ -54,13 +53,14 @@ def plot_loss_metrics(history, fold):
     plt.subplot(1, 3, 3)
     plt.plot(r2, label='R2 score')
     plt.plot(val_r2, label='Val. R2 score')
-    plt.title('R2 score')
+    plt.title(title + 'R2 score')
     plt.xlabel('Epochs')
     plt.ylabel('R2')
     plt.legend()
     plt.grid(True)
 
     # Show the figure
+    plt.tight_layout()
     plt.show(block=False)
 
 
@@ -204,65 +204,6 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.xlabel('Error [months]')
     plt.ylabel('Occurrences')
     plt.legend()
-    plt.show(block=False)
-
-
-def visualize_gradcam_batch(trained_model, last_conv_layer_name, num_images=6):
-    """
-    Visualizes Grad-CAM heatmaps overlayed on 6 random images from the test set.
-
-    This function selects `num_images` random images from the test set,
-    generates Grad-CAM heatmaps for each image, and overlays them on the original
-    image to visualize the areas of focus. The images are then displayed in a
-    grid layout.
-
-    :param trained_model: object
-        The trained model to be used for generating Grad-CAM heatmaps. It should
-        contain the attributes `X_test` and `X_gender_test` for input data.
-    :param last_conv_layer_name: str
-        The name of the last convolutional layer in the model. This layer is
-        used to compute the Grad-CAM heatmaps.
-    :param num_images: int, optional (default=6)
-        The number of random images to visualize from the test set.
-
-    :return: None
-        This function only displays the Grad-CAM heatmap overlayed on images.
-    """
-    # Select `num_images` random indices from the test set
-    indices = np.random.choice(len(trained_model.X_test),
-                               num_images,
-                               replace=False)
-
-    # Create figure with subplots (2 rows x 3 columns)
-    fig, axes = plt.subplots(2, 3, figsize=(12, 8))
-
-    for i, idx in enumerate(indices):
-        row, col = divmod(i, 3)
-
-        # Prepare the image and auxiliary data for the model
-        img_array = [
-            np.expand_dims(trained_model.X_test[idx], axis=0),
-            np.expand_dims(trained_model.X_gender_test[idx], axis=0)
-        ]
-
-        # Generate Grad-CAM heatmap
-        heatmap = make_gradcam_heatmap(img_array,
-                                       trained_model.trained_model,
-                                       last_conv_layer_name)
-
-        # Prepare the original image
-        original_img = (trained_model.X_test[idx] * 255).astype(np.uint8)
-
-        # Overlay the heatmap on the original image
-        superimposed_img = overlay_heatmap(original_img, heatmap)
-
-        # Mostra l'immagine nel subplot corrispondente
-        axes[row, col].imshow(superimposed_img)
-        axes[row, col].set_title(f"Sample {idx}")
-        axes[row, col].axis("off")  # Rimuove gli assi per pulizia
-
-    # Adjust the layout and show the figure
-    plt.tight_layout()
     plt.show(block=False)
 
 

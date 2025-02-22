@@ -1,14 +1,17 @@
 import sys
 import pathlib
 from loguru import logger
+import matplotlib.pyplot as plt
 
 import keras
 from keras import callbacks, models
 import keras_tuner as kt
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
+import numpy as np
 
 from hyperparameters import build_model
-from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
+from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold, get_last_conv_layer_name
+from utils import  make_gradcam_heatmap, overlay_heatmap
 
 # Setting logger configuration
 logger.remove()
@@ -99,6 +102,7 @@ class CNN_Model:
         self.max_trials = max_trials
         self.overwrite = overwrite
         self.model_builder = build_model
+        self.model_list = []
         self._trained_model = None
 
     @property
@@ -182,11 +186,12 @@ class CNN_Model:
         :return: None
         """
         self.train_model()
-        self.predict()
+        self.visualize_gradcam_batch()
 
     def hyperparameter_tuning(
-            self, X_val, X_gender_val, y_val, model_builder,
-            epochs=1, batch_size=64
+            self, X_train, X_gender_train, y_train,
+            X_val, X_gender_val, y_val,
+            model_builder, fold, epochs=1, batch_size=64
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an
@@ -210,7 +215,7 @@ class CNN_Model:
         :rtype: tuple
         """
         # Set directory for tuner results
-        tuner_dir = pathlib.Path(__file__).resolve().parent.parent / 'tuner'
+        tuner_dir = pathlib.Path(__file__).resolve().parent.parent / 'tuner' / f'tuner_{fold}'
         tuner_dir.mkdir(parents=True, exist_ok=True)
 
         # Set project name for the tuner
@@ -233,9 +238,9 @@ class CNN_Model:
 
         # Perform the hyperparameter search
         tuner.search(
-            [X_val, X_gender_val], y_val,
+            [X_train, X_gender_train], y_train,
             epochs=epochs,
-            validation_split=0.2,
+            validation_data=([X_val, X_gender_val], y_val),
             batch_size=batch_size,
             callbacks=[stop_early]
         )
@@ -248,17 +253,17 @@ class CNN_Model:
         best_model = tuner.get_best_models()[0]
 
         # Log the best hyperparameters
-        logger.info("Best Hyperparameters:")
-        for param, value in best_hps.values.items():
-            logger.info(f"Parameter: {param}, Value: {value}")
+        #logger.info("Best Hyperparameters:")
+        #for param, value in best_hps.values.items():
+        #    logger.info(f"Parameter: {param}, Value: {value}")
 
         # Log the summary of the best model
-        logger.info('Summary of the best network architecture:')
-        best_model.summary()
+        #logger.info('Summary of the best network architecture:')
+        #best_model.summary()
 
         return best_hps, best_model
 
-    def train_model(self, epochs=70):
+    def train_model(self, k=5):
         """
         Trains the model using the best hyperparameters on the complete dataset,
         with an internal validation split. After training, the loss curve is plotted,
@@ -270,51 +275,90 @@ class CNN_Model:
         :return: None
         :rtype: None
         """
-        # Splitting training data into training and validation
-        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val = (
-            train_test_split(self.X_train, self.X_gender_train, self.y_train,
-                             test_size=0.12, random_state=1)
-        )
+        # Set up k-fold validation
+        kf = KFold(n_splits=k, shuffle=True, random_state=42)
 
-        # Perform hyperparameters tuning
-        _, best_model = self.hyperparameter_tuning(
-            X_val, X_gender_val, y_val, self.model_builder
-        )
+        best_hps_list = []
+        mae_list = []
+        r2_list = []
 
         # Set up early stop
-        #early_stop = callbacks.EarlyStopping(
-        #    monitor='val_loss',
-        #    patience=15,
-        #    restore_best_weights=True,
-        #    start_from_epoch=20
-        #)
-
-        # Training the model
-        history = best_model.fit(
-            [X_train, X_gender_train],
-            y_train,
-            epochs=epochs,
-            batch_size=64,
-            validation_split=0.1, ##rimetti callback=[early_stop]
-            verbose=2
+        early_stop = callbacks.EarlyStopping(
+            monitor='val_loss',
+            patience=15,
+            restore_best_weights=True,
+            start_from_epoch=20
         )
 
-        # Plot training metrics
-        plot_loss_metrics(history)
+        fold = 1
+        for train_idx, val_idx in kf.split(self.X_train):
+            logger.info(f"Training fold {fold}/{k}")
 
-        # Evaluate the model on the test dataset and log the results
-        loss, mae, r2 = best_model.evaluate(
-            [self.X_test, self.X_gender_test], self.y_test, verbose=2
-        )
+            X_train_fold, X_val_fold = self.X_train[train_idx], self.X_train[val_idx]
+            X_gender_train_fold, X_gender_val_fold = self.X_gender_train[train_idx], self.X_gender_train[val_idx]
+            y_train_fold, y_val_fold = self.y_train[train_idx], self.y_train[val_idx]
 
-        logger.info(
-            f"Evaluation on the complete dataset: Loss = {loss:.4f}"
+            # Hyperparameter tuning
+            best_hps, best_model = self.hyperparameter_tuning(X_train_fold, X_gender_train_fold, y_train_fold,
+                                                              X_val_fold, X_gender_val_fold, y_val_fold, self.model_builder, fold)
+
+            best_hps_list.append(best_hps)
+
+            # Save the best model
+            self.model_list.append(best_model)
+
+            # Training the best model
+            history = best_model.fit(
+                [X_train_fold, X_gender_train_fold], 
+                y_train_fold,
+                epochs=1,
+                batch_size=64,
+                validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
+                callbacks=[early_stop],
+                verbose=2
+            )
+
+            # Plot training metrics
+            plot_loss_metrics(history, title=f'Fold {fold}: ')
+
+            # Evaluate the model on the test dataset and log the results
+            loss, mae, r2 = best_model.evaluate(
+                [self._X_test, self._X_gender_test], self._y_test, verbose=2
+            )
+
+            mae_list.append(mae)
+            r2_list.append(r2)
+
+            logger.info(
+            f"Evaluation on fold {fold}: Loss = {loss:.4f}"
             f"MAE = {mae:.4f}, r2 = {r2:.4f}"
-        )
+            )
 
-        # Save the trained model
-        self._trained_model = best_model
-        self.save_model()
+            # Save the trained model
+            self._trained_model = best_model
+            self.save_model(filename=f"model_fold{fold}.keras")
+
+            fold += 1
+        
+        logger.info("Training completed for all folds, logging summary:")
+
+        # Logging summary
+        logger.info("Best hyperparameters for each fold:")
+        for i, best_hps in enumerate(best_hps_list, 1):
+            params_str = ", ".join([f"{param}: {value}" for param, value in best_hps.values.items()])
+            logger.info(f"Fold {i}: {params_str}")
+
+        logger.info(f"List of MAE: {mae_list}")
+        logger.info(f"Mean MAE: {np.mean(mae_list):.2f}+/- {np.std(mae_list, ddof=1):.2f}")
+
+        logger.info(f"List of R2 score: {r2_list}")
+        logger.info(f"Mean R2 score: {np.mean(r2_list):.2f}+/- {np.std(r2_list, ddof=1):.2f}")
+
+        # Finding the model with the minimum MAE
+        min_mae_index = np.argmin(mae_list)  # Index of the model with minimum MAE
+        self._trained_model = self.model_list[min_mae_index]  # Get the best model from self.model_list
+        logger.info(f"Selected model from fold {min_mae_index+1} with MAE = {mae_list[min_mae_index]:.2f}")
+
 
     def save_model(self, filename="best_model.keras"):
         """
@@ -370,7 +414,74 @@ class CNN_Model:
         plot_predictions(self.y_test, y_pred)
         plot_accuracy_threshold(y_pred, self.y_test)
 
-        return y_pred
+        # Computes error between actual and predicted values
+        errors = np.abs(y_pred - self.y_test)
+
+        # Selecting the images based on the prediction error 
+        sorted_indices = np.argsort(errors)
+        best_indices = sorted_indices[:3]   # Get 3 best images
+        worst_indices = sorted_indices[-3:] # Get 3 worse images
+        selected_indices = np.concatenate([best_indices, worst_indices])
+        errors = errors[selected_indices]
+
+        return y_pred, selected_indices, errors
+
+    def visualize_gradcam_batch(self):
+        """
+        Visualizes Grad-CAM heatmaps overlayed on 6 random images from the test set.
+
+        This function selects `num_images` random images from the test set,
+        generates Grad-CAM heatmaps for each image, and overlays them on the original
+        image to visualize the areas of focus. The images are then displayed in a
+        grid layout.
+
+        :param trained_model: object
+            The trained model to be used for generating Grad-CAM heatmaps. It should
+            contain the attributes `X_test` and `X_gender_test` for input data.
+        :param last_conv_layer_name: str
+            The name of the last convolutional layer in the model. This layer is
+            used to compute the Grad-CAM heatmaps.
+        :param num_images: int, optional (default=6)
+            The number of random images to visualize from the test set.
+
+        :return: None
+            This function only displays the Grad-CAM heatmap overlayed on images.
+        """
+        last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
+
+        _, indices, errors = self.predict()
+
+        # Create figure with subplots (2 rows x 3 columns)
+        fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+
+        for i, idx in enumerate(indices):
+            row, col = divmod(i, 3)
+
+            # Prepare the image and auxiliary data for the model
+            img_array = [
+                np.expand_dims(self.X_test[idx], axis=0),
+                np.expand_dims(self.X_gender_test[idx], axis=0)
+            ]
+
+            # Generate Grad-CAM heatmap
+            heatmap = make_gradcam_heatmap(img_array,
+                                        self._trained_model,
+                                        last_conv_layer_name)
+
+            # Prepare the original image
+            original_img = (self.X_test[idx] * 255).astype(np.uint8)
+
+            # Overlay the heatmap on the original image
+            superimposed_img = overlay_heatmap(original_img, heatmap)
+
+            # Mostra l'immagine nel subplot corrispondente
+            axes[row, col].imshow(superimposed_img)
+            axes[row, col].set_title(f"Error = {errors[i]:.2f} m.")
+            axes[row, col].axis("off")  # Rimuove gli assi per pulizia
+
+        # Adjust the layout and show the figure
+        plt.tight_layout()
+        plt.show(block=False)
 
     def load_trained_model(self, model_path):
         """
@@ -390,3 +501,4 @@ class CNN_Model:
         """
         self._trained_model = models.load_model(model_path)
         logger.info(f"Model loaded from {model_path}")
+

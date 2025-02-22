@@ -10,17 +10,18 @@ from sklearn.model_selection import train_test_split
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
 
-# Setting logger configuration 
-logger.remove()  
+# Setting logger configuration
+logger.remove()
 logger.add(
     sys.stdout,
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
     level="INFO"
 )
 
+
 class CNN_Model:
     """
-    A class that builds, trains, and evaluates a Convolutional Neural Network (CNN) 
+    A class that builds, trains, and evaluates a Convolutional Neural Network (CNN)
     for regression tasks using Keras.
 
     This class allows for:
@@ -30,7 +31,7 @@ class CNN_Model:
     - Model training with early stopping.
 
     - Model evaluation and prediction.
-    
+
     - Saving and loading the trained model.
 
     Attributes:
@@ -52,7 +53,7 @@ class CNN_Model:
     --------
     train() :
         Performs hyperparameter tuning and training, followed by predictions.
-    
+
     hyperparameter_tuning(X_val, X_gender_val, y_val, model_builder) :
         Performs Bayesian optimization for hyperparameter tuning.
 
@@ -69,17 +70,22 @@ class CNN_Model:
         Loads a pre-trained model from a file.
     """
     def __init__(self, data_train, data_test, overwrite=False, max_trials=10):
-        """
-        Initializes the CNN_Model instance with training and testing datasets, 
-        as well as configuration options for hyperparameter tuning.
+        """Initialize the CNN_Model instance with training and testing datasets.
 
-        :param data_train: The training data object containing the features and labels for training.
+        This method sets up the training and testing datasets, along with
+        configuration options for hyperparameter tuning.
+
+        :param data_train: The training data object containing the features
+                        and labels for training.
         :type data_train: DataClass
-        :param data_test: The testing data object containing the features and labels for testing.
+        :param data_test: The testing data object containing the features
+                        and labels for testing.
         :type data_test: DataClass
-        :param overwrite: Flag to indicate whether to overwrite existing tuning results. Defaults to False.
+        :param overwrite: Whether to overwrite existing tuning results.
+                        Defaults to False.
         :type overwrite: bool, optional
-        :param max_trials: The maximum number of trials for hyperparameter tuning. Defaults to 10.
+        :param max_trials: The maximum number of trials for hyperparameter tuning.
+                        Defaults to 10.
         :type max_trials: int, optional
         """
         self._X_train = data_train.X
@@ -98,23 +104,23 @@ class CNN_Model:
     @property
     def X_train(self):
         return self._X_train
-    
+
     @X_train.setter
     def X_train(self, X_train_new):
         logger.warning('X_train dataset cannot be modified!')
-    
+
     @property
     def X_gender_train(self):
         return self._X_gender_train
-    
+
     @X_gender_train.setter
     def X_gender_train(self, X_gender_train_new):
         logger.warning('X_gender_train dataset cannot be modified!')
-    
+
     @property
     def y_train(self):
         return self._y_train
-    
+
     @y_train.setter
     def y_train(self, y_train_new):
         logger.warning('y_train dataset cannot be modified!')
@@ -122,42 +128,48 @@ class CNN_Model:
     @property
     def X_test(self):
         return self._X_test
-    
+
     @X_test.setter
     def X_test(self, X_test_new):
         logger.warning('X_test dataset cannot be modified!')
-    
+
     @property
     def X_gender_test(self):
         return self._X_gender_test
-    
+
     @X_gender_test.setter
     def X_gender_test(self, X_gender_test_new):
         logger.warning('X_gender_test dataset cannot be modified!')
-    
+
     @property
     def y_test(self):
         return self._y_test
-    
+
     @y_test.setter
     def y_test(self, y_test_new):
         logger.warning('y_test dataset cannot be modified!')
-    
+
     @property
     def trained_model(self):
+        """Return the trained model if available.
+
+        :raises ValueError: If the model has not been trained yet.
+        """
         if self._trained_model is None:
-            raise ValueError("Il modello non è ancora stato allenato. Esegui train() prima.")
-        return self._trained_model
-    
+            raise ValueError(
+                "The model has not been trained yet. Run `train()` first."
+            )
+        return
+
     @trained_model.setter
     def trained_model(self, model):
         """
-        Set the trained model. This setter can include checks to validate the model.
+        Set the trained model.
         """
         if not isinstance(model, keras.Model):
             raise ValueError("The model must be an instance of keras.Model.")
         self._trained_model = model
-    
+
     def train(self):
         """
         Performs hyperparameter tuning followed by training of the model,
@@ -172,10 +184,13 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=100, batch_size=64):
+    def hyperparameter_tuning(
+            self, X_val, X_gender_val, y_val, model_builder,
+            epochs=100, batch_size=64
+    ):
         """
-        Performs hyperparameter tuning using Bayesian optimization with an internal 
-        validation split for evaluation.
+        Performs hyperparameter tuning using Bayesian optimization with an
+        internal validation split for evaluation.
 
         :param X_val: Validation data features.
         :type X_val: numpy.ndarray or pandas.DataFrame
@@ -190,7 +205,8 @@ class CNN_Model:
         :param batch_size: The batch size to use during training.
         :type batch_size: int, optional, default is 64
 
-        :return: A tuple of the best hyperparameters and the best model found during tuning.
+        :return: A tuple of the best hyperparameters and the
+                 best model found during tuning.
         :rtype: tuple
         """
         # Set directory for tuner results
@@ -201,14 +217,14 @@ class CNN_Model:
         if self.overwrite:
             project_name = 'new_tuner'
         else:
-            project_name = 'new_tuner'      # change later to 'best_tuner' 
+            project_name = 'new_tuner'      # change later to 'best_tuner'
 
         # Initialize the BayesianOptimization tuner
         tuner = kt.BayesianOptimization(
             model_builder,
             objective='val_mean_absolute_error',
-            max_trials = self.max_trials,
-            overwrite = self.overwrite,
+            max_trials=self.max_trials,
+            overwrite=self.overwrite,
             directory=tuner_dir,
             project_name=project_name
         )
@@ -223,7 +239,7 @@ class CNN_Model:
             batch_size=batch_size,
             callbacks=[stop_early]
         )
-        
+
         # Print summary of tuner results
         tuner.results_summary()
 
@@ -240,9 +256,9 @@ class CNN_Model:
         logger.info('Summary of the best network architecture:')
         best_model.summary()
 
-        return  best_hps, best_model
+        return best_hps, best_model
 
-    def train_model(self, epochs=100):
+    def train_model(self, epochs=70):
         """
         Trains the model using the best hyperparameters on the complete dataset,
         with an internal validation split. After training, the loss curve is plotted,
@@ -255,8 +271,8 @@ class CNN_Model:
         :rtype: None
         """
         # Splitting training data into training and validation
-        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val  = (
-            train_test_split(self.X_train, self.X_gender_train, self.y_train, 
+        X_train, X_val, X_gender_train, X_gender_val, y_train, y_val = (
+            train_test_split(self.X_train, self.X_gender_train, self.y_train,
                              test_size=0.12, random_state=1)
         )
 
@@ -265,13 +281,13 @@ class CNN_Model:
             X_val, X_gender_val, y_val, self.model_builder
         )
 
-        # Set up early stop 
-        early_stop = callbacks.EarlyStopping(
-            monitor='val_loss',
-            patience=15,
-            restore_best_weights=True,
-            start_from_epoch=30
-        )
+        # Set up early stop
+        #early_stop = callbacks.EarlyStopping(
+        #    monitor='val_loss',
+        #    patience=15,
+        #    restore_best_weights=True,
+        #    start_from_epoch=20
+        #)
 
         # Training the model
         history = best_model.fit(
@@ -279,8 +295,7 @@ class CNN_Model:
             y_train,
             epochs=epochs,
             batch_size=64,
-            validation_split=0.1,
-            callbacks=[early_stop],
+            validation_split=0.1, ##rimetti callback=[early_stop]
             verbose=2
         )
 
@@ -294,13 +309,12 @@ class CNN_Model:
 
         logger.info(
             f"Evaluation on the complete dataset: Loss = {loss:.4f}"
-            "MAE = {mae:.4f}, r2 = {r2:.4f}"
+            f"MAE = {mae:.4f}, r2 = {r2:.4f}"
         )
 
         # Save the trained model
         self._trained_model = best_model
         self.save_model()
-
 
     def save_model(self, filename="best_model.keras"):
         """
@@ -325,17 +339,17 @@ class CNN_Model:
         self._trained_model.save(model_path)
         logger.info(f"Model saved in {model_path}")
 
-
-    def predict(self, model = None):
+    def predict(self, model=None):
         """
         Returns predictions from the model for the input data.
 
         If `model` is not provided, it uses the trained model stored in
-        `self._trained_model`. If the required input data (`X_test` and `X_gender_test`)
-        are not provided, it defaults to using the stored data in `self`.
+        `self._trained_model`. If the required input data
+        (`X_test` and `X_gender_test`) are not provided, it defaults
+        to using the stored data in `self`.
 
-        :param model: The model to use for prediction. If `None`, the trained model stored
-                    in `self._trained_model` will be used.
+        :param model: The model to use for prediction. If `None`, the trained
+                      model stored in `self._trained_model` will be used.
         :type model: keras.Model
 
         :raises ValueError: If no model is available for prediction.
@@ -368,7 +382,8 @@ class CNN_Model:
         :param model_path: Path to the file containing the trained model.
         :type model_path: str
 
-        :raises ValueError: If the model cannot be loaded due to an invalid path or corrupted file.
+        :raises ValueError: If the model cannot be loaded due to an
+                            invalid path or corrupted file.
 
         :return: None
         :rtype: None

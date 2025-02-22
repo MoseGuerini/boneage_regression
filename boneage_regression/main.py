@@ -123,6 +123,7 @@ if __name__ == '__main__':
         num_images=args.num_images,
         preprocessing=args.preprocessing
         )
+
     data_test = DataLoader(
         test_data,
         test_csv,
@@ -152,6 +153,6 @@ if __name__ == '__main__':
     model.train()
 
     # 4. gradCAM
-    last_conv_layer_name = get_last_conv_layer_name(model.trained_model)
-    visualize_gradcam_batch(model, last_conv_layer_name, num_images=6)
+    #last_conv_layer_name = get_last_conv_layer_name(model.trained_model)
+    #visualize_gradcam_batch(model, last_conv_layer_name, num_images=6)
     plt.show()

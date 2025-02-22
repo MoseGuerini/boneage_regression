@@ -1,4 +1,5 @@
 import sys
+import os
 import pathlib
 from loguru import logger
 import matplotlib.pyplot as plt
@@ -319,7 +320,7 @@ class CNN_Model:
             )
 
             # Plot training metrics
-            plot_loss_metrics(history, title=f'Fold {fold}: ')
+            plot_loss_metrics(history, fold=fold)
 
             # Evaluate the model on the test dataset and log the results
             loss, mae, r2 = best_model.evaluate(
@@ -448,6 +449,10 @@ class CNN_Model:
         :return: None
             This function only displays the Grad-CAM heatmap overlayed on images.
         """
+        # Save figures in a specific locations
+        folder = 'Grafici'
+        os.makedirs(folder, exist_ok=True)  # Create folder
+
         last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
 
         _, indices, errors = self.predict()
@@ -483,6 +488,9 @@ class CNN_Model:
         # Adjust the layout and show the figure
         plt.tight_layout()
         plt.show(block=False)
+
+        plt.savefig(os.path.join(folder, 'heat_map.png'))
+        plt.close()
 
     def load_trained_model(self, model_path):
         """

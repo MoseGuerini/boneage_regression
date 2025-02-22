@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 from utils import make_gradcam_heatmap, overlay_heatmap
 from sklearn.metrics import mean_absolute_error, r2_score
 from loguru import logger
@@ -26,6 +27,10 @@ def plot_loss_metrics(history):
     val_r2 = history.history['val_r2_score']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
+    
+    # Save figures in a specific locations
+    folder = 'Grafici'
+    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Create figure and subplots (3 whithin a row)
     plt.figure(figsize=(18, 6))
@@ -62,6 +67,9 @@ def plot_loss_metrics(history):
 
     # Show the figure
     plt.show(block=False)
+    
+    plt.savefig(os.path.join(folder, 'andamento_loss.png'))
+    plt.close()
 
 
 def plot_predictions(y_true, y_pred):
@@ -83,6 +91,10 @@ def plot_predictions(y_true, y_pred):
     # Log MAE and R2 score values
     logger.info(f'Mean absolute error on predicted values: {mae:.1f}')
     logger.info(f'r2 score on predicted values: {r2:.1f}')
+    
+    # Save figures in a specific locations
+    folder = 'Grafici'
+    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Create figure and axis
     plt.figure(figsize=(8, 6))
@@ -107,6 +119,11 @@ def plot_predictions(y_true, y_pred):
 
     # Show the figure
     plt.show(block=False)
+    
+    plt.savefig(os.path.join(folder, 'predictions.png'))
+    plt.close()
+    
+    
 
 
 def plot_gender(arr):
@@ -125,6 +142,10 @@ def plot_gender(arr):
     # Mapping gender values (0: Female, 1: Male)
     gender_labels = {0: 'Female', 1: 'Male'}
     unique_labels = [gender_labels[val] for val in unique]
+    
+    # Save figures in a specific locations
+    folder = 'Grafici'
+    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Create and customize the bar plot
     plt.figure(figsize=(10, 6))
@@ -137,6 +158,9 @@ def plot_gender(arr):
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.show(block=False)
+    
+    plt.savefig(os.path.join(folder, 'gender_distribution.png'))
+    plt.close()
 
 
 def plot_boneage(arr):
@@ -151,6 +175,10 @@ def plot_boneage(arr):
     """
     # Get occurrences of each unique value in the array
     unique, counts = np.unique(arr, return_counts=True)
+    
+    # Save figures in a specific locations
+    folder = 'Grafici'
+    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Create and customize the bar plot
     plt.figure(figsize=(10, 6))
@@ -164,6 +192,9 @@ def plot_boneage(arr):
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.show(block=False)
+    
+    plt.savefig(os.path.join(folder, 'boneage_distribution.png'))
+    plt.close()
 
 
 def plot_accuracy_threshold(y_pred, y_test, threshold=5):
@@ -194,6 +225,10 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     accuracy = (correct_predictions / total_predictions) * 100
 
     print(f"Accuracy: {accuracy:.2f}%")
+    
+    # Save figures in a specific locations
+    folder = 'Grafici'
+    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Plot error distribution
     plt.figure(figsize=(10, 6))
@@ -205,6 +240,9 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.ylabel('Occurrences')
     plt.legend()
     plt.show(block=False)
+    
+    plt.savefig(os.path.join(folder, 'accuracy.png'))
+    plt.close()
 
 
 def visualize_gradcam_batch(trained_model, last_conv_layer_name, num_images=6):
@@ -232,6 +270,10 @@ def visualize_gradcam_batch(trained_model, last_conv_layer_name, num_images=6):
     indices = np.random.choice(len(trained_model.X_test),
                                num_images,
                                replace=False)
+
+    # Save figures in a specific locations
+    folder = 'Grafici'
+    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Create figure with subplots (2 rows x 3 columns)
     fig, axes = plt.subplots(2, 3, figsize=(12, 8))
@@ -264,6 +306,9 @@ def visualize_gradcam_batch(trained_model, last_conv_layer_name, num_images=6):
     # Adjust the layout and show the figure
     plt.tight_layout()
     plt.show(block=False)
+    
+    plt.savefig(os.path.join(folder, 'heat_map.png'))
+    plt.close()
 
 
 def get_last_conv_layer_name(model):
@@ -292,3 +337,21 @@ def get_last_conv_layer_name(model):
         return conv_layers[-1].name
     else:
         raise ValueError("No Conv2D layer found in the model.")
+    
+
+def create_dir(make_folder):
+    if make_folder == True:
+        container_folder = 'grafici'
+        os.makedirs(container_folder, exist_ok=True) 
+    
+        trial_num = 1
+        while os.path.exists(os.path.join(container_folder, f'Grafici_trial_{trial_num}')):
+            trial_num += 1
+        
+        trial_folder = os.path.join(container_folder, f'Grafici_trial_{trial_num}')
+        os.makedirs(trial_folder)
+        
+    else:
+        trial_folder = None 
+    
+    return trial_folder

@@ -186,7 +186,7 @@ class CNN_Model:
 
     def hyperparameter_tuning(
             self, X_val, X_gender_val, y_val, model_builder,
-            epochs=100, batch_size=64
+            epochs=60, batch_size=64 ###############################################
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an
@@ -201,7 +201,7 @@ class CNN_Model:
         :param model_builder: Function to build the model, used by Keras Tuner.
         :type model_builder: function
         :param epochs: The number of epochs to train the model during tuning.
-        :type epochs: int, optional, default is 1
+        :type epochs: int, optional, default is 60 ###########################################
         :param batch_size: The batch size to use during training.
         :type batch_size: int, optional, default is 64
 
@@ -258,13 +258,13 @@ class CNN_Model:
 
         return best_hps, best_model
 
-    def train_model(self, epochs=70):
+    def train_model(self, epochs=300): ###################################
         """
         Trains the model using the best hyperparameters on the complete dataset,
         with an internal validation split. After training, the loss curve is plotted,
         and the model is evaluated. If requested, the model is saved to disk.
 
-        :param epochs: The number of epochs to train the model. Defaults to 100.
+        :param epochs: The number of epochs to train the model. Defaults to 300. ###################
         :type epochs: int
 
         :return: None
@@ -315,6 +315,7 @@ class CNN_Model:
         # Save the trained model
         self._trained_model = best_model
         self.save_model()
+
 
     def save_model(self, filename="best_model.keras"):
         """

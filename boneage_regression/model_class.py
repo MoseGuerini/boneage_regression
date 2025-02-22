@@ -172,7 +172,7 @@ class CNN_Model:
         self.train_model()
         self.predict()
 
-    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=1, batch_size=64):
+    def hyperparameter_tuning(self, X_val, X_gender_val, y_val, model_builder, epochs=100, batch_size=64):
         """
         Performs hyperparameter tuning using Bayesian optimization with an internal 
         validation split for evaluation.

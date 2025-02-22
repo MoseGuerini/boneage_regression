@@ -151,24 +151,14 @@ class DataLoader:
         eng.addpath(str(file_path.parent / 'Matlab_function'))
         eng.preprocessing(
             str(self.image_path),
-<<<<<<< HEAD
-            str((file_path.parent.parent / 'processed_images' / self.image_path.name)),
-=======
             str(file_path.parent.parent / 'processed_images' / self.image_path.name ),
->>>>>>> 80dcaa3ac62bc6d84f6da6ed716f23ef4690155f
             self.num_workers, self.target_size[1], nargout=0
         )
         # Number of workers for parallel preprocessing and dimension of images
         # can also be set. Defualt values are 12 and 128.
-<<<<<<< HEAD
-        self.image_path = str(file_path.parent.parent / 'processed_images' / self.image_path.name)
-        eng.quit()
-        logger.info(f"Preprocessed images {self.image_path.name} saved in processed_images/{self.image_path.name}")
-=======
         self.image_path = str(file_path.parent.parent / 'processed_images'/ self.image_path.name)
         eng.quit()
         logger.info(f"{self.image_path.name} processed images saved in processed_images/{self.image_path.name}")
->>>>>>> 80dcaa3ac62bc6d84f6da6ed716f23ef4690155f
 
 
     def load_images(self):

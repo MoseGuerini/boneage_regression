@@ -192,7 +192,7 @@ class CNN_Model:
     def hyperparameter_tuning(
             self, X_train, X_gender_train, y_train,
             X_val, X_gender_val, y_val,
-            model_builder, fold, epochs=1, batch_size=64
+            model_builder, fold, epochs=60, batch_size=64
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an

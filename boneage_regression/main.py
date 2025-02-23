@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
     # 1. Dataset part
     test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
+        pathlib.Path(__file__).resolve().parent.parent / 'Unpreprocessed_images'
     )
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'

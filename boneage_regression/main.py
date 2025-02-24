@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     # 1. Dataset part
     test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
+        pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
     )
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
@@ -129,8 +129,7 @@ if __name__ == '__main__':
         )
     space_size = hyperp_space_size()
 
-    #max_trials = np.rint(args.searching_fraction*space_size)
-    max_trials = 1
+    max_trials = np.rint(args.searching_fraction*space_size)
 
     # 3. create and train the model
     model = CNN_Model(

@@ -192,7 +192,7 @@ class CNN_Model:
     def hyperparameter_tuning(
             self, X_train, X_gender_train, y_train,
             X_val, X_gender_val, y_val,
-            model_builder, fold, epochs=60, batch_size=64
+            model_builder, fold, epochs=50, batch_size=64
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an
@@ -207,7 +207,7 @@ class CNN_Model:
         :param model_builder: Function to build the model, used by Keras Tuner.
         :type model_builder: function
         :param epochs: The number of epochs to train the model during tuning.
-        :type epochs: int, optional, default is 60 ###########################################
+        :type epochs: int, optional, default is 50
         :param batch_size: The batch size to use during training.
         :type batch_size: int, optional, default is 64
 
@@ -235,7 +235,7 @@ class CNN_Model:
             project_name=project_name
         )
 
-        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=5)
+        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
         # Perform the hyperparameter search
         tuner.search(
@@ -312,11 +312,10 @@ class CNN_Model:
             history = best_model.fit(
                 [X_train_fold, X_gender_train_fold], 
                 y_train_fold,
-                epochs=1,
+                epochs=100,
                 batch_size=64,
                 validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
-                callbacks=[early_stop],
-                verbose=2
+                verbose=1
             )
 
             # Plot training metrics

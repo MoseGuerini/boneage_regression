@@ -101,7 +101,7 @@ def plot_predictions(y_true, y_pred):
 
     # Scatter plot: predicted vs actual values
     plt.scatter(y_true, y_pred, color='blue', alpha=0.5,
-                label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.1f}')
+                label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.2f}')
 
     # Plotting y = x (ideal prediction line)
     lim = np.max([np.max(y_true), np.max(y_pred)])
@@ -244,7 +244,7 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.ylabel('Occurrences')
     plt.legend()
     plt.show(block=False)
-
+    plt.grid(True)
     plt.savefig(os.path.join(folder, 'boneage_distribution.png'))
     plt.close()
 

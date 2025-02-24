@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import pathlib
 import matplotlib.pyplot as plt
+from tensorflow.keras import mixed_precision
 
 from hyperparameters import hyperp_space_size
 from model_class import CNN_Model
@@ -11,6 +12,9 @@ from utils import hyperp_dict, check_rate, str2bool
 
 
 if __name__ == '__main__':
+
+    policy = mixed_precision.Policy('mixed_float16')
+    mixed_precision.set_global_policy(policy)
 
     parser = argparse.ArgumentParser(
         description="Bone Age Regressor"
@@ -140,8 +144,8 @@ if __name__ == '__main__':
         )
     space_size = hyperp_space_size()
 
-    #max_trials = np.rint(args.searching_fraction*space_size)
-    max_trials = 1
+    max_trials = np.rint(args.searching_fraction*space_size)
+    #max_trials = 1
 
     # 3. create and train the model
     model = CNN_Model(

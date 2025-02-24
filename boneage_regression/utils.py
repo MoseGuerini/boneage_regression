@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import keras
 from PIL import Image
+from pathlib import Path
 
 
 def hyperp_dict(
@@ -272,3 +273,21 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
     superimposed_img = np.clip(superimposed_img * 255, 0, 255).astype(np.uint8)
 
     return superimposed_img
+
+def save_image(file_name, image_data, folder_name = 'Grafici'):
+    # Ottieni il percorso del folder corrente
+    current_path = Path.cwd()
+    
+    # Torna indietro di due livelli
+    parent_folder = current_path.parent.parent
+    
+    # Crea il percorso del folder_name
+    folder_path = parent_folder / folder_name
+    
+    # Crea la cartella se non esiste
+    folder_path.mkdir(exist_ok=True)
+
+    # Crea l'immagine e salvala
+    image_path = folder_path / file_name
+    image = Image.fromarray(image_data)  # Assuming image_data is a NumPy array
+    image.save(image_path)

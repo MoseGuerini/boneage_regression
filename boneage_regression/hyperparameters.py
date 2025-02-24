@@ -57,7 +57,6 @@ def build_model(hp):
     hp_num_conv_layers = hp.Choice('conv_layers', hyperp['conv_layers'])
     hp_filters = hp.Choice('conv_filters', hyperp['conv_filters'])
     hp_dropout = hp.Choice('dropout_rate', hyperp['dropout_rate'])
-    hp_dense_units = hp.Choice('dense_units', hyperp['dense_units'])
     hp_dense_depth = hp.Choice('dense_depth', hyperp['dense_depth'])
     num_dense = 256
 
@@ -71,7 +70,7 @@ def build_model(hp):
     x = layers.Flatten()(x)
 
     # Dense layer before concatenation
-    x = layers.Dense(hp_dense_units, activation='relu')(x)
+    x = layers.Dense(num_dense, activation='relu')(x)
     x = layers.BatchNormalization()(x)
 
     # Second Branch (gender features)

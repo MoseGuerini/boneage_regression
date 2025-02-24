@@ -9,7 +9,7 @@ from PIL import Image
 
 
 def hyperp_dict(
-    conv_layers, conv_filters, dense_units, dense_depth, dropout_rate
+    conv_layers, conv_filters, dense_depth, dropout_rate
 ):
     """
     Creates a dictionary containing user-selected hyperparameters, ensuring
@@ -33,7 +33,6 @@ def hyperp_dict(
     hyperp_dict = {
         'conv_layers': list(set(conv_layers)),
         'conv_filters': list(set(conv_filters)),
-        'dense_units': list(set(dense_units)),
         'dense_depth': list(set(dense_depth)),
         'dropout_rate': list(set(dropout_rate)),
     }

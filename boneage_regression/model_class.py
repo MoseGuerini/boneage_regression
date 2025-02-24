@@ -192,7 +192,7 @@ class CNN_Model:
     def hyperparameter_tuning(
             self, X_train, X_gender_train, y_train,
             X_val, X_gender_val, y_val,
-            model_builder, fold, epochs=1, batch_size=64
+            model_builder, fold, epochs=50, batch_size=64
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an
@@ -228,14 +228,14 @@ class CNN_Model:
         # Initialize the BayesianOptimization tuner
         tuner = kt.BayesianOptimization(
             model_builder,
-            objective='val_mean_absolute_error',
+            objective='val_loss',
             max_trials=self.max_trials,
             overwrite=self.overwrite,
             directory=tuner_dir,
             project_name=project_name
         )
 
-        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=5)
+        stop_early = callbacks.EarlyStopping(monitor='val_loss', patience=10)
 
         # Perform the hyperparameter search
         tuner.search(
@@ -243,6 +243,7 @@ class CNN_Model:
             epochs=epochs,
             validation_data=([X_val, X_gender_val], y_val),
             batch_size=batch_size,
+            verbose=1,
             callbacks=[stop_early]
         )
 
@@ -251,16 +252,7 @@ class CNN_Model:
 
         # Get the best hyperparameters and model
         best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
-        best_model = tuner.get_best_models()[0]
-
-        # Log the best hyperparameters
-        #logger.info("Best Hyperparameters:")
-        #for param, value in best_hps.values.items():
-        #    logger.info(f"Parameter: {param}, Value: {value}")
-
-        # Log the summary of the best model
-        #logger.info('Summary of the best network architecture:')
-        #best_model.summary()
+        best_model = model_builder(best_hps)
 
         return best_hps, best_model
 
@@ -283,14 +275,6 @@ class CNN_Model:
         mae_list = []
         r2_list = []
 
-        # Set up early stop
-        early_stop = callbacks.EarlyStopping(
-            monitor='val_loss',
-            patience=15,
-            restore_best_weights=True,
-            start_from_epoch=20
-        )
-
         fold = 1
         for train_idx, val_idx in kf.split(self.X_train):
             logger.info(f"Training fold {fold}/{k}")
@@ -305,19 +289,18 @@ class CNN_Model:
 
             best_hps_list.append(best_hps)
 
-            # Save the best model
-            self.model_list.append(best_model)
-
             # Training the best model
             history = best_model.fit(
                 [X_train_fold, X_gender_train_fold], 
                 y_train_fold,
-                epochs=1,
+                epochs=300,
                 batch_size=64,
                 validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
-                callbacks=[early_stop],
-                verbose=2
+                verbose=1
             )
+
+            # Save the best model
+            self.model_list.append(best_model)
 
             # Plot training metrics
             plot_loss_metrics(history, fold=fold)
@@ -331,7 +314,7 @@ class CNN_Model:
             r2_list.append(r2)
 
             logger.info(
-            f"Evaluation on fold {fold}: Loss = {loss:.4f}"
+            f"Evaluation on fold {fold}: Loss = {loss:.4f} "
             f"MAE = {mae:.4f}, r2 = {r2:.4f}"
             )
 
@@ -360,8 +343,6 @@ class CNN_Model:
         self._trained_model = self.model_list[min_mae_index]  # Get the best model from self.model_list
         logger.info(f"Selected model from fold {min_mae_index+1} with MAE = {mae_list[min_mae_index]:.2f}")
 
-
-
     def save_model(self, filename="best_model.keras"):
         """
         Saves the trained model to a specified file.
@@ -377,7 +358,7 @@ class CNN_Model:
         :rtype: None
         """
         # Set model directory and path
-        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'model'
+        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'models'
         model_dir.mkdir(parents=True, exist_ok=True)
         model_path = model_dir / filename
 
@@ -421,8 +402,8 @@ class CNN_Model:
 
         # Selecting the images based on the prediction error 
         sorted_indices = np.argsort(errors)
-        best_indices = sorted_indices[:3]   # Get 3 best images
-        worst_indices = sorted_indices[-3:] # Get 3 worse images
+        best_indices = sorted_indices[:5]   # Get 5 best images
+        worst_indices = sorted_indices[-5:] # Get 5 worse images
         selected_indices = np.concatenate([best_indices, worst_indices])
         errors = errors[selected_indices]
 
@@ -455,13 +436,13 @@ class CNN_Model:
 
         last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
 
-        _, indices, errors = self.predict()
+        y_pred, indices, _ = self.predict()
 
         # Create figure with subplots (2 rows x 3 columns)
-        fig, axes = plt.subplots(2, 3, figsize=(12, 8))
+        fig, axes = plt.subplots(2, 5, figsize=(15, 7))
 
         for i, idx in enumerate(indices):
-            row, col = divmod(i, 3)
+            row, col = divmod(i, 5)
 
             # Prepare the image and auxiliary data for the model
             img_array = [
@@ -482,7 +463,7 @@ class CNN_Model:
 
             # Mostra l'immagine nel subplot corrispondente
             axes[row, col].imshow(superimposed_img)
-            axes[row, col].set_title(f"Error = {errors[i]:.2f} m.")
+            axes[row, col].set_title(f"True = {self.y_test[idx]} m. Pred = {y_pred[idx]:.1f} m.")
             axes[row, col].axis("off")  # Rimuove gli assi per pulizia
 
         # Adjust the layout and show the figure

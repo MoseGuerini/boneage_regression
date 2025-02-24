@@ -41,6 +41,7 @@ def plot_loss_metrics(history, fold):
     plt.title(f'Fold {fold}: Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
+    plt.yscale('log')
     plt.legend()
     plt.grid(True)
 
@@ -51,6 +52,7 @@ def plot_loss_metrics(history, fold):
     plt.title(f'Fold {fold}: MAE')
     plt.xlabel('Epochs')
     plt.ylabel('MAE')
+    plt.yscale('log')
     plt.legend()
     plt.grid(True)
 
@@ -61,6 +63,7 @@ def plot_loss_metrics(history, fold):
     plt.title(f'Fold {fold}: R2 score')
     plt.xlabel('Epochs')
     plt.ylabel('R2')
+    plt.yscale('log')
     plt.legend()
     plt.grid(True)
 

@@ -12,7 +12,7 @@ import numpy as np
 
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold, get_last_conv_layer_name
-from utils import  make_gradcam_heatmap, overlay_heatmap
+from utils import  make_gradcam_heatmap, overlay_heatmap, save_image
 
 # Setting logger configuration
 logger.remove()
@@ -312,7 +312,7 @@ class CNN_Model:
             history = best_model.fit(
                 [X_train_fold, X_gender_train_fold], 
                 y_train_fold,
-                epochs=100,
+                epochs=300,
                 batch_size=64,
                 validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
                 verbose=1
@@ -448,9 +448,6 @@ class CNN_Model:
         :return: None
             This function only displays the Grad-CAM heatmap overlayed on images.
         """
-        # Save figures in a specific locations
-        folder = 'Grafici'
-        os.makedirs(folder, exist_ok=True)  # Create folder
 
         last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
 
@@ -487,9 +484,12 @@ class CNN_Model:
         # Adjust the layout and show the figure
         plt.tight_layout()
         plt.show(block=False)
-
-        plt.savefig(os.path.join(folder, 'heat_map.png'))
+        
+        # Save the image
+        image_name = f'heat_map.png'
+        plt.savefig(image_name)  # Local saving
         plt.close()
+        save_image(image_name)
 
     def load_trained_model(self, model_path):
         """

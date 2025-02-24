@@ -274,12 +274,12 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     return superimposed_img
 
-def save_image(file_name, image_data, folder_name = 'Grafici'):
+def save_image(file_name, folder_name = 'Grafici'):
     # Ottieni il percorso del folder corrente
     current_path = Path.cwd()
     
     # Torna indietro di due livelli
-    parent_folder = current_path.parent.parent
+    parent_folder = current_path.parent
     
     # Crea il percorso del folder_name
     folder_path = parent_folder / folder_name
@@ -289,5 +289,9 @@ def save_image(file_name, image_data, folder_name = 'Grafici'):
 
     # Crea l'immagine e salvala
     image_path = folder_path / file_name
-    image = Image.fromarray(image_data)  # Assuming image_data is a NumPy array
-    image.save(image_path)
+    
+    # If a file with the same name is already present, delete it
+    if image_path.exists():
+        image_path.unlink()
+    
+    Path(file_name).rename(image_path)

@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 from utils import make_gradcam_heatmap, overlay_heatmap
 from sklearn.metrics import mean_absolute_error, r2_score
 from loguru import logger
@@ -66,12 +65,10 @@ def plot_loss_metrics(history, fold):
     plt.show(block=False)
 
     # Save the image
-    image_data = plt.gcf()
     image_name = f'fold{fold}_andamento_loss_folder.png'.format(fold)
-    folder_name = 'Grafici'
     plt.savefig(image_name)  # Local saving
     plt.close()
-    save_image(folder_name, image_name, image_data)
+    save_image(image_name)
 
 
 def plot_predictions(y_true, y_pred):
@@ -119,12 +116,10 @@ def plot_predictions(y_true, y_pred):
     plt.show(block=False)
     
     # Save the image
-    image_data = plt.gcf()
     image_name = f'predictions.png'
-    folder_name = 'Grafici'
     plt.savefig(image_name)  # Local saving
     plt.close()
-    save_image(folder_name, image_name, image_data)
+    save_image(image_name)
     
     
 
@@ -157,14 +152,12 @@ def plot_gender(arr):
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.show(block=False)
-    
+    plt.tight_layout()
     # Save the image
-    image_data = plt.gcf()
-    image_name = f'predictions.png'
-    folder_name = 'Grafici'
+    image_name = f'gender.png'
     plt.savefig(image_name)  # Local saving
     plt.close()
-    save_image(folder_name, image_name, image_data)
+    save_image(image_name)
 
 
 def plot_boneage(arr):
@@ -194,12 +187,10 @@ def plot_boneage(arr):
     plt.show(block=False)
     
     # Save the image
-    image_data = plt.gcf()
     image_name = f'boneage.png'
-    folder_name = 'Grafici'
     plt.savefig(image_name)  # Local saving
     plt.close()
-    save_image(folder_name, image_name, image_data)
+    save_image(image_name)
 
 
 def plot_accuracy_threshold(y_pred, y_test, threshold=10):
@@ -231,10 +222,6 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=10):
     accuracy = (correct_predictions / total_predictions) * 100
 
     print(f"Accuracy: {accuracy:.2f}%")
-    
-    # Save figures in a specific locations
-    folder = 'Grafici'
-    os.makedirs(folder, exist_ok=True)  # Create folder
 
     # Plot error distribution
     plt.figure(figsize=(10, 6))
@@ -249,12 +236,10 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=10):
     plt.show(block=False)
 
     # Save the image
-    image_data = plt.gcf()
     image_name = f'accuracy.png'
-    folder_name = 'Grafici'
     plt.savefig(image_name)  # Local saving
     plt.close()
-    save_image(folder_name, image_name, image_data)
+    save_image(image_name)
 
 
 def get_last_conv_layer_name(model):

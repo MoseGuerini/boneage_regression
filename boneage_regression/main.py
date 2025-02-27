@@ -71,16 +71,6 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        "-du",
-        "--dense_units",
-        metavar="",
-        nargs='+',
-        type=int,
-        help="List of values for the hypermodel's dense units",
-        default=[64, 128, 256],
-    )
-
-    parser.add_argument(
         "-dd",
         "--dense_depth",
         metavar="",
@@ -113,7 +103,7 @@ if __name__ == '__main__':
 
     # 1. Dataset part
     test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Unpreprocessed_images'
+        pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
     )
     train_data = test_data_dir / 'Training'
     train_csv = test_data_dir / 'training.csv'
@@ -138,14 +128,12 @@ if __name__ == '__main__':
     hyperp_dict = hyperp_dict(
         args.conv_layers,
         args.conv_filters,
-        args.dense_units,
         args.dense_depth,
         args.dropout_rate
         )
     space_size = hyperp_space_size()
 
     max_trials = np.rint(args.searching_fraction*space_size)
-    #max_trials = 1
 
     # 3. create and train the model
     model = CNN_Model(

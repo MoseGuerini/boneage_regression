@@ -35,6 +35,7 @@ def plot_loss_metrics(history, fold):
     plt.title(f'Fold {fold}: Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
+    plt.yscale('log')
     plt.legend()
     plt.grid(True)
 
@@ -45,6 +46,7 @@ def plot_loss_metrics(history, fold):
     plt.title(f'Fold {fold}: MAE')
     plt.xlabel('Epochs')
     plt.ylabel('MAE')
+    plt.yscale('log')
     plt.legend()
     plt.grid(True)
 
@@ -55,6 +57,7 @@ def plot_loss_metrics(history, fold):
     plt.title(f'Fold {fold}: R2 score')
     plt.xlabel('Epochs')
     plt.ylabel('R2')
+    plt.yscale('log')
     plt.legend()
     plt.grid(True)
 
@@ -94,7 +97,7 @@ def plot_predictions(y_true, y_pred):
 
     # Scatter plot: predicted vs actual values
     plt.scatter(y_true, y_pred, color='blue', alpha=0.5,
-                label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.1f}')
+                label=f'MAE: {mae:.1f} m.\nR² Score: {r2:.2f}')
 
     # Plotting y = x (ideal prediction line)
     lim = np.max([np.max(y_true), np.max(y_pred)])
@@ -232,5 +235,6 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=10):
     # Save the image
     image_name = f'accuracy.png'
     plt.savefig(image_name)  # Local saving
+    plt.grid(True)
     plt.close()
     save_image(image_name)

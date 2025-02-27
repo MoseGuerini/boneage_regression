@@ -12,7 +12,7 @@ import numpy as np
 
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold, get_last_conv_layer_name
-from utils import  make_gradcam_heatmap, overlay_heatmap, save_image
+from utils import  make_gradcam_heatmap, overlay_heatmap, save_image, log_training_summary
 
 # Setting logger configuration
 logger.remove()
@@ -22,6 +22,12 @@ logger.add(
     level="INFO"
 )
 
+def readonly_property(attr_name: str) -> property:
+    def getter(self):
+        return getattr(self, f"_{attr_name}")
+    def setter(self, value):
+        logger.warning(f"{attr_name} dataset cannot be modified!")
+    return property(getter, setter)
 
 class CNN_Model:
     """
@@ -73,7 +79,12 @@ class CNN_Model:
     load_trained_model(model_path) :
         Loads a pre-trained model from a file.
     """
-    def __init__(self, data_train, data_test, overwrite=False, max_trials=10):
+    def __init__(
+            self,
+            data_train,
+            data_test,
+            overwrite: bool = False,
+            max_trials: int = 10):
         """Initialize the CNN_Model instance with training and testing datasets.
 
         This method sets up the training and testing datasets, along with
@@ -106,53 +117,13 @@ class CNN_Model:
         self.model_list = []
         self._trained_model = None
 
-    @property
-    def X_train(self):
-        return self._X_train
-
-    @X_train.setter
-    def X_train(self, X_train_new):
-        logger.warning('X_train dataset cannot be modified!')
-
-    @property
-    def X_gender_train(self):
-        return self._X_gender_train
-
-    @X_gender_train.setter
-    def X_gender_train(self, X_gender_train_new):
-        logger.warning('X_gender_train dataset cannot be modified!')
-
-    @property
-    def y_train(self):
-        return self._y_train
-
-    @y_train.setter
-    def y_train(self, y_train_new):
-        logger.warning('y_train dataset cannot be modified!')
-
-    @property
-    def X_test(self):
-        return self._X_test
-
-    @X_test.setter
-    def X_test(self, X_test_new):
-        logger.warning('X_test dataset cannot be modified!')
-
-    @property
-    def X_gender_test(self):
-        return self._X_gender_test
-
-    @X_gender_test.setter
-    def X_gender_test(self, X_gender_test_new):
-        logger.warning('X_gender_test dataset cannot be modified!')
-
-    @property
-    def y_test(self):
-        return self._y_test
-
-    @y_test.setter
-    def y_test(self, y_test_new):
-        logger.warning('y_test dataset cannot be modified!')
+    # Making dataset attributes read-only
+    X_train = readonly_property("X_train")
+    X_gender_train = readonly_property("X_gender_train")
+    y_train = readonly_property("y_train")
+    X_test = readonly_property("X_test")
+    X_gender_test = readonly_property("X_gender_test")
+    y_test = readonly_property("y_test")
 
     @property
     def trained_model(self):
@@ -164,7 +135,7 @@ class CNN_Model:
             raise ValueError(
                 "The model has not been trained yet. Run `train()` first."
             )
-        return
+        return self._trained_model
 
     @trained_model.setter
     def trained_model(self, model):
@@ -272,6 +243,7 @@ class CNN_Model:
         kf = KFold(n_splits=k, shuffle=True, random_state=42)
 
         best_hps_list = []
+        loss_list = []
         mae_list = []
         r2_list = []
 
@@ -310,6 +282,7 @@ class CNN_Model:
                 [self._X_test, self._X_gender_test], self._y_test, verbose=2
             )
 
+            loss_list.append(loss)
             mae_list.append(mae)
             r2_list.append(r2)
 
@@ -326,18 +299,7 @@ class CNN_Model:
         
         logger.info("Training completed for all folds, logging summary:")
 
-        # Logging summary
-        logger.info("Best hyperparameters for each fold:")
-        for i, best_hps in enumerate(best_hps_list, 1):
-            params_str = ", ".join([f"{param}: {value}" for param, value in best_hps.values.items()])
-            logger.info(f"Fold {i}: {params_str}")
-
-        logger.info(f"List of MAE: {mae_list}")
-        logger.info(f"Mean MAE: {np.mean(mae_list):.2f}+/- {np.std(mae_list, ddof=1):.2f}")
-
-        logger.info(f"List of R2 score: {r2_list}")
-        logger.info(f"Mean R2 score: {np.mean(r2_list):.2f}+/- {np.std(r2_list, ddof=1):.2f}")
-
+        log_training_summary(best_hps_list, loss_list, mae_list, r2_list)
         # Finding the model with the minimum MAE
         min_mae_index = np.argmin(mae_list)  # Index of the model with minimum MAE
         self._trained_model = self.model_list[min_mae_index]  # Get the best model from self.model_list

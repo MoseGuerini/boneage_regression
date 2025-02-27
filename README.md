@@ -61,6 +61,11 @@ Some examples of processed and unprocessed fotos follows.
 # Neural Network
 
 ## Hypermodel
+The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
+• `Conv. layers`: number of convolutional layers of the network. <br>
+• `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters doubles with each successive layer.<br>
+• `Dense depth`: number of dense layer(s) after feature concatenation. <br>
+• `Dropout rate`: dropout rate of the final dense layer(s). <br>
 
 ## Classes
 In order to improve readability by performing encapsulation we build up two classes: one to handle data and another to handle the model.

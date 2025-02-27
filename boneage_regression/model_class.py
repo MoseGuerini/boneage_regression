@@ -12,7 +12,7 @@ import numpy as np
 
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold, get_last_conv_layer_name
-from utils import  make_gradcam_heatmap, overlay_heatmap
+from utils import  make_gradcam_heatmap, overlay_heatmap, save_image
 
 # Setting logger configuration
 logger.remove()
@@ -207,7 +207,7 @@ class CNN_Model:
         :param model_builder: Function to build the model, used by Keras Tuner.
         :type model_builder: function
         :param epochs: The number of epochs to train the model during tuning.
-        :type epochs: int, optional, default is 60 ###########################################
+        :type epochs: int, optional, default is 50
         :param batch_size: The batch size to use during training.
         :type batch_size: int, optional, default is 64
 
@@ -430,9 +430,6 @@ class CNN_Model:
         :return: None
             This function only displays the Grad-CAM heatmap overlayed on images.
         """
-        # Save figures in a specific locations
-        folder = 'Grafici'
-        os.makedirs(folder, exist_ok=True)  # Create folder
 
         last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
 
@@ -469,9 +466,12 @@ class CNN_Model:
         # Adjust the layout and show the figure
         plt.tight_layout()
         plt.show(block=False)
-
-        plt.savefig(os.path.join(folder, 'heat_map.png'))
+        
+        # Save the image
+        image_name = f'heat_map.png'
+        plt.savefig(image_name)  # Local saving
         plt.close()
+        save_image(image_name)
 
     def load_trained_model(self, model_path):
         """

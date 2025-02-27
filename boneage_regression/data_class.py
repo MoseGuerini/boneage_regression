@@ -225,8 +225,8 @@ class DataLoader:
         print("Shape of X:", (np.array(filtered_images_rgb,
                                        dtype=np.float32)/255).shape)
 
-        plot_gender(np.array(gender, dtype=np.int32))
-        plot_boneage(np.array(boneage, dtype=np.int32))
+        # plot_gender(np.array(gender, dtype=np.int32))
+        # plot_boneage(np.array(boneage, dtype=np.int32))
 
         return (
             np.array(filtered_images_rgb, dtype=np.float32)/255,

@@ -1,9 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import make_gradcam_heatmap, overlay_heatmap
 from sklearn.metrics import mean_absolute_error, r2_score
 from loguru import logger
-from keras import layers
 from utils import save_image
 
 
@@ -120,9 +118,6 @@ def plot_predictions(y_true, y_pred):
     plt.savefig(image_name)  # Local saving
     plt.close()
     save_image(image_name)
-    
-    
-
 
 def plot_gender(arr):
     """
@@ -159,7 +154,6 @@ def plot_gender(arr):
     plt.close()
     save_image(image_name)
 
-
 def plot_boneage(arr):
     """
     Creates a bar plot showing the distribution of boneage values in the input
@@ -185,7 +179,7 @@ def plot_boneage(arr):
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.show(block=False)
-    
+
     # Save the image
     image_name = f'boneage.png'
     plt.savefig(image_name)  # Local saving
@@ -240,32 +234,3 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=10):
     plt.savefig(image_name)  # Local saving
     plt.close()
     save_image(image_name)
-
-
-def get_last_conv_layer_name(model):
-    """
-    Inspects the model's layers and returns the name of the last 'Conv2D'
-    layer.
-
-    This function filters all layers of type 'Conv2D' and returns the name
-    of the last such layer in the model. If no 'Conv2D' layers are found,
-    a ValueError is raised.
-
-    :param model: keras.Model
-        The trained Keras model from which to extract the last Conv2D layer.
-
-    :return: str
-        The name of the last 'Conv2D' layer.
-    :raises ValueError:
-        If no 'Conv2D' layers are found in the model.
-    """
-    # Inspect all layers and filter those of type 'Conv2D'
-    conv_layers = [layer for layer in model.layers
-                   if isinstance(layer, layers.Conv2D)]
-
-    # Return the name of the last 'Conv2D' layer
-    if conv_layers:
-        return conv_layers[-1].name
-    else:
-        raise ValueError("No Conv2D layer found in the model.")
-

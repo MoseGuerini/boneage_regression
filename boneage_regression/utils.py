@@ -55,6 +55,11 @@ def check_rate(value):
     :return: The validated float value.
     :rtype: float
     """
+    if not isinstance(value, (float, str)):
+        raise argparse.ArgumentTypeError(
+            f"Invalid value type: {type(value)}. Expected float or string."
+        )
+
     try:
         value = float(value)
     except ValueError:
@@ -81,6 +86,8 @@ def is_numeric(s):
     :rtype: bool
     """
     try:
+        if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):  # Escludiamo bool, float e liste
+            return False
         int(s)
         return True
     except ValueError:
@@ -112,7 +119,7 @@ def sorting_and_preprocessing(image_files, target_size):
 
     for img_path in image_files:
         img = plt.imread(img_path)
-        img_id = int(img_path.stem)
+        img_id = int(img_path.stem) # drops file extension
 
         # Switch to RGB if needed (RGB are better from CNN point of view)
         if len(img.shape) == 2:  # BW images
@@ -149,6 +156,7 @@ def str2bool(value):
     """
     if isinstance(value, bool):
         return value
+    value = str(value).lower()
     if value.lower() in ['true', 't', 'yes', 'y', '1']:
         return True
     elif value.lower() in ['false', 'f', 'no', 'n', '0']:

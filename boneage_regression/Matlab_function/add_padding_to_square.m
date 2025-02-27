@@ -1,17 +1,22 @@
 function img_padded = add_padding_to_square(img)
-    % Ottieni le dimensioni dell'immagine
+    % Obtain image size
     [height, width, channels] = size(img);
 
-    % Calcola la dimensione del quadrato
+    % Compute the box dimension (it will have side lenght equal to the
+    % maximum of the image dimension)
     new_size = max(height, width);
 
-    % Crea un'immagine quadrata nera (tutta 0)
+    % Create an all black (every pixel is 0) squared image
     img_padded = zeros(new_size, new_size, channels, 'like', img);
 
-    % Calcola la posizione di partenza per centrare l'immagine originale
+    % Compute the position to center the image
     row_start = floor((new_size - height) / 2) + 1;
     col_start = floor((new_size - width) / 2) + 1;
 
-    % Copia l'immagine originale nel centro della nuova immagine quadrata
-    img_padded(row_start:row_start + height - 1, col_start:col_start + width - 1, :) = img;
+    % Copy the original image in the center of the squared one
+    img_padded( ...
+        row_start:row_start + height - 1, ...
+        col_start:col_start + width - 1, ...
+        : ...
+        ) = img;
 end

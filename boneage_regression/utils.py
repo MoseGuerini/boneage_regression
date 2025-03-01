@@ -310,11 +310,11 @@ def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):
         params_str = ", ".join([f"{param}: {value}" for param, value in best_hps.values.items()])
         logger.info(f"Fold {i}: {params_str}")
 
-        logger.info(f"List of losses: {loss_list}")
-        logger.info(f"Mean loss: {np.mean(loss_list):.2f}+/- {np.std(loss_list, ddof=1):.2f}")
+    logger.info(f"List of losses: {loss_list}")
+    logger.info(f"Mean loss: {np.mean(loss_list):.2f}+/- {np.std(loss_list, ddof=1):.2f}")
 
-        logger.info(f"List of MAE: {mae_list}")
-        logger.info(f"Mean MAE: {np.mean(mae_list):.2f}+/- {np.std(mae_list, ddof=1):.2f}")
+    logger.info(f"List of MAE: {mae_list}")
+    logger.info(f"Mean MAE: {np.mean(mae_list):.2f}+/- {np.std(mae_list, ddof=1):.2f}")
 
-        logger.info(f"List of R2 score: {r2_list}")
-        logger.info(f"Mean R2 score: {np.mean(r2_list):.2f}+/- {np.std(r2_list, ddof=1):.2f}")
+    logger.info(f"List of R2 score: {r2_list}")
+    logger.info(f"Mean R2 score: {np.mean(r2_list):.2f}+/- {np.std(r2_list, ddof=1):.2f}")

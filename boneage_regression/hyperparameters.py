@@ -62,7 +62,12 @@ def build_model(hp):
 
     # Variable number of convolutional layers
     for i in range(hp_num_conv_layers):
-        x = layers.Conv2D(hp_filters*(i+1), (3, 3), activation='relu', padding='same')(x)
+        x = layers.Conv2D(
+            hp_filters * (i + 1),
+            (3, 3),
+            activation='relu',
+            padding='same'
+        )(x)
         x = layers.BatchNormalization()(x)
         x = layers.MaxPooling2D((2, 2))(x)
 

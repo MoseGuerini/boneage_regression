@@ -21,16 +21,6 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        "-n",
-        "--num_images",
-        metavar="",
-        type=int,
-        help="Number of images to be imported,"
-        "if none all the images will be imported",
-        default=None,
-    )
-
-    parser.add_argument(
         "-p",
         "--preprocessing",
         metavar="",
@@ -113,14 +103,12 @@ if __name__ == '__main__':
     data_train = DataLoader(
         train_data,
         train_csv,
-        num_images=args.num_images,
         preprocessing=args.preprocessing
         )
 
     data_test = DataLoader(
         test_data,
         test_csv,
-        num_images=args.num_images,
         preprocessing=args.preprocessing
         )
 

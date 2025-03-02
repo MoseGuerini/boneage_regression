@@ -104,13 +104,15 @@ def plot_predictions(y_true, y_pred):
     plt.plot([0, lim], [0, lim], color='red', label='y = x', linestyle='--')
 
     # Set axis labels, title, and grid
-    plt.xlabel('Actual age [months]')
-    plt.ylabel('Predicted age [months]')
-    plt.title('Predicted vs actual age')
+    plt.xlabel('Actual age [months]', fontsize=14)
+    plt.ylabel('Predicted age [months]', fontsize=14)
+    plt.title('Predicted vs actual age', fontsize=14)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
     plt.grid(True)
 
     # Show the legend and adjust the layout
-    plt.legend()
+    plt.legend(fontsize=14)
     plt.tight_layout()
 
     # Show the figure
@@ -147,6 +149,8 @@ def plot_gender(arr):
     plt.xlabel('Gender')
     plt.ylabel('Occurences')
     plt.title('Occurrences distributions')
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.show(block=False)
@@ -175,10 +179,11 @@ def plot_boneage(arr):
     plt.bar(unique, counts, width=0.8, color='b')
 
     # Set axis labels, title, ticks, and grid
-    plt.xlabel('Values [Months]')
-    plt.ylabel('Occurrences')
-    plt.title('Distribution of Occurrences')
-    plt.xticks(np.arange(0, 230, 10))
+    plt.xlabel('Values [Months]', fontsize=14)
+    plt.ylabel('Occurrences', fontsize=14)
+    plt.title('Distribution of Occurrences', fontsize=14)
+    plt.xticks(np.arange(0, 230, 10), fontsize=14)
+    plt.yticks(fontsize=14)
     plt.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.show(block=False)
@@ -190,7 +195,7 @@ def plot_boneage(arr):
     save_image(image_name)
 
 
-def plot_accuracy_threshold(y_pred, y_test, threshold=10):
+def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     """
     Plots the distribution of prediction errors.
 
@@ -225,10 +230,12 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=10):
     plt.hist(errors, bins=50, color='blue', alpha=0.7)
     plt.axvline(threshold, color='red', linestyle='dashed', linewidth=2,
                 label=f"Threshold: {threshold} months")
-    plt.title('Prediction Error Occurrences')
-    plt.xlabel('Error [months]')
-    plt.ylabel('Occurrences')
-    plt.legend()
+    plt.title('Prediction Error Occurrences', fontsize=14)
+    plt.xlabel('Error [months]', fontsize=14)
+    plt.ylabel('Occurrences', fontsize=14)
+    plt.legend(fontsize=14)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
     plt.grid(True)
     plt.show(block=False)
 

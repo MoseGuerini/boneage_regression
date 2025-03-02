@@ -1,14 +1,24 @@
 """Main"""
+import sys
 import numpy as np
 import argparse
 import pathlib
 import matplotlib.pyplot as plt
 from tensorflow.keras import mixed_precision
+from loguru import logger
 
 from hyperparameters import hyperp_space_size
 from model_class import CNN_Model
 from data_class import DataLoader
 from utils import hyperp_dict, check_rate, str2bool
+
+# Setting logger configuration
+logger.remove()
+logger.add(
+    sys.stdout,
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+    level="INFO"
+)
 
 
 if __name__ == '__main__':

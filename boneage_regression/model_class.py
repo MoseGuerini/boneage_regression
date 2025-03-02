@@ -19,18 +19,13 @@ from utils import (
     get_last_conv_layer_name,
 )
 
-# Setting logger configuration
-logger.remove()
-logger.add(
-    sys.stdout,
-    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
-    level="INFO"
-)
-
 
 def readonly_property(attr_name: str) -> property:
     """
     Creates a read-only property for a specified attribute.
+
+    Attempts to modify the property will log a warning but will not
+    update the attribute.
 
     :param attr_name: The name of the attribute to create a read-only
                     property for.
@@ -165,9 +160,12 @@ class CNN_Model:
 
     @property
     def trained_model(self):
-        """Return the trained model if available.
+        """
+        Get the trained model if available.
 
         :raises ValueError: If the model has not been trained yet.
+        :return: The trained Keras model.
+        :rtype: keras.Model
         """
         if self._trained_model is None:
             raise ValueError(
@@ -179,6 +177,11 @@ class CNN_Model:
     def trained_model(self, model):
         """
         Set the trained model.
+
+        :param model: The trained Keras model to set.
+        :type model: keras.Model
+        :raises ValueError: If the provided model is not an instance of
+                            keras.Model.
         """
         if not isinstance(model, keras.Model):
             raise ValueError("The model must be an instance of keras.Model.")
@@ -186,12 +189,8 @@ class CNN_Model:
 
     def train(self):
         """
-        Performs hyperparameter tuning followed by training of the model,
-        and then generates predictions.
-
-        This method first calls `train_model` to perform hyperparameter tuning
-        and train the model, then calls `predict` to make predictions using the
-        trained model.
+        Performs hyperparameters tuning, model training using k-fold
+        cross-validation and generates Grad-CAM visualizations.
 
         :return: None
         """
@@ -201,20 +200,29 @@ class CNN_Model:
     def hyperparameter_tuning(
             self, X_train, X_gender_train, y_train,
             X_val, X_gender_val, y_val,
-            model_builder, fold, epochs=50, batch_size=64
+            model_builder, fold, epochs=1, batch_size=64
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an
         internal validation split for evaluation.
 
-        :param X_val: Validation data features.
-        :type X_val: numpy.ndarray or pandas.DataFrame
+        :param X_train: Training data features.
+        :type X_train: numpy.ndarray
 
-        :param X_gender_val: Validation data for gender features.
-        :type X_gender_val: numpy.ndarray or pandas.DataFrame
+        :param X_gender_train: Training gender features.
+        :type X_gender_train: numpy.ndarray
+
+        :param y_train: True labels for the training set.
+        :type y_train: numpy.ndarray
+
+        :param X_val: Validation data features.
+        :type X_val: numpy.ndarray
+
+        :param X_gender_val: Validation gender features.
+        :type X_gender_val: numpy.ndarray
 
         :param y_val: True labels for the validation set.
-        :type y_val: numpy.ndarray or pandas.Series
+        :type y_val: numpy.ndarray
 
         :param model_builder: Function to build the model, used by Keras Tuner.
         :type model_builder: function
@@ -226,7 +234,7 @@ class CNN_Model:
         :type batch_size: int, optional, default is 64
 
         :return: A tuple of the best hyperparameters found during tuning
-                 and a model built using this hyperparameters.
+                 and the model built using this hyperparameters.
         :rtype: tuple
         """
         # Set directory for tuner results
@@ -316,7 +324,7 @@ class CNN_Model:
         history = best_model.fit(
             [X_train_fold, X_gender_train_fold],
             y_train_fold,
-            epochs=3,
+            epochs=1,
             batch_size=64,
             validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
             verbose=1
@@ -434,9 +442,8 @@ class CNN_Model:
 
         :raises ValueError: If no model is available for prediction.
 
-        :return: None
-            This method performs predictions and plots a scatter plot of
-            predicted vs actual values and error distribution on predictions.
+        :return: Predicted values for the test set.
+        :rtype: numpy.ndarray
         """
         model = model if model is not None else self._trained_model
 
@@ -450,6 +457,8 @@ class CNN_Model:
         # Plot prediction and error distribution
         plot_predictions(self.y_test, y_pred)
         plot_accuracy_threshold(y_pred, self.y_test)
+
+        return y_pred
 
     def visualize_gradcam_batch(self):
         """
@@ -468,6 +477,10 @@ class CNN_Model:
             This method does not return any value. It displays and saves
             the Grad-CAM visualizations.
         """
+        last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
+
+        y_pred = self.predict()
+
         # Computes error between actual and predicted values
         errors = np.abs(y_pred - self.y_test)
 
@@ -475,12 +488,8 @@ class CNN_Model:
         sorted_indices = np.argsort(errors)
         best_indices = sorted_indices[:5]   # Get 5 best images
         worst_indices = sorted_indices[-5:]  # Get 5 worse images
-        selected_indices = np.concatenate([best_indices, worst_indices])
-        errors = errors[selected_indices]
-
-        last_conv_layer_name = get_last_conv_layer_name(self._trained_model)
-
-        y_pred, indices, _ = self.predict()
+        indices = np.concatenate([best_indices, worst_indices])
+        errors = errors[indices]
 
         # Create figure with subplots (2 rows x 3 columns)
         fig, axes = plt.subplots(2, 5, figsize=(15, 7))

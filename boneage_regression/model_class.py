@@ -200,7 +200,7 @@ class CNN_Model:
     def hyperparameter_tuning(
             self, X_train, X_gender_train, y_train,
             X_val, X_gender_val, y_val,
-            model_builder, fold, epochs=1, batch_size=64
+            model_builder, fold, epochs=50, batch_size=64
     ):
         """
         Performs hyperparameter tuning using Bayesian optimization with an
@@ -324,7 +324,7 @@ class CNN_Model:
         history = best_model.fit(
             [X_train_fold, X_gender_train_fold],
             y_train_fold,
-            epochs=1,
+            epochs=300,
             batch_size=64,
             validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
             verbose=1

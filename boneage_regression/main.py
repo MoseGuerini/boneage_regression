@@ -10,7 +10,7 @@ from loguru import logger
 from hyperparameters import hyperp_space_size
 from model_class import CNN_Model
 from data_class import DataLoader
-from utils import hyperp_dict, check_rate, str2bool
+from utils import hyperp_dict, check_rate, check_folder, str2bool
 
 # Setting logger configuration
 logger.remove()
@@ -20,6 +20,10 @@ logger.add(
     level="INFO"
 )
 
+# Setting default data directory
+data_dir = (
+    pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
+)
 
 if __name__ == '__main__':
 
@@ -27,7 +31,22 @@ if __name__ == '__main__':
     mixed_precision.set_global_policy(policy)
 
     parser = argparse.ArgumentParser(
-        description="Bone Age Regressor"
+        description=(
+            "This script performs bone age prediction using a machine "
+            "learning regression model. It accepts input parameters "
+            "for model configuration and folder dataset path."
+        )
+    )
+
+    parser.add_argument(
+        "-fp",
+        "--folder_path",
+        metavar="",
+        type=check_folder,
+        help="Path to the directory containing training "
+        "and test images as well as csv files with the labels. "
+        "Default: Preprocessed_images",
+        default=data_dir,
     )
 
     parser.add_argument(
@@ -35,7 +54,8 @@ if __name__ == '__main__':
         "--preprocessing",
         metavar="",
         type=str2bool,
-        help="If False avoid image preprocessing",
+        help="If False avoid image preprocessing. "
+        "Default: False",
         default=False,
     )
 
@@ -44,9 +64,9 @@ if __name__ == '__main__':
         "--overwrite",
         metavar="",
         type=str2bool,
-        help="If False avoid hyperparameters search"
+        help="If False avoid hyperparameters search "
         "and use the pre-saved hyperpar. Default: False",
-        default=True,
+        default=False,
     )
 
     parser.add_argument(
@@ -65,7 +85,7 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's"
+        help="List of values for the hypermodel's "
         "first conv2d number of filters",
         default=[8, 16, 32],
     )
@@ -94,21 +114,18 @@ if __name__ == '__main__':
         "--searching_fraction",
         metavar="",
         type=check_rate,
-        help="Fraction of the hyperparamiters space explored"
+        help="Fraction of the hyperparameters space explored "
         "during hypermodel search. Default: 0.25",
         default=0.25,
     )
 
     args = parser.parse_args()
 
-    # 1. Dataset part
-    test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
-    )
-    train_data = test_data_dir / 'Training'
-    train_csv = test_data_dir / 'training.csv'
-    test_data = test_data_dir / 'Test'
-    test_csv = test_data_dir / 'test.csv'
+    # 1. Dataset loading and optional preprocessing
+    train_data = args.folder_path / 'Training'
+    train_csv = args.folder_path / 'training.csv'
+    test_data = args.folder_path / 'Test'
+    test_csv = args.folder_path / 'test.csv'
 
     data_train = DataLoader(
         train_data,
@@ -122,7 +139,7 @@ if __name__ == '__main__':
         preprocessing=args.preprocessing
         )
 
-    # 2. set chosen hyperparameters and get number of trials
+    # 2. Set chosen hyperparameters and get number of trials for tuning
     hyperp_dict = hyperp_dict(
         args.conv_layers,
         args.conv_filters,
@@ -133,14 +150,14 @@ if __name__ == '__main__':
 
     max_trials = np.rint(args.searching_fraction*space_size)
 
-    # 3. create and train the model
+    # 3. Create and train the model
     model = CNN_Model(
         data_train=data_train,
         data_test=data_test,
         overwrite=args.overwrite,
         max_trials=max_trials
         )
-    
+
     model.train()
 
     plt.show()

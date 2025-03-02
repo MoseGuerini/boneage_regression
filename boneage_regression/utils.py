@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 from loguru import logger
 from hyperparameters import set_hyperp
 import numpy as np
@@ -6,7 +7,6 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import keras
 from PIL import Image
-from pathlib import Path
 
 
 def hyperp_dict(
@@ -74,6 +74,27 @@ def check_rate(value):
     return value
 
 
+def check_folder(value):
+    """
+    Validates whether the provided value is a valid directory path.
+
+    :param value: The path to be validated.
+    :type value: str
+
+    :raises argparse.ArgumentTypeError: If the provided path does not exist or is not a directory.
+
+    :return: A `pathlib.Path` object representing the valid directory path.
+    :rtype: pathlib.Path
+    """
+    folder_path = pathlib.Path(value)
+    
+    # Check if the path exists and if it is a directory
+    if not folder_path.exists() or not folder_path.is_dir():
+        raise argparse.ArgumentTypeError(f"Error: '{value}' is not a valid directory.")
+    
+    return folder_path  # Return the pathlib.Path object
+
+
 def is_numeric(s):
     """
     Check if a given string represents a valid integer.
@@ -85,7 +106,7 @@ def is_numeric(s):
     :rtype: bool
     """
     try:
-        if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):  # Escludiamo bool, float e liste
+        if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):
             return False
         int(s)
         return True
@@ -284,30 +305,60 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     return superimposed_img
 
-def save_image(file_name, folder_name = 'Grafici'):
-    # Ottieni il percorso del folder corrente
-    current_path = Path.cwd()
+import pathlib
+
+def save_image(file_name, folder_name='Graphics'):
+    """
+    Saves an image to a specified folder, creating the folder if it does not exist.
+
+    :param file_name: The name of the image file to be saved.
+    :type file_name: str
+    :param folder_name: The name of the folder where the image should be saved. 
+                         Defaults to 'Graphics'. 
+    :type folder_name: str
+    """
     
-    # Torna indietro di due livelli
+    # Get the current working directory
+    current_path = pathlib.Path.cwd()
+    
+    # Move two levels up
     parent_folder = current_path.parent
     
-    # Crea il percorso del folder_name
+    # Construct the folder path
     folder_path = parent_folder / folder_name
     
-    # Crea la cartella se non esiste
+    # Create the folder if it does not exist
     folder_path.mkdir(exist_ok=True)
 
-    # Crea l'immagine e salvala
+    # Construct the path for the image file
     image_path = folder_path / file_name
     
-    # If a file with the same name is already present, delete it
+    # If a file with the same name already exists, delete it
     if image_path.exists():
         image_path.unlink()
     
-    Path(file_name).rename(image_path)
+    # Rename the file to save it in the destination folder
+    pathlib.Path(file_name).rename(image_path)
+
 
 def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):
-    # Logging summary
+    """
+    Logs the summary of the training process, including the best hyperparameters,
+    loss values, mean absolute error (MAE), and R² score for each fold.
+
+    :param best_hps_list: List of dictionaries containing the best hyperparameters 
+                           for each fold.
+    :type best_hps_list: list[dict]
+
+    :param loss_list: List of loss values for each fold.
+    :type loss_list: list[float]
+
+    :param mae_list: List of Mean Absolute Error (MAE) values for each fold.
+    :type mae_list: list[float]
+
+    :param r2_list: List of R² score values for each fold.
+    :type r2_list: list[float]
+    """
     logger.info("Best hyperparameters for each fold:")
     for i, best_hps in enumerate(best_hps_list, 1):
         params_str = ", ".join([f"{param}: {value}" for param, value in best_hps.values.items()])

@@ -230,6 +230,9 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
     heatmap = np.maximum(heatmap, 0)  # ReLU
     heatmap /= (np.max(heatmap) + 1e-8)  # Avoid division by zero
 
+    # Normalize and convert heatmap to uint8
+    heatmap = np.uint8(255 * heatmap) 
+
     return heatmap
 
 

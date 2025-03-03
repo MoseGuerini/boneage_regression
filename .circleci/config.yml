@@ -33,6 +33,10 @@ jobs:
           name: Run tests for data_class.py
           command: python -m unittest tests.data_class_test
 
+      - run:
+          name: Run tests for model_class.py
+          command: python -m unittest tests.model_class_test
+
 workflows:
   version: 2  # Workflow version
   test:

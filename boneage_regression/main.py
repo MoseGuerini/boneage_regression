@@ -20,7 +20,7 @@ logger.add(
     level="INFO"
 )
 
-# Setting default data directory
+# Setting default data folder
 data_dir = (
     pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
 )
@@ -146,7 +146,8 @@ if __name__ == '__main__':
         args.dense_depth,
         args.dropout_rate
         )
-    space_size = hyperp_space_size()
+    
+    space_size = hyperp_space_size(hyperp_dict)
 
     max_trials = np.rint(args.searching_fraction*space_size)
 

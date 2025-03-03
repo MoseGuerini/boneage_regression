@@ -97,24 +97,26 @@ def check_folder(value):
 
 def is_numeric(s):
     """
-    Check if a given string represents a valid integer.
+    Check if a given value is a valid integer.
 
-    :param s: The string to verify.
-    :type s: str
+    :param s: The value to verify. This can be a string or other types.
+    :type s: str, bool, float, list
 
-    :return: True if the string is an integer, False otherwise.
+    :return: True if the value can be interpreted as an integer, False otherwise.
     :rtype: bool
     """
     try:
+        # Check if the input is a boolean, float, or list
         if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):
+            logger.warning(f"Invalid value '{s}'. It should be an integer.")
             return False
+        
+        # Attempt to convert to an integer
         int(s)
         return True
     except ValueError:
-        logger.warning(
-            f"Value '{s}' is not valid."
-            f"The image file name must be an integer."
-        )
+        # If conversion fails, log the error
+        logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
         return False
 
 

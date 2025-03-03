@@ -16,7 +16,7 @@ def set_hyperp(hyperp_dict):
     hyperp = hyperp_dict
 
 
-def hyperp_space_size():
+def hyperp_space_size(hyperp):
     """
     Calculates the total number of possible hyperparameter combinations
     based on the user-defined hyperparameter space.

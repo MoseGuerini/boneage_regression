@@ -89,6 +89,17 @@ In case you are running this code for the first time remember to install the req
 pip install -r requirements.txt
 ```
 
+## Attribution
+
+This work builds upon the research presented in the following paper:
+
+- **Halabi SS, Prevedello LM, Kalpathy-Cramer J, et al.** (2018). The RSNA Pediatric Bone Age Machine Learning Challenge. *Radiology*, 290(2), 498-503. [DOI](https://doi.org/10.1148/radiol.2018180640).
+
+For more details, please refer to the original paper.
+
+The original dataset can be downloaded at https://www.rsna.org/rsnai/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017
+
+
 
 
 

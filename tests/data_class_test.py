@@ -5,7 +5,6 @@ import pathlib
 # Add the "boneage_regression" directory to sys.path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
 
-# Import delle classi e funzioni
 from boneage_regression.data_class import DataLoader
 from boneage_regression.data_class import is_numeric
 

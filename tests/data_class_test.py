@@ -185,7 +185,6 @@ class TestDataLoader(unittest.TestCase):
                 )
 
 """     def test_preprocessing(self):
-        """The function must only accept an integer as preprocessing"""
 
         # Obtain script folder and parent folder
         current_dir = pathlib.Path(__file__).parent

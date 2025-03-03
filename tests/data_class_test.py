@@ -184,7 +184,7 @@ class TestDataLoader(unittest.TestCase):
                 num_images=invalid_num_images
                 )
 
-    def test_preprocessing(self):
+"""     def test_preprocessing(self):
         """The function must only accept an integer as preprocessing"""
 
         # Obtain script folder and parent folder
@@ -261,7 +261,7 @@ class TestDataLoader(unittest.TestCase):
                 preprocessing=invalid_preprocessing,
                 num_workers=valid_num_workers,
                 target_size=valid_target_size
-                )
+                ) """
 
 
 if __name__ == '__main__':

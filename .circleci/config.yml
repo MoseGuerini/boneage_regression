@@ -19,7 +19,7 @@ jobs:
           name: Debug current working directory
           command: |
             pwd
-            ls -R
+            ls
         
       # Esegui i test uno alla volta, con comandi separati per ciascun file di test
       - run:

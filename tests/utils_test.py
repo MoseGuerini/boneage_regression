@@ -70,13 +70,6 @@ class UtilsTest(unittest.TestCase):
 
     def test_check_folder(self):
         """Test cases for the check_folder function."""
-
-        # Test with an existing directory path
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            result = check_folder(tmp_dir)
-            self.assertIsInstance(result, pathlib.Path)
-            self.assertEqual(result, pathlib.Path(tmp_dir))
-
         # Test error raised when a file path is provided instead of a directory
         with tempfile.NamedTemporaryFile() as tmp_file:
             with self.assertRaises(argparse.ArgumentTypeError):
@@ -85,6 +78,32 @@ class UtilsTest(unittest.TestCase):
         # Test error raised for a non-existent directory path
         with self.assertRaises(argparse.ArgumentTypeError):
             check_folder("/non/existent/path")
+
+        # Test with an existing directory path
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = pathlib.Path(tmp_dir)
+
+            # Create required folders and CSV files
+            (tmp_path / 'Training').mkdir()
+            (tmp_path / 'Test').mkdir()
+            (tmp_path / 'training.csv').touch()
+            (tmp_path / 'test.csv').touch()
+
+            # Call check_folder and validate the result
+            result = check_folder(tmp_dir)
+            self.assertIsInstance(result, pathlib.Path)
+            self.assertEqual(result, tmp_path)
+
+        # Check that missing folders/files raise an error
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = pathlib.Path(tmp_dir)
+
+            # Create only part of the required structure
+            (tmp_path / 'Training').mkdir()  # Missing 'Test'
+            (tmp_path / 'test.csv').touch()  # Missing 'training.csv'
+
+            with self.assertRaises(argparse.ArgumentTypeError):
+                check_folder(tmp_dir)
 
     def test_get_last_conv_layer_name(self):
         """Test cases for the get_last_conv_layer_name function."""

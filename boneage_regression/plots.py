@@ -117,7 +117,7 @@ def plot_predictions(y_true, y_pred):
 
     # Show the figure
     plt.show(block=False)
-    
+
     # Save the image
     image_name = f'predictions.png'
     plt.savefig(image_name)  # Local saving

@@ -43,7 +43,7 @@ def readonly_property(attr_name: str) -> property:
     return property(getter, setter)
 
 
-class CNN_Model:
+class CnnModel:
     """
     A class that represents a Convolutional Neural Network (CNN) model
     for training, evaluation, and prediction tasks, with support for

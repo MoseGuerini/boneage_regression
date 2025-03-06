@@ -6,7 +6,7 @@ import numpy as np
 # Add the "boneage_regression" directory to sys.path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
 
-from boneage_regression.model_class import CNN_Model
+from boneage_regression.model_class import CnnModel
 
 
 class MockData:
@@ -23,7 +23,7 @@ class TestCNNModel(unittest.TestCase):
         """Initialize mock data and CNN_Model."""
         data_train = MockData()
         data_test = MockData()
-        self.model = CNN_Model(data_train, data_test)
+        self.model = CnnModel(data_train, data_test)
 
     def test_initialize_model(self):
         """Test if CNN_Model is initialized with mock data correctly."""

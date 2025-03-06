@@ -8,7 +8,7 @@ from tensorflow.keras import mixed_precision
 from loguru import logger
 
 from hyperparameters import hyperp_space_size
-from model_class import CNN_Model
+from model_class import CnnModel
 from data_class import DataLoader
 from utils import hyperp_dict, check_rate, check_folder, str2bool
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     max_trials = np.rint(args.searching_fraction*space_size)
 
     # 3. Create and train the model
-    model = CNN_Model(
+    model = CnnModel(
         data_train=data_train,
         data_test=data_test,
         overwrite=args.overwrite,

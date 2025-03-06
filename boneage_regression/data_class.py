@@ -3,7 +3,6 @@ import numpy as np
 from loguru import logger
 import pandas as pd
 from utils import is_numeric, sorting_and_preprocessing
-from plots import plot_gender, plot_boneage
 
 try:
     import matlab.engine

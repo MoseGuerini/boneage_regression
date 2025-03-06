@@ -32,9 +32,21 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description=(
-            "This script performs bone age prediction using a machine "
-            "learning regression model. It accepts input parameters "
-            "for model configuration and folder dataset path."
+            """
+            This script performs bone age prediction using a machine learning
+            regression model. It accepts input parameters for model
+            configuration and the dataset folder path.
+
+            If you pass a dataset folder remember that it must contain:
+
+            1) Two separate folders for training and test images named
+                'Training' and 'Test'.
+            2) Two .csv files with the corresponding labels named
+                'training.csv' and 'test.csv'.
+
+            Each CSV file must contain three columns named 'ID', 'boneage',
+            'male'.
+            """
         )
     )
 
@@ -146,7 +158,7 @@ if __name__ == '__main__':
         args.dense_depth,
         args.dropout_rate
         )
-    
+
     space_size = hyperp_space_size(hyperp_dict)
 
     max_trials = np.rint(args.searching_fraction*space_size)

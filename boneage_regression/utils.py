@@ -76,22 +76,40 @@ def check_rate(value):
 
 def check_folder(value):
     """
-    Validates whether the provided value is a valid directory path.
+    Validates whether the provided value is a valid directory path and
+    checks for required subfolders and CSV files.
 
     :param value: The path to be validated.
     :type value: str
 
-    :raises argparse.ArgumentTypeError: If the provided path does not exist or is not a directory.
+    :raises argparse.ArgumentTypeError: If the provided path does not exist,
+    is not a directory, or is missing required items.
 
-    :return: A `pathlib.Path` object representing the valid directory path.
+    :return: The valid directory path.
     :rtype: pathlib.Path
     """
     folder_path = pathlib.Path(value)
-    
+
     # Check if the path exists and if it is a directory
     if not folder_path.exists() or not folder_path.is_dir():
         raise argparse.ArgumentTypeError(f"Error: '{value}' is not a valid directory.")
-    
+
+    # Define required folders and CSV files
+    required_folders = ['Training', 'Test']
+    required_files = ['training.csv', 'test.csv']
+
+    # Check for missing folders
+    missing_items = [item for item in required_folders if not (folder_path / item).is_dir()]
+
+    # Check for missing files
+    missing_items += [item for item in required_files if not (folder_path / item).is_file()]
+
+    # Log errors if any required items are missing
+    if missing_items:
+        for item in missing_items:
+            logger.error(f"Missing required item: {item}")
+        raise argparse.ArgumentTypeError("Validation failed: missing required files or directories.")
+
     return folder_path  # Return the pathlib.Path object
 
 

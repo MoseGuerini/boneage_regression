@@ -163,7 +163,7 @@ class TestDataLoader(unittest.TestCase):
                 )
 
 
-"""     def test_load_labels_missing_columns(self):
+    """def test_load_labels_missing_columns(self):
 
         # Simulate a DataFrame with a missing 'id' column
         mock_df = pd.DataFrame({

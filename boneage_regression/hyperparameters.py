@@ -16,7 +16,7 @@ def set_hyperp(hyperp_dict):
     hyperp = hyperp_dict
 
 
-def hyperp_space_size():
+def hyperp_space_size(hyperp):
     """
     Calculates the total number of possible hyperparameter combinations
     based on the user-defined hyperparameter space.
@@ -62,7 +62,12 @@ def build_model(hp):
 
     # Variable number of convolutional layers
     for i in range(hp_num_conv_layers):
-        x = layers.Conv2D(hp_filters*(i+1), (3, 3), activation='relu', padding='same')(x)
+        x = layers.Conv2D(
+            hp_filters * (i + 1),
+            (3, 3),
+            activation='relu',
+            padding='same'
+        )(x)
         x = layers.BatchNormalization()(x)
         x = layers.MaxPooling2D((4, 4))(x)
 

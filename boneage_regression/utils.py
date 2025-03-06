@@ -1,44 +1,84 @@
 import argparse
-from loguru import logger
-from hyperparameters import set_hyperp
+import pathlib
+
+import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-import keras
 from PIL import Image
-from pathlib import Path
+from loguru import logger
+
+from hyperparameters import set_hyperp
 
 
-def hyperp_dict(
-    conv_layers, conv_filters, dense_depth, dropout_rate
-):
+def check_folder(value):
     """
-    Creates a dictionary containing user-selected hyperparameters, ensuring
-    only unique values in each list, and sets it as a global variable using
-    `set_hyperp`.
+    Validates whether the provided value is a valid directory path and
+    checks for required subfolders and CSV files.
 
-    :param conv_layers: List of possible numbers of convolutional layers.
-    :type conv_layers: list[int]
-    :param conv_filters: List of possible numbers of filters per conv layer.
-    :type conv_filters: list[int]
-    :param dense_units: List of possible numbers of units in dense layers.
-    :type dense_units: list[int]
-    :param dense_depth: List of possible numbers of dense layers.
-    :type dense_depth: list[int]
-    :param dropout_rate: List of possible dropout rates.
-    :type dropout_rate: list[float]
+    :param value: The path to be validated.
+    :type value: str
 
-    :return: A dictionary containing the unique hyperparameter values.
-    :rtype: dict[str, list]
+    :raises argparse.ArgumentTypeError: If the provided path does not exist,
+    is not a directory, or is missing required items.
+
+    :return: The valid directory path.
+    :rtype: pathlib.Path
     """
-    hyperp_dict = {
-        'conv_layers': list(set(conv_layers)),
-        'conv_filters': list(set(conv_filters)),
-        'dense_depth': list(set(dense_depth)),
-        'dropout_rate': list(set(dropout_rate)),
-    }
-    set_hyperp(hyperp_dict)
-    return hyperp_dict
+    folder_path = pathlib.Path(value)
+
+    # Check if the path exists and if it is a directory
+    if not folder_path.exists() or not folder_path.is_dir():
+        raise argparse.ArgumentTypeError(f"Error: '{value}' is not a valid directory.")
+
+    # Define required folders and CSV files
+    required_folders = ['Training', 'Test']
+    required_files = ['training.csv', 'test.csv']
+
+    # Check for missing folders
+    missing_items = [item for item in required_folders if not (folder_path / item).is_dir()]
+
+    # Check for missing files
+    missing_items += [item for item in required_files if not (folder_path / item).is_file()]
+
+    # Log errors if any required items are missing
+    if missing_items:
+        for item in missing_items:
+            logger.error(f"Missing required item: {item}")
+        raise argparse.ArgumentTypeError("Validation failed: missing required files or directories.")
+
+    return folder_path
+
+
+def str2bool(value):
+    """
+    Convert a string representation of a boolean to an actual boolean value.
+
+    This function is useful for parsing boolean arguments from the command line.
+    It accepts common string representations of boolean values.
+
+    :param value: The string to convert.
+    :type value: str or bool
+
+    :return: The corresponding boolean value.
+    :rtype: bool
+
+    :raises argparse.ArgumentTypeError: If the input string is not a valid
+        boolean representation.
+    """
+    if isinstance(value, bool):
+        return value
+    value = str(value).lower()
+    if value.lower() in ['true', 't', 'yes', 'y', '1']:
+        return True
+    elif value.lower() in ['false', 'f', 'no', 'n', '0']:
+        return False
+    else:
+        raise argparse.ArgumentTypeError(
+            f"Invalid value '{value}' for boolean argument."
+            "Expected values: 'True', 'False', 'Yes', 'No', '1', '0', "
+            "'t', 'f', 'y', 'n'."
+        )
 
 
 def check_rate(value):
@@ -74,26 +114,60 @@ def check_rate(value):
     return value
 
 
+def hyperp_dict(
+    conv_layers, conv_filters, dense_depth, dropout_rate
+):
+    """
+    Creates a dictionary containing user-selected hyperparameters, ensuring
+    only unique values in each list, and sets it as a global variable using
+    `set_hyperp`.
+
+    :param conv_layers: List of possible numbers of convolutional layers.
+    :type conv_layers: list[int]
+    :param conv_filters: List of possible numbers of filters per conv layer.
+    :type conv_filters: list[int]
+    :param dense_units: List of possible numbers of units in dense layers.
+    :type dense_units: list[int]
+    :param dense_depth: List of possible numbers of dense layers.
+    :type dense_depth: list[int]
+    :param dropout_rate: List of possible dropout rates.
+    :type dropout_rate: list[float]
+
+    :return: A dictionary containing the unique hyperparameter values.
+    :rtype: dict[str, list]
+    """
+    hyperp_dict = {
+        'conv_layers': list(set(conv_layers)),
+        'conv_filters': list(set(conv_filters)),
+        'dense_depth': list(set(dense_depth)),
+        'dropout_rate': list(set(dropout_rate)),
+    }
+    set_hyperp(hyperp_dict)
+    return hyperp_dict
+
+
 def is_numeric(s):
     """
-    Check if a given string represents a valid integer.
+    Check if a given value is a valid integer.
 
-    :param s: The string to verify.
-    :type s: str
+    :param s: The value to verify. This can be a string or other types.
+    :type s: str, bool, float, list
 
-    :return: True if the string is an integer, False otherwise.
+    :return: True if the value can be interpreted as an integer, False otherwise.
     :rtype: bool
     """
     try:
-        if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):  # Escludiamo bool, float e liste
+        # Check if the input is a boolean, float, or list
+        if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):
+            logger.warning(f"Invalid value '{s}'. It should be an integer.")
             return False
+        
+        # Attempt to convert to an integer
         int(s)
         return True
     except ValueError:
-        logger.warning(
-            f"Value '{s}' is not valid."
-            f"The image file name must be an integer."
-        )
+        # If conversion fails, log the error
+        logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
         return False
 
 
@@ -135,36 +209,6 @@ def sorting_and_preprocessing(image_files, target_size):
         ids.append(img_id)
 
     return images_rgb, ids
-
-
-def str2bool(value):
-    """
-    Convert a string representation of a boolean to an actual boolean value.
-
-    This function is useful for parsing boolean arguments from the command line.
-    It accepts common string representations of boolean values.
-
-    :param value: The string to convert.
-    :type value: str or bool
-
-    :return: The corresponding boolean value.
-    :rtype: bool
-
-    :raises argparse.ArgumentTypeError: If the input string is not a valid
-        boolean representation.
-    """
-    if isinstance(value, bool):
-        return value
-    value = str(value).lower()
-    if value.lower() in ['true', 't', 'yes', 'y', '1']:
-        return True
-    elif value.lower() in ['false', 'f', 'no', 'n', '0']:
-        return False
-    else:
-        raise argparse.ArgumentTypeError(
-            f"Invalid value '{value}' for boolean argument."
-            f"Expected values: 'True', 'False', 'Yes', 'No', '1', '0'."
-        )
 
 
 def get_last_conv_layer_name(model):
@@ -230,6 +274,9 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
     heatmap = np.maximum(heatmap, 0)  # ReLU
     heatmap /= (np.max(heatmap) + 1e-8)  # Avoid division by zero
 
+    # Normalize and convert heatmap to uint8
+    heatmap = np.uint8(255 * heatmap) 
+
     return heatmap
 
 
@@ -281,24 +328,70 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     return superimposed_img
 
-def save_image(file_name, folder_name = 'Grafici'):
-    # Ottieni il percorso del folder corrente
-    current_path = Path.cwd()
+import pathlib
+
+def save_image(file_name, folder_name='Graphics'):
+    """
+    Saves an image to a specified folder, creating the folder if it does not exist.
+
+    :param file_name: The name of the image file to be saved.
+    :type file_name: str
+    :param folder_name: The name of the folder where the image should be saved. 
+                         Defaults to 'Graphics'. 
+    :type folder_name: str
+    """
     
-    # Torna indietro di due livelli
+    # Get the current working directory
+    current_path = pathlib.Path.cwd()
+    
+    # Move two levels up
     parent_folder = current_path.parent
     
-    # Crea il percorso del folder_name
+    # Construct the folder path
     folder_path = parent_folder / folder_name
     
-    # Crea la cartella se non esiste
+    # Create the folder if it does not exist
     folder_path.mkdir(exist_ok=True)
 
-    # Crea l'immagine e salvala
+    # Construct the path for the image file
     image_path = folder_path / file_name
     
-    # If a file with the same name is already present, delete it
+    # If a file with the same name already exists, delete it
     if image_path.exists():
         image_path.unlink()
     
-    Path(file_name).rename(image_path)
+    # Rename the file to save it in the destination folder
+    pathlib.Path(file_name).rename(image_path)
+
+
+def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):
+    """
+    Logs the summary of the training process, including the best hyperparameters,
+    loss values, mean absolute error (MAE), and R² score for each fold.
+
+    :param best_hps_list: List of dictionaries containing the best hyperparameters 
+                           for each fold.
+    :type best_hps_list: list[dict]
+
+    :param loss_list: List of loss values for each fold.
+    :type loss_list: list[float]
+
+    :param mae_list: List of Mean Absolute Error (MAE) values for each fold.
+    :type mae_list: list[float]
+
+    :param r2_list: List of R² score values for each fold.
+    :type r2_list: list[float]
+    """
+    logger.info("Best hyperparameters for each fold:")
+    for i, best_hps in enumerate(best_hps_list, 1):
+        params_str = ", ".join([f"{param}: {value}" for param, value in best_hps.values.items()])
+        logger.info(f"Fold {i}: {params_str}")
+
+    logger.info(f"List of losses: {loss_list}")
+    logger.info(f"Mean loss: {np.mean(loss_list):.2f}+/- {np.std(loss_list, ddof=1):.2f}")
+
+    logger.info(f"List of MAE: {mae_list}")
+    logger.info(f"Mean MAE: {np.mean(mae_list):.2f}+/- {np.std(mae_list, ddof=1):.2f}")
+
+    logger.info(f"List of R2 score: {r2_list}")
+    logger.info(f"Mean R2 score: {np.mean(r2_list):.2f}+/- {np.std(r2_list, ddof=1):.2f}")

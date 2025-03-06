@@ -1,6 +1,7 @@
 # Boneage Regression
 
 [![Documentation Status](https://readthedocs.org/projects/boneage-regression/badge/?version=latest)](https://boneage-regression.readthedocs.io/en/latest/?badge=latest)
+![GitHub repo size](https://img.shields.io/github/repo-size/MoseGuerini/boneage_regression)
 ![CircleCI](https://circleci.com/gh/MoseGuerini/boneage_regression/tree/main.svg?style=shield)
 
 The aim of this reporsitory is to build and train a convolutional neural network (CNN) for a deep learning based regression. Starting from hands x-rays the CNN will be able to infer patiences' ages. This neaural network will be developed using both Python and Matlab.
@@ -64,8 +65,8 @@ Some examples of processed and unprocessed fotos follows.
 The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
 • `Conv. layers`: number of convolutional layers of the network. <br>
 • `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters doubles with each successive layer.<br>
-• `Dense depth`: number of dense layer(s) after feature concatenation.
-• `Dropout rate`: dropout rate of the final dense layer(s).
+• `Dense depth`: number of dense layer(s) after feature concatenation. <br>
+• `Dropout rate`: dropout rate of the final dense layer(s). <br>
 
 ## Classes
 In order to improve readability by performing encapsulation we build up two classes: one to handle data and another to handle the model.
@@ -87,6 +88,17 @@ In case you are running this code for the first time remember to install the req
 ```python
 pip install -r requirements.txt
 ```
+
+## Attribution
+
+This work builds upon the research presented in the following paper:
+
+- **Halabi SS, Prevedello LM, Kalpathy-Cramer J, et al.** (2018). The RSNA Pediatric Bone Age Machine Learning Challenge. *Radiology*, 290(2), 498-503. [DOI](https://doi.org/10.1148/radiol.2018180736).
+
+For more details, please refer to the original paper.
+
+The original dataset can be downloaded at https://www.rsna.org/rsnai/ai-image-challenge/rsna-pediatric-bone-age-challenge-2017
+
 
 
 

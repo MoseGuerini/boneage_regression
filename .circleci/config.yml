@@ -1,31 +1,45 @@
-
-version: 2.1  # Definisce la versione della configurazione CircleCI
+version: 2.1  # Defines the CircleCI configuration version
 
 orbs:
-  python: circleci/python@2.1.1  # Usa l'orb per Python
+  python: circleci/python@2.1.1  # Uses the Python orb
 
 jobs:
   build-and-test:
     docker:
-      - image: cimg/python:3.10.7  # Contenitore Docker con Python 3.10
+      - image: cimg/python:3.10.7  # Docker container with Python 3.10
     steps:
-      - checkout  # Clona il codice dal repository
+      - checkout  # Checkout the code from the repository
       - python/install-packages:
           pkg-manager: pip
-          pip-dependency-file: requirements.txt  # Installa le dipendenze
+          pip-dependency-file: requirements.txt  # Installs the dependencies
 
-      # Debugging: Controlla la directory corrente
+      # Debugging: Show current path and directory structure
       - run:
           name: Debug current working directory
-          command: pwd
+          command: |
+            pwd
+            ls
         
-      # Esegui i test uno alla volta, con comandi separati per ciascun file di test
+      # Run tests one by one, with separate commands for each test file
       - run:
           name: Run tests for hyperparameters.py
-          command: python -m unittest tests.hyperparameters_test # Comando per eseguire i test di hyperparameters_test
+          command: python -m unittest tests.hyperparameters_test 
+
+      - run:
+          name: Run tests for utils.py
+          command: python -m unittest tests.utils_test 
+
+      - run:
+          name: Run tests for data_class.py
+          command: python -m unittest tests.data_class_test
+
+      - run:
+          name: Run tests for model_class.py
+          command: python -m unittest tests.model_class_test
 
 workflows:
-  version: 2  # Versione del workflow
+  version: 2  # Workflow version
   test:
     jobs:
-      - build-and-test  # Esegui il job 'build-and-test'
+      - build-and-test  # Run the 'build-and-test' job
+

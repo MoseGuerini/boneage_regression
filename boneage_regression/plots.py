@@ -104,93 +104,28 @@ def plot_predictions(y_true, y_pred):
     plt.plot([0, lim], [0, lim], color='red', label='y = x', linestyle='--')
 
     # Set axis labels, title, and grid
-    plt.xlabel('Actual age [months]')
-    plt.ylabel('Predicted age [months]')
-    plt.title('Predicted vs actual age')
+    plt.xlabel('Actual age [months]', fontsize=14)
+    plt.ylabel('Predicted age [months]', fontsize=14)
+    plt.title('Predicted vs actual age', fontsize=14)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
     plt.grid(True)
 
     # Show the legend and adjust the layout
-    plt.legend()
+    plt.legend(fontsize=14)
     plt.tight_layout()
 
     # Show the figure
     plt.show(block=False)
-    
+
     # Save the image
     image_name = f'predictions.png'
     plt.savefig(image_name)  # Local saving
     plt.close()
     save_image(image_name)
 
-def plot_gender(arr):
-    """
-    Creates a bar plot showing the distribution of gender values in the input
-    array.
 
-    :param arr: Array containing the gender values (0 for female, 1 for male).
-    :type arr: numpy.array
-    :return: None (displays the plot).
-    :rtype: None
-    """
-    # Get occurrences of each unique value in the array
-    unique, counts = np.unique(arr, return_counts=True)
-
-    # Mapping gender values (0: Female, 1: Male)
-    gender_labels = {0: 'Female', 1: 'Male'}
-    unique_labels = [gender_labels[val] for val in unique]
-
-    # Create and customize the bar plot
-    plt.figure(figsize=(10, 6))
-    plt.bar(unique_labels, counts, width=0.8, color=['b', 'r'])
-
-    # Set axis labels, title, and grid
-    plt.xlabel('Gender')
-    plt.ylabel('Occurences')
-    plt.title('Occurrences distributions')
-    plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-
-    plt.show(block=False)
-    plt.tight_layout()
-    # Save the image
-    image_name = f'gender.png'
-    plt.savefig(image_name)  # Local saving
-    plt.close()
-    save_image(image_name)
-
-def plot_boneage(arr):
-    """
-    Creates a bar plot showing the distribution of boneage values in the input
-    array.
-
-    :param arr: Array containing the boneage values.
-    :type arr: numpy.array
-    :return: None (displays the plot).
-    :rtype: None
-    """
-    # Get occurrences of each unique value in the array
-    unique, counts = np.unique(arr, return_counts=True)
-
-    # Create and customize the bar plot
-    plt.figure(figsize=(10, 6))
-    plt.bar(unique, counts, width=0.8, color='b')
-
-    # Set axis labels, title, ticks, and grid
-    plt.xlabel('Values [Months]')
-    plt.ylabel('Occurrences')
-    plt.title('Distribution of Occurrences')
-    plt.xticks(np.arange(0, 230, 10))
-    plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-
-    plt.show(block=False)
-
-    # Save the image
-    image_name = f'boneage.png'
-    plt.savefig(image_name)  # Local saving
-    plt.close()
-    save_image(image_name)
-
-
-def plot_accuracy_threshold(y_pred, y_test, threshold=10):
+def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     """
     Plots the distribution of prediction errors.
 
@@ -225,10 +160,12 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=10):
     plt.hist(errors, bins=50, color='blue', alpha=0.7)
     plt.axvline(threshold, color='red', linestyle='dashed', linewidth=2,
                 label=f"Threshold: {threshold} months")
-    plt.title('Prediction Error Occurrences')
-    plt.xlabel('Error [months]')
-    plt.ylabel('Occurrences')
-    plt.legend()
+    plt.title('Prediction Error Occurrences', fontsize=14)
+    plt.xlabel('Error [months]', fontsize=14)
+    plt.ylabel('Occurrences', fontsize=14)
+    plt.legend(fontsize=14)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
     plt.grid(True)
     plt.show(block=False)
 

@@ -1,15 +1,30 @@
 """Main"""
-import numpy as np
+import sys
 import argparse
 import pathlib
+
+import numpy as np
+from loguru import logger
 import matplotlib.pyplot as plt
 from tensorflow.keras import mixed_precision
 
 from hyperparameters import hyperp_space_size
-from model_class import CNN_Model
+from model_class import CnnModel
 from data_class import DataLoader
-from utils import hyperp_dict, check_rate, str2bool
+from utils import hyperp_dict, check_rate, check_folder, str2bool
 
+# Setting logger configuration
+logger.remove()
+logger.add(
+    sys.stdout,
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+    level="INFO"
+)
+
+# Setting default data folder
+data_dir = (
+    pathlib.Path(__file__).resolve().parent.parent / 'Preprocessed_images'
+)
 
 if __name__ == '__main__':
 
@@ -17,17 +32,34 @@ if __name__ == '__main__':
     mixed_precision.set_global_policy(policy)
 
     parser = argparse.ArgumentParser(
-        description="Bone Age Regressor"
+        description=(
+            """
+            This script performs bone age prediction using a machine learning
+            regression model. It accepts input parameters for model
+            configuration and the dataset folder path.
+
+            If you pass a dataset folder remember that it must contain:
+
+            1) Two separate folders for training and test images named
+                'Training' and 'Test'.
+            2) Two .csv files with the corresponding labels named
+                'training.csv' and 'test.csv'.
+
+            Each CSV file must contain three columns named 'ID', 'boneage',
+            'male'.
+            """
+        )
     )
 
     parser.add_argument(
-        "-n",
-        "--num_images",
+        "-fp",
+        "--folder_path",
         metavar="",
-        type=int,
-        help="Number of images to be imported,"
-        "if none all the images will be imported",
-        default=None,
+        type=check_folder,
+        help="Path to the directory containing training "
+        "and test images as well as csv files with the labels. "
+        "Default: Preprocessed_images",
+        default=data_dir,
     )
 
     parser.add_argument(
@@ -35,7 +67,8 @@ if __name__ == '__main__':
         "--preprocessing",
         metavar="",
         type=str2bool,
-        help="If False avoid image preprocessing",
+        help="If False avoid image preprocessing. "
+        "Default: False",
         default=False,
     )
 
@@ -44,7 +77,7 @@ if __name__ == '__main__':
         "--overwrite",
         metavar="",
         type=str2bool,
-        help="If False avoid hyperparameters search"
+        help="If False avoid hyperparameters search "
         "and use the pre-saved hyperpar. Default: False",
         default=False,
     )
@@ -55,7 +88,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's number of conv2d layers",
+        help="List of values for the hypermodel number of conv2d layers"
+        " Default [3, 4, 5]",
         default=[3, 4, 5],
     )
 
@@ -65,8 +99,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's"
-        "first conv2d number of filters",
+        help="List of values for the hypermodel "
+        "first conv2d number of filters. Default [8, 16, 32]",
         default=[8, 16, 32],
     )
 
@@ -76,7 +110,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's depth of final dense layers",
+        help="List of values for the hypermodel depth of final dense layers"
+        " Default [1, 2, 3]",
         default=[1, 2, 3],
     )
     parser.add_argument(
@@ -85,7 +120,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=check_rate,
-        help="List of values for the hypermodel's dropout rate",
+        help="List of values for the dropout rate of the final dense layers"
+        " Default [0.1, 0.2, 0.3]",
         default=[0.1, 0.2, 0.3],
     )
 
@@ -94,56 +130,52 @@ if __name__ == '__main__':
         "--searching_fraction",
         metavar="",
         type=check_rate,
-        help="Fraction of the hyperparamiters space explored"
+        help="Fraction of the hyperparameters space explored "
         "during hypermodel search. Default: 0.25",
         default=0.25,
     )
 
     args = parser.parse_args()
 
-    # 1. Dataset part
-    test_data_dir = (
-        pathlib.Path(__file__).resolve().parent.parent / 'Test_dataset'
-    )
-    train_data = test_data_dir / 'Training'
-    train_csv = test_data_dir / 'training.csv'
-    test_data = test_data_dir / 'Test'
-    test_csv = test_data_dir / 'test.csv'
+    # 1. Dataset part loading and optional preprocessing
+    train_data = args.folder_path / 'Training'
+    train_csv = args.folder_path / 'training.csv'
+    test_data = args.folder_path / 'Test'
+    test_csv = args.folder_path / 'test.csv'
 
     data_train = DataLoader(
         train_data,
         train_csv,
-        num_images=args.num_images,
         preprocessing=args.preprocessing
         )
 
     data_test = DataLoader(
         test_data,
         test_csv,
-        num_images=args.num_images,
         preprocessing=args.preprocessing
         )
 
-    # 2. set chosen hyperparameters and get number of trials
+    # 2. Set chosen hyperparameters and get number of trials for tuning
     hyperp_dict = hyperp_dict(
         args.conv_layers,
         args.conv_filters,
         args.dense_depth,
         args.dropout_rate
         )
-    space_size = hyperp_space_size()
+
+    space_size = hyperp_space_size(hyperp_dict)
 
     #max_trials = np.rint(args.searching_fraction*space_size)
     max_trials = 1
 
-    # 3. create and train the model
-    model = CNN_Model(
+    # 3. Create and train the model
+    model = CnnModel(
         data_train=data_train,
         data_test=data_test,
         overwrite=args.overwrite,
         max_trials=max_trials
         )
-    
+
     model.train()
 
     plt.show()

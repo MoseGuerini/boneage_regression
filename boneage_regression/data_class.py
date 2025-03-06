@@ -259,6 +259,14 @@ class DataLoader:
         df = pd.read_csv(self.labels_path, nrows=self.num_images)
         df.columns = df.columns.str.lower()
 
+        # Searching for missing informations
+        required_columns = ['id', 'boneage', 'male']
+        missing_columns = [col for col in required_columns if col not in
+                           df.columns]
+
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {missing_columns}")
+        
         # Searching for images with no corresponding labels
         missing_ids = [img_id for img_id in image_ids if
                        img_id not in df['id'].to_numpy()]
@@ -276,14 +284,6 @@ class DataLoader:
             logger.warning(f"Warning: The following labels do not correspond"
                            f" to any image:"
                            f"{', '.join(map(str, missing_images))}")
-
-        # Searching for missing informations
-        required_columns = ['id', 'boneage', 'male']
-        missing_columns = [col for col in required_columns if col not in
-                           df.columns]
-
-        if missing_columns:
-            raise ValueError(f"Missing required columns: {missing_columns}")
 
         label_df = df[df['id'].isin(image_ids)]
 

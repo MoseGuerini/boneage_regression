@@ -1,6 +1,8 @@
 import unittest
 import sys
 import pathlib
+from unittest.mock import patch
+import pandas as pd
 
 # Add the "boneage_regression" directory to sys.path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
@@ -160,7 +162,33 @@ class TestDataLoader(unittest.TestCase):
                     num_images=invalid_value
                 )
 
-"""     def test_preprocessing(self):
+
+"""     def test_load_labels_missing_columns(self):
+
+        # Simulate a DataFrame with a missing 'id' column
+        mock_df = pd.DataFrame({
+            "id": [1, 2, 3],
+            "boneage": [100, 120, 130],
+            "male": [1, 0, 1]
+        })
+
+        with patch("boneage_regression.data_class.pd.read_csv", return_value=mock_df):
+
+            # Mock pathlib.Path.iterdir() to prevent filesystem access
+            with patch("pathlib.Path.iterdir", return_value=[]):
+
+                # Use dummy paths (not actually accessed)
+                dummy_image_path = "dummy/image/path"
+                dummy_labels_path = "dummy/labels/path"
+
+                # Ensure a ValueError is raised due to the missing 'id' column
+                with self.assertRaises(ValueError):
+                    DataLoader(
+                        image_path=dummy_image_path,
+                        labels_path=dummy_labels_path
+                    ) """
+    
+    def test_preprocessing(self):
 
         # Obtain script folder and parent folder
         current_dir = pathlib.Path(__file__).parent
@@ -170,73 +198,14 @@ class TestDataLoader(unittest.TestCase):
         valid_image_path = parent_dir / "Test_dataset" / "Test"
         valid_labels_path = parent_dir / "Test_dataset" / "test.csv"
 
-        valid_preprocessing = True
-        valid_num_workers = 8
-        valid_target_size = (64, 64)
-        loader_true = DataLoader(
-            image_path=valid_image_path,
-            labels_path=valid_labels_path,
-            preprocessing=valid_preprocessing,
-            num_workers=valid_num_workers,
-            target_size=valid_target_size
-            )
-        self.assertEqual(loader_true.preprocessing, valid_preprocessing)
         valid_preprocessing = False
         loader_false = DataLoader(
             image_path=valid_image_path,
             labels_path=valid_labels_path,
-            preprocessing=valid_preprocessing,
-            num_workers=valid_num_workers,
-            target_size=valid_target_size
+            preprocessing=valid_preprocessing
             )
         self.assertEqual(loader_false.preprocessing, valid_preprocessing)
-        # Now be sure preprocessing does not lose images
-        self.assertEqual(len(loader_true.X), len(loader_false.X))
-        invalid_preprocessing = (256, 1)
-        with self.assertRaises(ValueError):
-            DataLoader(
-                image_path=valid_image_path,
-                labels_path=valid_labels_path,
-                preprocessing=invalid_preprocessing,
-                num_workers=valid_num_workers,
-                target_size=valid_target_size
-                )
-        invalid_preprocessing = 'abc'
-        with self.assertRaises(ValueError):
-            DataLoader(
-                image_path=valid_image_path,
-                labels_path=valid_labels_path,
-                preprocessing=invalid_preprocessing,
-                num_workers=valid_num_workers,
-                target_size=valid_target_size
-                )
-        invalid_preprocessing = 0.1
-        with self.assertRaises(ValueError):
-            DataLoader(
-                image_path=valid_image_path,
-                labels_path=valid_labels_path,
-                preprocessing=invalid_preprocessing,
-                num_workers=valid_num_workers,
-                target_size=valid_target_size
-                )
-        invalid_preprocessing = -10
-        with self.assertRaises(ValueError):
-            DataLoader(
-                image_path=valid_image_path,
-                labels_path=valid_labels_path,
-                preprocessing=invalid_preprocessing,
-                num_workers=valid_num_workers,
-                target_size=valid_target_size
-                )
-        invalid_preprocessing = 1
-        with self.assertRaises(ValueError):
-            DataLoader(
-                image_path=valid_image_path,
-                labels_path=valid_labels_path,
-                preprocessing=invalid_preprocessing,
-                num_workers=valid_num_workers,
-                target_size=valid_target_size
-                ) """
+        
 
 
 if __name__ == '__main__':

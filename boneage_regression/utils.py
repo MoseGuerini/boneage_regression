@@ -1,77 +1,14 @@
 import argparse
 import pathlib
-from loguru import logger
-from hyperparameters import set_hyperp
+
+import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
-import keras
 from PIL import Image
+from loguru import logger
 
-
-def hyperp_dict(
-    conv_layers, conv_filters, dense_depth, dropout_rate
-):
-    """
-    Creates a dictionary containing user-selected hyperparameters, ensuring
-    only unique values in each list, and sets it as a global variable using
-    `set_hyperp`.
-
-    :param conv_layers: List of possible numbers of convolutional layers.
-    :type conv_layers: list[int]
-    :param conv_filters: List of possible numbers of filters per conv layer.
-    :type conv_filters: list[int]
-    :param dense_units: List of possible numbers of units in dense layers.
-    :type dense_units: list[int]
-    :param dense_depth: List of possible numbers of dense layers.
-    :type dense_depth: list[int]
-    :param dropout_rate: List of possible dropout rates.
-    :type dropout_rate: list[float]
-
-    :return: A dictionary containing the unique hyperparameter values.
-    :rtype: dict[str, list]
-    """
-    hyperp_dict = {
-        'conv_layers': list(set(conv_layers)),
-        'conv_filters': list(set(conv_filters)),
-        'dense_depth': list(set(dense_depth)),
-        'dropout_rate': list(set(dropout_rate)),
-    }
-    set_hyperp(hyperp_dict)
-    return hyperp_dict
-
-
-def check_rate(value):
-    """
-    Validates if the given value is a float between 0 and 1.
-
-    :param value: The input value to check.
-    :type value: float or str
-
-    :raises argparse.ArgumentTypeError: If the value is not a valid float
-        or is outside the range [0, 1].
-
-    :return: The validated float value.
-    :rtype: float
-    """
-    if not isinstance(value, (float, str)):
-        raise argparse.ArgumentTypeError(
-            f"Invalid value type: {type(value)}. Expected float or string."
-        )
-
-    try:
-        value = float(value)
-    except ValueError:
-        raise argparse.ArgumentTypeError(
-            f"Invalid value, input type: {type(value)}. Expected float."
-        )
-
-    if not (0 <= value <= 1):
-        raise argparse.ArgumentTypeError(
-            f"Value out of range: {value}. Must be between 0 and 1."
-        )
-
-    return value
+from hyperparameters import set_hyperp
 
 
 def check_folder(value):
@@ -110,7 +47,103 @@ def check_folder(value):
             logger.error(f"Missing required item: {item}")
         raise argparse.ArgumentTypeError("Validation failed: missing required files or directories.")
 
-    return folder_path  # Return the pathlib.Path object
+    return folder_path
+
+
+def str2bool(value):
+    """
+    Convert a string representation of a boolean to an actual boolean value.
+
+    This function is useful for parsing boolean arguments from the command line.
+    It accepts common string representations of boolean values.
+
+    :param value: The string to convert.
+    :type value: str or bool
+
+    :return: The corresponding boolean value.
+    :rtype: bool
+
+    :raises argparse.ArgumentTypeError: If the input string is not a valid
+        boolean representation.
+    """
+    if isinstance(value, bool):
+        return value
+    value = str(value).lower()
+    if value.lower() in ['true', 't', 'yes', 'y', '1']:
+        return True
+    elif value.lower() in ['false', 'f', 'no', 'n', '0']:
+        return False
+    else:
+        raise argparse.ArgumentTypeError(
+            f"Invalid value '{value}' for boolean argument."
+            "Expected values: 'True', 'False', 'Yes', 'No', '1', '0', "
+            "'t', 'f', 'y', 'n'."
+        )
+
+
+def check_rate(value):
+    """
+    Validates if the given value is a float between 0 and 1.
+
+    :param value: The input value to check.
+    :type value: float or str
+
+    :raises argparse.ArgumentTypeError: If the value is not a valid float
+        or is outside the range [0, 1].
+
+    :return: The validated float value.
+    :rtype: float
+    """
+    if not isinstance(value, (float, str)):
+        raise argparse.ArgumentTypeError(
+            f"Invalid value type: {type(value)}. Expected float or string."
+        )
+
+    try:
+        value = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(
+            f"Invalid value, input type: {type(value)}. Expected float."
+        )
+
+    if not (0 <= value <= 1):
+        raise argparse.ArgumentTypeError(
+            f"Value out of range: {value}. Must be between 0 and 1."
+        )
+
+    return value
+
+
+def hyperp_dict(
+    conv_layers, conv_filters, dense_depth, dropout_rate
+):
+    """
+    Creates a dictionary containing user-selected hyperparameters, ensuring
+    only unique values in each list, and sets it as a global variable using
+    `set_hyperp`.
+
+    :param conv_layers: List of possible numbers of convolutional layers.
+    :type conv_layers: list[int]
+    :param conv_filters: List of possible numbers of filters per conv layer.
+    :type conv_filters: list[int]
+    :param dense_units: List of possible numbers of units in dense layers.
+    :type dense_units: list[int]
+    :param dense_depth: List of possible numbers of dense layers.
+    :type dense_depth: list[int]
+    :param dropout_rate: List of possible dropout rates.
+    :type dropout_rate: list[float]
+
+    :return: A dictionary containing the unique hyperparameter values.
+    :rtype: dict[str, list]
+    """
+    hyperp_dict = {
+        'conv_layers': list(set(conv_layers)),
+        'conv_filters': list(set(conv_filters)),
+        'dense_depth': list(set(dense_depth)),
+        'dropout_rate': list(set(dropout_rate)),
+    }
+    set_hyperp(hyperp_dict)
+    return hyperp_dict
 
 
 def is_numeric(s):
@@ -176,36 +209,6 @@ def sorting_and_preprocessing(image_files, target_size):
         ids.append(img_id)
 
     return images_rgb, ids
-
-
-def str2bool(value):
-    """
-    Convert a string representation of a boolean to an actual boolean value.
-
-    This function is useful for parsing boolean arguments from the command line.
-    It accepts common string representations of boolean values.
-
-    :param value: The string to convert.
-    :type value: str or bool
-
-    :return: The corresponding boolean value.
-    :rtype: bool
-
-    :raises argparse.ArgumentTypeError: If the input string is not a valid
-        boolean representation.
-    """
-    if isinstance(value, bool):
-        return value
-    value = str(value).lower()
-    if value.lower() in ['true', 't', 'yes', 'y', '1']:
-        return True
-    elif value.lower() in ['false', 'f', 'no', 'n', '0']:
-        return False
-    else:
-        raise argparse.ArgumentTypeError(
-            f"Invalid value '{value}' for boolean argument."
-            f"Expected values: 'True', 'False', 'Yes', 'No', '1', '0'."
-        )
 
 
 def get_last_conv_layer_name(model):

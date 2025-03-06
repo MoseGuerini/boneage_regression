@@ -1,11 +1,12 @@
 """Main"""
 import sys
-import numpy as np
 import argparse
 import pathlib
+
+import numpy as np
+from loguru import logger
 import matplotlib.pyplot as plt
 from tensorflow.keras import mixed_precision
-from loguru import logger
 
 from hyperparameters import hyperp_space_size
 from model_class import CnnModel
@@ -87,7 +88,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's number of conv2d layers",
+        help="List of values for the hypermodel number of conv2d layers"
+        " Default [3, 4, 5]",
         default=[3, 4, 5],
     )
 
@@ -97,8 +99,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's "
-        "first conv2d number of filters",
+        help="List of values for the hypermodel "
+        "first conv2d number of filters. Default [8, 16, 32]",
         default=[8, 16, 32],
     )
 
@@ -108,7 +110,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=int,
-        help="List of values for the hypermodel's depth of final dense layers",
+        help="List of values for the hypermodel depth of final dense layers"
+        " Default [1, 2, 3]",
         default=[1, 2, 3],
     )
     parser.add_argument(
@@ -117,7 +120,8 @@ if __name__ == '__main__':
         metavar="",
         nargs='+',
         type=check_rate,
-        help="List of values for the hypermodel's dropout rate",
+        help="List of values for the dropout rate of the final dense layers"
+        " Default [0.1, 0.2, 0.3]",
         default=[0.1, 0.2, 0.3],
     )
 

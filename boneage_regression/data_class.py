@@ -4,7 +4,7 @@ import numpy as np
 from loguru import logger
 import pandas as pd
 
-from utils import is_numeric, convert_and_resize
+from utils import is_integer, convert_and_resize
 
 try:
     import matlab.engine
@@ -199,7 +199,7 @@ class DataLoader:
 
         # Ordering file names numerically
         image_files = [f for f in path.iterdir() if
-                       f.is_file() and is_numeric(f.stem)]
+                       f.is_file() and is_integer(f.stem)]
         image_files = sorted(image_files, key=lambda x: int(x.stem))
 
         if self._num_images:

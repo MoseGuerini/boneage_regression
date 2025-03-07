@@ -33,7 +33,7 @@ def hyperp_space_size(hyperp):
 def build_model(hp):
     """
     Builds a Convolutional Neural Network (CNN) model for regression using
-    hyperparameter tuning.
+    a keras hypermodel.
 
     The model consists of two branches:
     - An image-processing branch with convolutional layers.

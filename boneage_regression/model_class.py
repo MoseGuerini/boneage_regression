@@ -73,9 +73,6 @@ class CnnModel:
 
         model_builder: A function that builds the model.
 
-        model_list: A list to store models trained across different folds
-                    during cross-validation.
-                    
         _trained_model: The best-trained model selected after cross-validation.
 
     Methods:
@@ -131,10 +128,10 @@ class CnnModel:
 
         :param data_train: The training data object containing the features
                         and labels for training.
-        :type data_train: DataClass
+        :type data_train: DataLoader
         :param data_test: The testing data object containing the features
                         and labels for testing.
-        :type data_test: DataClass
+        :type data_test: DataLoader
         :param overwrite: Whether to overwrite existing tuning results.
                         Default: False.
         :type overwrite: bool, optional
@@ -153,7 +150,6 @@ class CnnModel:
         self.max_trials = max_trials
         self.overwrite = overwrite
         self.model_builder = build_model
-        self.model_list = []
         self._trained_model = None
 
     # Making dataset attributes read-only
@@ -253,7 +249,7 @@ class CnnModel:
         if self.overwrite:
             project_name = 'new_tuner'
         else:
-            project_name = 'new_tuner'      # change later to 'best_tuner'
+            project_name = 'new_tuner'    # change later to 'base_tuner'
 
         # Initialize the BayesianOptimization tuner
         tuner = kt.BayesianOptimization(
@@ -376,13 +372,14 @@ class CnnModel:
         """
         kf = KFold(n_splits=k, shuffle=True, random_state=42)
         best_hps_list = []
+        model_list = []
         loss_list = []
         mae_list = []
         r2_list = []
         fold = 1
 
         # Loop over each fold and train using the train_on_fold method
-        for train_idx, val_idx in kf.split(self.X_train):
+        for train_idx, val_idx in kf.split(self._X_train):
             logger.info(f"Training fold {fold}/{k}")
             (best_hps, best_model, loss, mae, r2) = (
                 self.train_on_fold(fold, train_idx, val_idx)
@@ -393,7 +390,7 @@ class CnnModel:
             loss_list.append(loss)
             mae_list.append(mae)
             r2_list.append(r2)
-            self.model_list.append(best_model)
+            model_list.append(best_model)
             fold += 1
 
         logger.info("Training completed for all folds, logging summary:")
@@ -402,40 +399,11 @@ class CnnModel:
 
         # Finding the model with the minimum MAE
         min_mae_index = np.argmin(mae_list)
-        self._trained_model = self.model_list[min_mae_index]
+        self._trained_model = model_list[min_mae_index]
         logger.info(
             f"Selected model for predictions from fold {min_mae_index + 1} "
             f"with MAE = {mae_list[min_mae_index]:.2f}"
         )
-
-    def save_model(self, model=None, filename="best_model.keras"):
-        """
-        Saves the trained model to a specified file.
-
-        The model is saved in a directory named 'models',
-        which is created if it does not already exist. The model is saved with
-        the specified `filename`.
-
-        :param model: The model to save. If `None`, the trained model stored in
-                    `self._trained_model` will be used.
-        :type model: keras.Model, optional
-
-        :param filename: The name of the file where the model will be saved.
-                        Defaults to "best_model.keras".
-        :type filename: str, optional
-
-        :return: None
-            This method does not return anything. It saves the model to a file.
-        """
-        model = model if model is not None else self._trained_model
-        # Set model directory and path
-        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'models'
-        model_dir.mkdir(parents=True, exist_ok=True)
-        model_path = model_dir / filename
-
-        # Save the model and log the path
-        model.save(model_path)
-        logger.info(f"Model saved in {model_path}")
 
     def predict(self, model=None):
         """
@@ -459,12 +427,12 @@ class CnnModel:
             raise ValueError("No model available for prediction.")
 
         # Get predictions
-        y_pred = model.predict([self.X_test, self.X_gender_test])
+        y_pred = model.predict([self._X_test, self._X_gender_test])
         y_pred = y_pred.flatten()
 
         # Plot prediction and error distribution
-        plot_predictions(self.y_test, y_pred)
-        plot_accuracy_threshold(y_pred, self.y_test)
+        plot_predictions(self._y_test, y_pred)
+        plot_accuracy_threshold(y_pred, self._y_test)
 
         return y_pred
 
@@ -540,3 +508,31 @@ class CnnModel:
         plt.close()
         save_image(image_name)
 
+    def save_model(self, model=None, filename="best_model.keras"):
+        """
+        Saves the trained model to a specified file.
+
+        The model is saved in a directory named 'models',
+        which is created if it does not already exist. The model is saved with
+        the specified `filename`.
+
+        :param model: The model to save. If `None`, the trained model stored in
+                    `self._trained_model` will be used.
+        :type model: keras.Model, optional
+
+        :param filename: The name of the file where the model will be saved.
+                        Defaults to "best_model.keras".
+        :type filename: str, optional
+
+        :return: None
+            This method does not return anything. It saves the model to a file.
+        """
+        model = model if model is not None else self._trained_model
+        # Set model directory and path
+        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'models'
+        model_dir.mkdir(parents=True, exist_ok=True)
+        model_path = model_dir / filename
+
+        # Save the model and log the path
+        model.save(model_path)
+        logger.info(f"Model saved in {model_path}")

@@ -175,6 +175,7 @@ if __name__ == '__main__':
         max_trials=max_trials
         )
 
-    model.train()
+    model.trained_model = 5
+    #model.train()
 
     plt.show()

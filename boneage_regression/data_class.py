@@ -1,13 +1,15 @@
 import pathlib
+
 import numpy as np
 from loguru import logger
 import pandas as pd
+
 from utils import is_numeric, sorting_and_preprocessing
 
 try:
     import matlab.engine
 except ImportError:
-    logger.info("Matlab.engine package not found.")
+    logger.info("matlab.engine package not found.")
 
 
 class DataLoader:
@@ -23,22 +25,28 @@ class DataLoader:
         Initialize the DataLoader for the BoneAge dataset.
 
         :param image_path: Path to the folder containing the images.
+        :type image_path: str
         :param labels_path: Path to the file containing labels.
-        :param target_size: Tuple specifying the target size for image
-        resizing.
-        :param num_images: Number of images to load (default: None,
-        loads all images).
+        :type labels_path: str
+        :param target_size: Target size for image
+        resizing. Deafult: (256, 256).
+        :type target_size: tuple(int, int)
+        :param num_images: Number of images to load. Default: None
+        (loads all images).
+        :type num_images: int
         :param preprocessing: Boolean indicating whether preprocessing
-        is required.
+        is required. Deafult: False.
+        :type preprocessing: bool
         :param num_workers: Number of workers for parallel preprocessing
-        in MATLAB.
+        in MATLAB. Default: 12.
+        :type num_workers: int
         """
         self._image_path = pathlib.Path(image_path)
         self._labels_path = pathlib.Path(labels_path)
-        self.target_size = target_size
-        self.num_images = num_images
-        self.preprocessing = preprocessing
-        self.num_workers = num_workers
+        self._target_size = target_size
+        self._num_images = num_images
+        self._preprocessing = preprocessing
+        self._num_workers = num_workers
         self.X, self.ids, self.X_gender, self.y = self.load_images()
 
     @property
@@ -52,7 +60,7 @@ class DataLoader:
             raise FileNotFoundError(
                 f"Invalid path: {value}. The directory does not exist."
             )
-        self.__dict__["image_path"] = path
+        self._image_path = path
 
     @property
     def labels_path(self):
@@ -65,7 +73,7 @@ class DataLoader:
             raise FileNotFoundError(
                 f"Invalid path: {value}. The file does not exist."
             )
-        self.__dict__["labels_path"] = path
+        self._labels_path = path
 
     @property
     def target_size(self):
@@ -123,11 +131,11 @@ class DataLoader:
         """
         Preprocess images using MATLAB.
 
-        This function processes images in the `self.image_path` folder using
+        This function processes images in the `self._image_path` folder using
         parallel computation. A MATLAB process is started, and the MATLAB
-        function reads images from `self.image_path`, preprocesses them,
-        and saves them in a folder named `self.image_path + '_processed'`.
-        The `self.image_path` attribute is then updated accordingly.
+        function reads images from `self._image_path`, preprocesses them,
+        and saves them in subfolders inside 'Processed_images' folder.
+        The `self._image_path` attribute is then updated accordingly.
 
         Notes:
 
@@ -137,8 +145,6 @@ class DataLoader:
             - If your version of MATLAB does not support the specified number
             of workers, the default value from your MATLAB environment will
             be used.
-
-        :raises FileNotFoundError: If the specified image path does not exist.
         """
         
         # Start a matlab process to augment contrast and center the images
@@ -149,28 +155,27 @@ class DataLoader:
 
         eng.addpath(str(file_path.parent / 'Matlab_function'))
         eng.preprocessing(
-            str(self.image_path),
-            str(file_path.parent.parent / 'processed_images' / self.image_path.name ),
-            self.num_workers, self.target_size[1], nargout=0
+            str(self._image_path),
+            str(file_path.parent.parent / 'Processed_images' / self._image_path.name ),
+            self._num_workers, self._target_size[1], nargout=0
         )
-        # Number of workers for parallel preprocessing and dimension of images
-        # can also be set. Defualt values are 12 and 128.
-        self.image_path = str(file_path.parent.parent / 'processed_images'/ self.image_path.name)
+
+        self._image_path = str(file_path.parent.parent / 'processed_images'/ self._image_path.name)
         eng.quit()
-        logger.info(f"{self.image_path.name} processed images saved in processed_images/{self.image_path.name}")
+        logger.info(f"{self._image_path.name} processed images saved in processed_images/{self._image_path.name}")
 
 
     def load_images(self):
         """
-        Load images from `self.image_path` and apply preprocessing if
+        Load images from `self._image_path` and apply preprocessing if
         specified.
 
-        This function reads images from `self.image_path`,
+        This function reads images from `self._image_path`,
         converts them to RGB, resizes them to the target dimensions,
         and filters them according to the available labels.
 
-        If `self.preprocessing` is True, the MATLAB preprocessing function
-        is executed.
+        If `self._preprocessing` is True, the MATLAB preprocessing method
+        is called.
 
         :return: tuple containing:
 
@@ -180,15 +185,16 @@ class DataLoader:
             - `filtered_ids` (np.ndarray): NumPy array of valid image IDs
             (those with a corresponding label).
 
-            - `labels` (np.ndarray or None): Corresponding labels for the
+            - `gender` (np.ndarray): Corresponding gender for the
             images (or `None` if not available).
 
-        :raises FileNotFoundError: If the image directory does not exist.
+            - `boneage` (np.ndarray): Corresponding age for the
+            images (or `None` if not available).
         """
 
-        path = self.image_path
+        path = self._image_path
 
-        if self.preprocessing:
+        if self._preprocessing:
             self.preprocess_images()
 
         # Ordering file names
@@ -196,39 +202,29 @@ class DataLoader:
                        f.is_file() and is_numeric(f.stem)]
         image_files = sorted(image_files, key=lambda x: int(x.stem))
 
-        if self.num_images:
-            image_files = image_files[:self.num_images]
+        if self._num_images:
+            image_files = image_files[:self._num_images]
 
-        images_rgb, ids = sorting_and_preprocessing(image_files,
-                                                    self.target_size)
+        images, ids = sorting_and_preprocessing(image_files,
+                                                    self._target_size)
 
-        logger.info(f"{len(images_rgb)} images loaded.")
+        logger.info(f"{len(images)} images loaded.")
 
         # Loading labels
-        labels = None
-        if self.labels_path:
-            labels, missing_ids = self.load_labels(ids)
+        labels, missing_ids = self.load_labels(ids)
 
         # Discarding images whose ID is present in missing_ids
         # (they would have no labels)
-        filtered_images_rgb = [img for img, img_id in zip(images_rgb, ids) if
+        filtered_images = [img for img, img_id in zip(images, ids) if
                                img_id not in missing_ids]
         filtered_ids = [img_id for img_id in ids if img_id not in missing_ids]
 
-        logger.info(f"{len(filtered_images_rgb)} images are ready to be used.")
+        logger.info(f"{len(filtered_images)} images are ready to be used.")
 
         boneage, gender = zip(*labels)  # Spiltting boneage and gender
-        boneage = np.array(boneage, dtype=np.int32)
-        gender = np.array(gender, dtype=np.int32)
-        
-        print("Shape of X:", (np.array(filtered_images_rgb,
-                                       dtype=np.float32)/255).shape)
-
-        # plot_gender(np.array(gender, dtype=np.int32))
-        # plot_boneage(np.array(boneage, dtype=np.int32))
 
         return (
-            np.array(filtered_images_rgb, dtype=np.float32)/255,
+            np.array(filtered_images, dtype=np.float32)/255,
             np.array(filtered_ids, dtype=np.int32),
             np.array(gender, dtype=np.int32).reshape(-1, 1),
             np.array(boneage, dtype=np.int32)
@@ -243,12 +239,17 @@ class DataLoader:
         corresponding label and vice versa. Missing image IDs or labels without
         corresponding images are logged as warnings.
 
-        :param image_ids: A list of IDs of the loaded images.
+        :param image_ids: IDs of the loaded images.
+        :type image_ids: list
+
         :return: A tuple containing:
+
             - `label_pairs`: A NumPy array of pairs (boneage, gender) for each
             valid image.
+            
             - `valid_ids`: A list of image IDs that have a corresponding label
             in the CSV.
+
         :raises FileNotFoundError: If the labels file cannot be found at the
         specified path.
         :raises ValueError: If required columns ('id', 'boneage', 'male') are

@@ -9,7 +9,7 @@ from tensorflow import keras
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
 
 from boneage_regression.utils import (
-    is_numeric,
+    is_integer,
     check_rate,
     get_last_conv_layer_name,
     str2bool,
@@ -23,12 +23,12 @@ class UtilsTest(unittest.TestCase):
         """Test cases for the is_numeric function."""
 
         # Valid integer string should return True
-        self.assertTrue(is_numeric("123"))
+        self.assertTrue(is_integer("123"))
 
         # Invalid inputs should return False
-        self.assertFalse(is_numeric("abc"))    # Alphabetic string
-        self.assertFalse(is_numeric(0.1))      # Float
-        self.assertFalse(is_numeric([1, 1]))   # List of integers
+        self.assertFalse(is_integer("abc"))    # Alphabetic string
+        self.assertFalse(is_integer(0.1))      # Float
+        self.assertFalse(is_integer([1, 1]))   # List of integers
 
     def test_check_rate(self):
         """Test cases for the check_rate function."""

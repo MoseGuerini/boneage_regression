@@ -23,19 +23,19 @@ jobs:
       # Run tests one by one, with separate commands for each test file
       - run:
           name: Run tests for hyperparameters.py
-          command: python -m unittest tests.hyperparameters_test 
+          command: python -m unittest Tests.hyperparameters_test 
 
       - run:
           name: Run tests for utils.py
-          command: python -m unittest tests.utils_test 
+          command: python -m unittest Tests.utils_test 
 
       - run:
           name: Run tests for data_class.py
-          command: python -m unittest tests.data_class_test
+          command: python -m unittest Tests.data_class_test
 
       - run:
           name: Run tests for model_class.py
-          command: python -m unittest tests.model_class_test
+          command: python -m unittest Tests.model_class_test
 
 workflows:
   version: 2  # Workflow version

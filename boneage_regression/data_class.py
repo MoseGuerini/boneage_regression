@@ -4,7 +4,7 @@ import numpy as np
 from loguru import logger
 import pandas as pd
 
-from utils import is_numeric, sorting_and_preprocessing
+from utils import is_numeric, convert_and_resize
 
 try:
     import matlab.engine
@@ -197,7 +197,7 @@ class DataLoader:
         if self._preprocessing:
             self.preprocess_images()
 
-        # Ordering file names
+        # Ordering file names numerically
         image_files = [f for f in path.iterdir() if
                        f.is_file() and is_numeric(f.stem)]
         image_files = sorted(image_files, key=lambda x: int(x.stem))
@@ -205,16 +205,15 @@ class DataLoader:
         if self._num_images:
             image_files = image_files[:self._num_images]
 
-        images, ids = sorting_and_preprocessing(image_files,
-                                                    self._target_size)
+        images, ids = convert_and_resize(image_files,
+                                        self._target_size)
 
         logger.info(f"{len(images)} images loaded.")
 
-        # Loading labels
+        # Loading labels and identifying missing ones
         labels, missing_ids = self.load_labels(ids)
 
-        # Discarding images whose ID is present in missing_ids
-        # (they would have no labels)
+        # Filtering out images with missing labels
         filtered_images = [img for img, img_id in zip(images, ids) if
                                img_id not in missing_ids]
         filtered_ids = [img_id for img_id in ids if img_id not in missing_ids]
@@ -250,14 +249,11 @@ class DataLoader:
             - `valid_ids`: list of image IDs that have a corresponding label
             in the CSV.
 
-        :raises FileNotFoundError: If the labels file cannot be found at the
-        specified path.
-
         :raises ValueError: If required columns ('id', 'boneage', 'male') are
         missing from the CSV.
         """
 
-        df = pd.read_csv(self.labels_path, nrows=self.num_images)
+        df = pd.read_csv(self._labels_path, nrows=self._num_images)
         df.columns = df.columns.str.lower()
 
         # Searching for missing informations
@@ -277,13 +273,13 @@ class DataLoader:
                           label_id not in image_ids]
 
         if missing_ids:
-            logger.warning(f"Warning: The following image IDs are missing in"
-                           f" the label file:"
+            logger.warning("Warning: The following image IDs are missing in"
+                           " the label file:"
                            f"{', '.join(map(str, missing_ids))}")
 
         if missing_images:
-            logger.warning(f"Warning: The following labels do not correspond"
-                           f" to any image:"
+            logger.warning("Warning: The following labels do not correspond"
+                           " to any image:"
                            f"{', '.join(map(str, missing_images))}")
 
         label_df = df[df['id'].isin(image_ids)]

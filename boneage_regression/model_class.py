@@ -1,13 +1,12 @@
-import sys
 import pathlib
-from loguru import logger
-import matplotlib.pyplot as plt
 
 import keras
-from keras import callbacks, models
 import keras_tuner as kt
-from sklearn.model_selection import KFold
 import numpy as np
+import matplotlib.pyplot as plt
+from keras import callbacks
+from loguru import logger
+from sklearn.model_selection import KFold
 
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
@@ -51,12 +50,13 @@ class CnnModel:
 
     This class enables the user to train and evaluate a CNN model,
     perform hyperparameter tuning, generate predictions, and visualize results
-    such as Grad-CAM heatmaps. The model can be trained using k-fold
-    cross-validation, and the best model can be selected based on performance
+    such as Grad-CAM heatmaps. The model is trained using k-fold
+    cross-validation, and the best model is selected based on performance
     metrics like mean absolute error (MAE) and R-squared (R²).
 
     Attributes:
         _X_train: The feature data for training.
+        
         _X_gender_train: The gender-specific feature data for training.
         _y_train: The target labels for training.
         _X_test: The feature data for testing.

@@ -166,8 +166,6 @@ def hyperp_dict(
     :type conv_layers: list[int]
     :param conv_filters: List of possible numbers of filters per conv layer.
     :type conv_filters: list[int]
-    :param dense_units: List of possible numbers of units in dense layers.
-    :type dense_units: list[int]
     :param dense_depth: List of possible numbers of dense layers.
     :type dense_depth: list[int]
     :param dropout_rate: List of possible dropout rates.

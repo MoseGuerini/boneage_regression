@@ -252,7 +252,7 @@ class DataLoader:
 
         :raises FileNotFoundError: If the labels file cannot be found at the
         specified path.
-        
+
         :raises ValueError: If required columns ('id', 'boneage', 'male') are
         missing from the CSV.
         """

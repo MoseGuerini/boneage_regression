@@ -244,14 +244,15 @@ class DataLoader:
 
         :return: A tuple containing:
 
-            - `label_pairs`: A NumPy array of pairs (boneage, gender) for each
+            - `label_pairs`: NumPy array of pairs (boneage, gender) for each
             valid image.
-            
-            - `valid_ids`: A list of image IDs that have a corresponding label
+
+            - `valid_ids`: list of image IDs that have a corresponding label
             in the CSV.
 
         :raises FileNotFoundError: If the labels file cannot be found at the
         specified path.
+        
         :raises ValueError: If required columns ('id', 'boneage', 'male') are
         missing from the CSV.
         """

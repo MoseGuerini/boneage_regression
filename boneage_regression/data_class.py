@@ -52,7 +52,7 @@ class DataLoader:
             raise FileNotFoundError(
                 f"Invalid path: {value}. The directory does not exist."
             )
-        self.__dict__["image_path"] = path
+        self._image_path = path
 
     @property
     def labels_path(self):
@@ -65,7 +65,7 @@ class DataLoader:
             raise FileNotFoundError(
                 f"Invalid path: {value}. The file does not exist."
             )
-        self.__dict__["labels_path"] = path
+        self._labels_path = path
 
     @property
     def target_size(self):
@@ -142,7 +142,7 @@ class DataLoader:
         """
         
         # Start a matlab process to augment contrast and center the images
-        file_path = pathlib.Path(__file__).resolve()
+        file_path = pathlib.Path().resolve()
         logger.info("Performing MATLAB preprocessing...")
 
         eng = matlab.engine.start_matlab()
@@ -293,3 +293,11 @@ class DataLoader:
         label_pairs = np.array(list(zip(boneage, gender)))
 
         return label_pairs, missing_ids
+    
+    
+test_data = r"C:\Users\nicco\boneage_regression\Test_dataset\Test"
+test_csv = r"C:\Users\nicco\boneage_regression\Test_dataset\test.csv"
+data_test = DataLoader(
+    test_data,
+    test_csv
+    )

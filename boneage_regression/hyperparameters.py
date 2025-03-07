@@ -38,7 +38,7 @@ def build_model(hp):
     The model consists of two branches:
     - An image-processing branch with convolutional layers.
     - A gender feature branch that is concatenated with the extracted
-      image features.
+    image features.
 
     The final output is a regression prediction.
 

@@ -118,9 +118,6 @@ class CnnModel:
         visualize_gradcam_batch():
             Visualizes Grad-CAM heatmaps overlaid on test images with
             the lowest and highest prediction errors.
-
-        load_trained_model(model_path):
-            Loads a pre-trained model from a specified file path.
     """
     def __init__(
             self,
@@ -319,8 +316,10 @@ class CnnModel:
         # Split training dataset for the current fold
         X_train_fold = self.X_train[train_idx]
         X_val_fold = self.X_train[val_idx]
+
         X_gender_train_fold = self.X_gender_train[train_idx]
         X_gender_val_fold = self.X_gender_train[val_idx]
+
         y_train_fold = self.y_train[train_idx]
         y_val_fold = self.y_train[val_idx]
 
@@ -573,26 +572,3 @@ class CnnModel:
         plt.close()
         save_image(image_name)
 
-    def load_trained_model(self, model_path):
-        """
-        Load a trained model from a file.
-
-        This method loads a pre-trained model from the specified file path
-        and stores it in the instance variable `_trained_model`. If the model
-        cannot be loaded due to an invalid path or corrupted file, a
-        `ValueError` is raised.
-
-        :param model_path: Path to the file containing the trained model.
-        :type model_path: str
-
-        :raises ValueError: If the model cannot be loaded due to an invalid
-                            path or corrupted file.
-
-        :return: None
-        :rtype: None
-        """
-        try:
-            self._trained_model = models.load_model(model_path)
-            logger.info(f"Model loaded from {model_path}")
-        except OSError as e:
-            raise ValueError(f"Failed to load model from {model_path}: {e}")

@@ -114,6 +114,46 @@ def check_rate(value):
     return value
 
 
+def convert_and_resize(image_files, target_size):
+    """
+    Resizes images for model input and switch to three
+    channels images.
+
+    This function reads image files, add a third channel,
+    normalizes pixel values and resizes images.
+
+    :param image_files: List of image file paths.
+    :type image_files: list[pathlib.Path]
+    :param target_size: Target size for resizing (height, width).
+    :type target_size: tuple[int, int]
+
+    :return: Images and their corresponding IDs.
+    :rtype: tuple[list[np.ndarray], list[int]]
+    """
+    images_rgb = []
+    ids = []
+
+    for img_path in image_files:
+        img = plt.imread(img_path)
+        img_id = int(img_path.stem) # drops file extension
+
+        # Add a third dimension
+        if len(img.shape) == 2:  # BW images
+            img = np.stack([img], axis=-1)
+
+        # Assert values to be in 0-255 range (avoiding visualization problem)
+        if img.dtype == np.float32 or img.dtype == np.float64:
+            img = (img * 255).astype(np.uint8)  # Convert to uint8
+
+        # Resize the image to the target size
+        img_resized = tf.image.resize(img, target_size).numpy()
+
+        images_rgb.append(img_resized)
+        ids.append(img_id)
+
+    return images_rgb, ids
+
+
 def hyperp_dict(
     conv_layers, conv_filters, dense_depth, dropout_rate
 ):
@@ -169,46 +209,6 @@ def is_numeric(s):
         # If conversion fails, log the error
         logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
         return False
-
-
-def sorting_and_preprocessing(image_files, target_size):
-    """
-    Sort and preprocess images for model input.
-
-    This function reads image files, converts grayscale images to RGB,
-    normalizes pixel values, resizes images, and returns processed images
-    along with their IDs.
-
-    :param image_files: List of image file paths.
-    :type image_files: list[pathlib.Path]
-    :param target_size: Target size for resizing (height, width).
-    :type target_size: tuple[int, int]
-
-    :return: Processed images as NumPy arrays and their corresponding IDs.
-    :rtype: tuple[list[np.ndarray], list[int]]
-    """
-    images_rgb = []
-    ids = []
-
-    for img_path in image_files:
-        img = plt.imread(img_path)
-        img_id = int(img_path.stem) # drops file extension
-
-        # Switch to RGB if needed (RGB are better from CNN point of view)
-        if len(img.shape) == 2:  # BW images
-            img = np.stack([img] * 1, axis=-1)
-
-        # Assert values to be in 0-255 range (avoiding visualization problem)
-        if img.dtype == np.float32 or img.dtype == np.float64:
-            img = (img * 255).astype(np.uint8)  # Convert to uint8
-
-        # Resize the image to the target size
-        img_resized = tf.image.resize(img, target_size).numpy()
-
-        images_rgb.append(img_resized)
-        ids.append(img_id)
-
-    return images_rgb, ids
 
 
 def get_last_conv_layer_name(model):

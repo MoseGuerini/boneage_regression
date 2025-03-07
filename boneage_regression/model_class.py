@@ -56,17 +56,26 @@ class CnnModel:
 
     Attributes:
         _X_train: The feature data for training.
-        
+
         _X_gender_train: The gender-specific feature data for training.
+
         _y_train: The target labels for training.
+
         _X_test: The feature data for testing.
+
         _X_gender_test: The gender-specific feature data for testing.
+
         _y_test: The target labels for testing.
+
         max_trials: The maximum number of trials for hyperparameter tuning.
+
         overwrite: Whether to overwrite existing tuner results.
+
         model_builder: A function that builds the model.
+
         model_list: A list to store models trained across different folds
                     during cross-validation.
+                    
         _trained_model: The best-trained model selected after cross-validation.
 
     Methods:
@@ -127,10 +136,10 @@ class CnnModel:
                         and labels for testing.
         :type data_test: DataClass
         :param overwrite: Whether to overwrite existing tuning results.
-                        Defaults to False.
+                        Default: False.
         :type overwrite: bool, optional
         :param max_trials: The maximum number of trials for hyperparameter
-                        tuning. Defaults to 10.
+                        tuning. Defaults: 10.
         :type max_trials: int, optional
         """
         self._X_train = data_train.X

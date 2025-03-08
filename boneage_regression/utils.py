@@ -165,11 +165,15 @@ def is_integer(s):
     :rtype: bool
     """
     try:
+        # Ensure s is not a float
+        if isinstance(s, float):
+            return False
+
         # Attempt to convert to an integer
         int(s)
         return True
-    except ValueError:
-        # If conversion fails, log the error
+
+    except (ValueError, TypeError):
         logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
         return False
 

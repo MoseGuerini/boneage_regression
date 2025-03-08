@@ -43,8 +43,8 @@ class DataLoader:
         """
         self._image_path = pathlib.Path(image_path)
         self._labels_path = pathlib.Path(labels_path)
-        self._target_size = target_size
-        self._num_images = num_images
+        self.target_size = target_size
+        self.num_images = num_images
         self._preprocessing = preprocessing
         self._num_workers = num_workers
         self.X, self.ids, self.X_gender, self.y = self.load_images()

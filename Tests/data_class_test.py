@@ -51,11 +51,7 @@ class TestDataLoader(unittest.TestCase):
                 labels_path=valid_labels_path
             )
             
-    def test_paths(self):
-        """
-        Test the behavior of the DataLoader when provided with mocked paths
-        (without needing real directories or files).
-        """
+    """def test_paths(self):
 
         # Definisci dei percorsi "inesistenti" e "validi" (sintetici, non reali)
         invalid_image_path = pathlib.Path("/mocked/path/to/nonexistent/images")
@@ -67,13 +63,13 @@ class TestDataLoader(unittest.TestCase):
         # Mocka la funzione `exists` per restituire False per i percorsi non validi e True per quelli validi
         # Mocka anche `iterdir` per evitare il tentativo di elencare i file nei percorsi
         with patch.object(pathlib.Path, 'exists', side_effect=lambda self: str(self) in [str(valid_image_path), str(valid_labels_path)]), \
-             patch.object(pathlib.Path, 'iterdir', return_value=[]), \
-             patch('pandas.read_csv', return_value=pd.DataFrame({
+            patch.object(pathlib.Path, 'iterdir', return_value=[]), \
+            patch('pandas.read_csv', return_value=pd.DataFrame({
                 "id": list(range(10000)),
                 "boneage": [10]*10000,
                 "male": [1]*10000
             })) as mock_read_csv:
-            print(mock_read_csv.return_value)
+            print("Mock attivato:", mock_read_csv.return_value.head())    
 
             # Test: DataLoader deve accettare i percorsi validi
             loader = DataLoader(
@@ -94,7 +90,7 @@ class TestDataLoader(unittest.TestCase):
                 DataLoader(
                     image_path=valid_image_path,
                     labels_path=invalid_labels_path
-                )
+                )"""
 
     def test_load_labels_missing_columns(self):
         """

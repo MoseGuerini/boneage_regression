@@ -8,7 +8,7 @@ from tensorflow import keras
 # Add the "boneage_regression" directory to sys.path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
 
-from boneage_regression.utils import (
+from utils import (
     is_integer,
     check_rate,
     get_last_conv_layer_name,
@@ -19,7 +19,7 @@ from boneage_regression.utils import (
 
 class UtilsTest(unittest.TestCase):
 
-    def test_is_numeric(self):
+    def test_is_integer(self):
         """Test cases for the is_numeric function."""
 
         # Valid integer string should return True

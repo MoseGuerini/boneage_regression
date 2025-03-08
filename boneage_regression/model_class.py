@@ -516,13 +516,10 @@ class CnnModel:
 
         # Adjust the layout and show the figure
         plt.tight_layout()
-        plt.show(block=False)
 
         # Save the image
-        image_name = 'heat_map.png'
-        plt.savefig(image_name)  # Local saving
+        save_image('heat_map.png')
         plt.close()
-        save_image(image_name)
 
     def save_model(self, model=None, filename="best_model.keras"):
         """

@@ -376,8 +376,7 @@ def save_image(file_name, folder_name='Plots'):
     if image_path.exists():
         image_path.unlink()
 
-    # Rename the file to save it in the destination folder
-    pathlib.Path(file_name).rename(image_path)
+    plt.savefig(image_path)
 
 
 def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):

@@ -63,13 +63,11 @@ def plot_loss_metrics(history, fold):
 
     # Show the figure
     plt.tight_layout()
-    plt.show(block=False)
 
     # Save the image
     image_name = f'fold{fold}_andamento_loss_folder.png'.format(fold)
-    plt.savefig(image_name)  # Local saving
-    plt.close()
     save_image(image_name)
+    plt.close()
 
 
 def plot_predictions(y_true, y_pred):
@@ -115,14 +113,9 @@ def plot_predictions(y_true, y_pred):
     plt.legend(fontsize=14)
     plt.tight_layout()
 
-    # Show the figure
-    plt.show(block=False)
-
     # Save the image
-    image_name = f'predictions.png'
-    plt.savefig(image_name)  # Local saving
+    save_image('predictions.png')
     plt.close()
-    save_image(image_name)
 
 
 def plot_accuracy_threshold(y_pred, y_test, threshold=5):
@@ -167,11 +160,7 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
     plt.grid(True)
-    plt.show(block=False)
 
     # Save the image
-    image_name = f'accuracy.png'
-    plt.savefig(image_name)  # Local saving
-    plt.grid(True)
+    save_image('accuracy.png')
     plt.close()
-    save_image(image_name)

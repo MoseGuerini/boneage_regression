@@ -162,6 +162,23 @@ class DataLoader:
         self._num_images = value
 
     @property
+    def num_workers(self):
+        return self._num_workers
+    
+    @num_workers.setter
+    def num_workers(self, value):
+        if hasattr(self, "_num_workers"):
+            raise AttributeError(
+                "num_workers cannot be modified after assignment."
+            )
+        if value is not None and (not isinstance(value, int) or value <= 0):
+            raise ValueError(
+                f"Invalid num_workers: {value}."
+                f" Must be a positive integer or None."
+            )
+        self._num_workers = value
+    
+    @property
     def preprocessing(self):
         return self._preprocessing
 
@@ -204,8 +221,8 @@ class DataLoader:
         eng.preprocessing(
             str(self._image_path),
             str(dir_path.parent / 'Preprocessed_images' / self._image_path.name),
-            self.num_workers,
-            self.target_size[1],
+            self._num_workers,
+            self._target_size[1],
             nargout=0
         )
 

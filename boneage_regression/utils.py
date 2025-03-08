@@ -241,38 +241,40 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
     were important for the model's decision.
 
     :param img_array: The input image(s) to process.
-    :type img_array: np.ndarray
+    :type img_array: list[np.ndarray]
+
     :param model: The trained model used to generate the predictions.
     :type model: keras.Model
+
     :param last_conv_layer_name: The name of the last convolutional layer in the model.
     :type last_conv_layer_name: str
 
     :return: The Grad-CAM heatmap.
     :rtype: np.ndarray
-
-    :raises ValueError: If the model doesn't contain the specified convolutional layer.
     """
+    # Modify the model to output both the last conv layer and predictions
     grad_model = keras.models.Model(
         model.inputs,
         [model.get_layer(last_conv_layer_name).output, model.output]
     )
 
+    # Record operations for gradient computation and perform a forward pass
     with tf.GradientTape() as tape:
         conv_outputs, predictions = grad_model(img_array, training=False)
         loss = predictions[:, 0]
-        # Supponiamo che sia una rete di regressione/scoring ############
 
+    # Compute gradients of the output w.r.t. the feature maps
     grads = tape.gradient(loss, conv_outputs)
 
+    # Average gradients across spatial dimensions
     pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
+    # Generate and process the heatmap, applying ReLU and normalization
     heatmap = tf.reduce_mean(tf.multiply(pooled_grads, conv_outputs), axis=-1)
     heatmap = heatmap.numpy()[0]
     heatmap = np.maximum(heatmap, 0)  # ReLU
     heatmap /= (np.max(heatmap) + 1e-8)  # Avoid division by zero
-
-    # Normalize and convert heatmap to uint8
-    heatmap = np.uint8(255 * heatmap) 
+    heatmap = np.uint8(255 * heatmap)
 
     return heatmap
 
@@ -288,11 +290,14 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     :param img: The input image to overlay the heatmap on.
     :type img: np.ndarray
+
     :param heatmap: The heatmap to overlay on the image.
     :type heatmap: np.ndarray
+
     :param alpha: The blending factor between the image and the heatmap.
                   (Default is 0.4)
     :type alpha: float, optional
+
     :param colormap: The colormap to use for the heatmap visualization.
                      (Default is 'jet')
     :type colormap: str, optional
@@ -325,7 +330,6 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     return superimposed_img
 
-import pathlib
 
 def save_image(file_name, folder_name='Plots'):
     """

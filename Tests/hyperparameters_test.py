@@ -5,8 +5,8 @@ import pathlib
 # Add the "boneage_regression" directory to sys.path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
 
-from boneage_regression.hyperparameters import hyperp_space_size
-from boneage_regression.utils import hyperp_dict
+from hyperparameters import hyperp_space_size
+from utils import hyperp_dict
 
 class TestHyperparameters(unittest.TestCase):
     def test_hyperp_space_size(self):

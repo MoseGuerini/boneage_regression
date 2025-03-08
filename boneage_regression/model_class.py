@@ -474,7 +474,7 @@ class CnnModel:
         y_pred = self.predict()
 
         # Computes error between actual and predicted values
-        errors = np.abs(y_pred - self.y_test)
+        errors = np.abs(y_pred - self._y_test)
 
         # Selecting the images based on the prediction error
         sorted_indices = np.argsort(errors)
@@ -491,8 +491,8 @@ class CnnModel:
 
             # Prepare the image and auxiliary data for the model
             img_array = [
-                np.expand_dims(self.X_test[idx], axis=0),
-                np.expand_dims(self.X_gender_test[idx], axis=0)
+                np.expand_dims(self._X_test[idx], axis=0),
+                np.expand_dims(self._X_gender_test[idx], axis=0)
             ]
 
             # Generate Grad-CAM heatmap
@@ -502,24 +502,24 @@ class CnnModel:
                 last_conv_layer_name)
 
             # Prepare the original image
-            original_img = (self.X_test[idx] * 255).astype(np.uint8)
+            original_img = (self._X_test[idx] * 255).astype(np.uint8)
 
             # Overlay the heatmap on the original image
             superimposed_img = overlay_heatmap(original_img, heatmap)
 
-            # Mostra l'immagine nel subplot corrispondente
+            # Show images in corresponding subplots
             axes[row, col].imshow(superimposed_img)
             axes[row, col].set_title(
-                f"True = {self.y_test[idx]} m. Pred = {y_pred[idx]:.1f} m."
+                f"True = {self._y_test[idx]} m. Pred = {y_pred[idx]:.1f} m."
             )
-            axes[row, col].axis("off")  # Rimuove gli assi per pulizia
+            axes[row, col].axis("off")  # Remove axes
 
         # Adjust the layout and show the figure
         plt.tight_layout()
         plt.show(block=False)
 
         # Save the image
-        image_name = f'heat_map.png'
+        image_name = 'heat_map.png'
         plt.savefig(image_name)  # Local saving
         plt.close()
         save_image(image_name)

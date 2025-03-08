@@ -58,7 +58,7 @@ def build_model(hp):
     hp_filters = hp.Choice('conv_filters', hyperp['conv_filters'])
     hp_dropout = hp.Choice('dropout_rate', hyperp['dropout_rate'])
     hp_dense_depth = hp.Choice('dense_depth', hyperp['dense_depth'])
-    num_dense = 128
+    num_dense = 256
 
     # Variable number of convolutional layers
     for i in range(hp_num_conv_layers):
@@ -69,7 +69,7 @@ def build_model(hp):
             padding='same'
         )(x)
         x = layers.BatchNormalization()(x)
-        x = layers.MaxPooling2D((4, 4))(x)
+        x = layers.MaxPooling2D((2, 2))(x)
 
     # Flattening
     x = layers.Flatten()(x)

@@ -413,12 +413,12 @@ class CnnModel:
 
         log_training_summary(best_hps_list, loss_list, mae_list, r2_list)
 
-        # Finding the model with the minimum MAE
-        min_mae_index = np.argmin(mae_list)
-        self._trained_model = model_list[min_mae_index]
+        # Finding the model with the minimum MSE
+        min_mse_index = np.argmin(loss_list)
+        self._trained_model = model_list[min_mse_index]
         logger.info(
-            f"Selected model for predictions from fold {min_mae_index + 1} "
-            f"with MAE = {mae_list[min_mae_index]:.2f}"
+            f"Selected model for predictions from fold {min_mse_index + 1} "
+            f"with MSE = {loss_list[min_mse_index]:.2f}"
         )
 
     def predict(self, model=None):

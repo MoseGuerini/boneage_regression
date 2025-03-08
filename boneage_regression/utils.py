@@ -407,9 +407,9 @@ def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):
         logger.info(f"Fold {i}: {params_str}")
 
     # Loss
-    logger.info(f"List of losses: {loss_list}")
+    logger.info(f"List of MSE: {loss_list}")
     logger.info(
-        f"Mean loss: {np.mean(loss_list):.2f}+/-"
+        f"Mean MSE: {np.mean(loss_list):.2f}+/-"
         f"{np.std(loss_list, ddof=1):.2f}"
     )
 

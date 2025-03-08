@@ -337,11 +337,3 @@ class DataLoader:
         label_pairs = np.array(list(zip(boneage, gender)))
 
         return label_pairs, missing_ids
-    
-    
-test_data = r"C:\Users\nicco\boneage_regression\Test_dataset\Test"
-test_csv = r"C:\Users\nicco\boneage_regression\Test_dataset\test.csv"
-data_test = DataLoader(
-    test_data,
-    test_csv
-    )

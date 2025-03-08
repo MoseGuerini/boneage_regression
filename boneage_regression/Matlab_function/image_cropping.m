@@ -4,7 +4,7 @@ function img_cropped = image_cropping(img)
         img = rgb2gray(img);
     end
 
-    img = double(img); % Convert to double for Python comaptibility
+    img = double(img); % Convert to double for Python compatibility
 
     % Normalize the image
     max_intensity = prctile(img(:), 99.5);

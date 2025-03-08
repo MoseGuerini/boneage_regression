@@ -9,6 +9,14 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage
 
 from data_class import DataLoader
 
+# Obtain script folder and parent folder
+current_dir = pathlib.Path(__file__).parent
+parent_dir = current_dir.parent
+
+# Attach the correct paths
+valid_image_path = parent_dir / "Test_dataset" / "Test"
+valid_labels_path = parent_dir / "Test_dataset" / "test.csv"
+
 
 class TestDataLoader(unittest.TestCase):
 
@@ -16,15 +24,6 @@ class TestDataLoader(unittest.TestCase):
         """
         Test the behavior of the DataLoader when provided with valid and invalid paths.
         """
-
-        # Define the current and parent directory paths
-        current_dir = pathlib.Path(__file__).parent
-        parent_dir = current_dir.parent
-
-        # Define valid image and label paths
-        valid_image_path = parent_dir / "Test_dataset" / "Test"
-        valid_labels_path = parent_dir / "Test_dataset" / "test.csv"
-
         # Test: DataLoader should accept valid paths
         loader = DataLoader(
             image_path=valid_image_path,
@@ -50,59 +49,11 @@ class TestDataLoader(unittest.TestCase):
                 image_path=invalid_image_path,
                 labels_path=valid_labels_path
             )
-            
-    """def test_paths(self):
-
-        # Definisci dei percorsi "inesistenti" e "validi" (sintetici, non reali)
-        invalid_image_path = pathlib.Path("/mocked/path/to/nonexistent/images")
-        invalid_labels_path = pathlib.Path("/mocked/path/to/nonexistent/labels.csv")
-
-        valid_image_path = pathlib.Path("/mocked/path/to/valid/images")
-        valid_labels_path = pathlib.Path("/mocked/path/to/valid/labels.csv")
-
-        # Mocka la funzione `exists` per restituire False per i percorsi non validi e True per quelli validi
-        # Mocka anche `iterdir` per evitare il tentativo di elencare i file nei percorsi
-        with patch.object(pathlib.Path, 'exists', side_effect=lambda self: str(self) in [str(valid_image_path), str(valid_labels_path)]), \
-            patch.object(pathlib.Path, 'iterdir', return_value=[]), \
-            patch('pandas.read_csv', return_value=pd.DataFrame({
-                "id": list(range(10000)),
-                "boneage": [10]*10000,
-                "male": [1]*10000
-            })) as mock_read_csv:
-            print("Mock attivato:", mock_read_csv.return_value.head())    
-
-            # Test: DataLoader deve accettare i percorsi validi
-            loader = DataLoader(
-                image_path=valid_image_path,
-                labels_path=valid_labels_path
-            )
-            self.assertEqual(loader.image_path, valid_image_path)
-            self.assertEqual(loader.labels_path, valid_labels_path)
-
-            # Test: DataLoader deve sollevare un errore per i percorsi non validi
-            with self.assertRaises(FileNotFoundError):
-                DataLoader(
-                    image_path=invalid_image_path,
-                    labels_path=valid_labels_path
-                )
-
-            with self.assertRaises(FileNotFoundError):
-                DataLoader(
-                    image_path=valid_image_path,
-                    labels_path=invalid_labels_path
-                )"""
 
     def test_load_labels_missing_columns(self):
         """
         Test that a CSV file with a missing column raises a ValueError.
         """
-
-        # Define the current and parent directory paths
-        current_dir = pathlib.Path(__file__).parent
-        parent_dir = current_dir.parent
-
-        # Define valid image path and invalid labels path with missing column
-        valid_image_path = parent_dir / "Test_dataset" / "Test"
         invalid_labels_path = (
             parent_dir / "Test_dataset" / "training_missing_column.csv"
         )
@@ -118,14 +69,6 @@ class TestDataLoader(unittest.TestCase):
         """
         Test that the target_size parameter is validated properly.
         """
-
-        # Define the current and parent directory paths
-        current_dir = pathlib.Path(__file__).parent
-        parent_dir = current_dir.parent
-
-        # Define valid image path, labels path, and valid target size
-        valid_image_path = parent_dir / "Test_dataset" / "Test"
-        valid_labels_path = parent_dir / "Test_dataset" / "test.csv"
         valid_target_size = (256, 256)
 
         # Test with valid target size
@@ -158,17 +101,9 @@ class TestDataLoader(unittest.TestCase):
         """
         Test that the num_images parameter is validated properly.
         """
-
-        # Define current and parent directory paths
-        current_dir = pathlib.Path(__file__).parent
-        parent_dir = current_dir.parent
-
-        # Define valid image and labels paths
-        valid_image_path = parent_dir / "Test_dataset" / "Test"
-        valid_labels_path = parent_dir / "Test_dataset" / "test.csv"
-
         # Test with valid num_images
         valid_num_images = 10
+
         loader = DataLoader(
             image_path=valid_image_path,
             labels_path=valid_labels_path,
@@ -202,50 +137,16 @@ class TestDataLoader(unittest.TestCase):
                     num_images=invalid_value
                 )
 
-
-    """def test_load_labels_missing_columns(self):
-
-        # Simulate a DataFrame with a missing 'id' column
-        mock_df = pd.DataFrame({
-            "id": [1, 2, 3],
-            "boneage": [100, 120, 130],
-            "male": [1, 0, 1]
-        })
-
-        with patch("boneage_regression.data_class.pd.read_csv", return_value=mock_df):
-
-            # Mock pathlib.Path.iterdir() to prevent filesystem access
-            with patch("pathlib.Path.iterdir", return_value=[]):
-
-                # Use dummy paths (not actually accessed)
-                dummy_image_path = "dummy/image/path"
-                dummy_labels_path = "dummy/labels/path"
-
-                # Ensure a ValueError is raised due to the missing 'id' column
-                with self.assertRaises(ValueError):
-                    DataLoader(
-                        image_path=dummy_image_path,
-                        labels_path=dummy_labels_path
-                    ) """
-    
     def test_preprocessing(self):
-
-        # Obtain script folder and parent folder
-        current_dir = pathlib.Path(__file__).parent
-        parent_dir = current_dir.parent
-
-        # Attach the correct paths
-        valid_image_path = parent_dir / "Test_dataset" / "Test"
-        valid_labels_path = parent_dir / "Test_dataset" / "test.csv"
-
+        """Test preprocessing"""
         valid_preprocessing = False
+
         loader_false = DataLoader(
             image_path=valid_image_path,
             labels_path=valid_labels_path,
             preprocessing=valid_preprocessing
             )
         self.assertEqual(loader_false.preprocessing, valid_preprocessing)
-        
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-function preprocessing2(input_folder, output_folder,num_workers,target_size)
+function preprocessing2(input_folder, output_folder, num_workers, target_size)
 
     % If num_workers has not been specified, set 12
     
@@ -45,12 +45,6 @@ function preprocessing2(input_folder, output_folder,num_workers,target_size)
     % preprocessing need
     % Start parallel loop over the images
     parfor i = 1:num_images
-
-        % Just be sure everything is working
-        % (useful if you have hundreds of images)
-        if mod(i, 100) == 0
-            disp(['Processing image: ', num2str(i)]);
-        end
 
         % Obtaining image path
         img_path = fullfile(input_folder, image_files(i).name);

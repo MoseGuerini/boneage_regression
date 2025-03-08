@@ -38,14 +38,9 @@ class UtilsTest(unittest.TestCase):
         self.assertEqual(check_rate(0.1), 0.1)    # Actual float
 
         # Invalid inputs should raise argparse.ArgumentTypeError
-        with self.assertRaises(argparse.ArgumentTypeError):
-            check_rate("abc")    # Non-numeric string
-
-        with self.assertRaises(argparse.ArgumentTypeError):
-            check_rate([1, 2])   # List input
-
-        with self.assertRaises(argparse.ArgumentTypeError):
-            check_rate(8)        # Integer (out of valid float range)
+        for invalid in ["abc", [1, 2], 8]:
+            with self.assertRaises(argparse.ArgumentTypeError):
+                check_rate(invalid)
 
     def test_str2bool(self):
         """Test cases for the str2bool function."""
@@ -90,9 +85,8 @@ class UtilsTest(unittest.TestCase):
             (tmp_path / 'test.csv').touch()
 
             # Call check_folder and validate the result
-            result = check_folder(tmp_dir)
-            self.assertIsInstance(result, pathlib.Path)
-            self.assertEqual(result, tmp_path)
+            self.assertIsInstance(check_folder(tmp_dir), pathlib.Path)
+            self.assertEqual(check_folder(tmp_dir), tmp_path)
 
         # Check that missing folders/files raise an error
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -122,7 +116,7 @@ class UtilsTest(unittest.TestCase):
         ])
         self.assertEqual(get_last_conv_layer_name(model), "conv_single")
 
-        # Test with a model having Conv2D layers along with other types of layers
+        # Test with a model having Conv2D layers and other types of layers
         model = keras.Sequential([
             keras.layers.Conv2D(16, (3, 3), activation="relu", name="conv1"),
             keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool1"),
@@ -132,7 +126,7 @@ class UtilsTest(unittest.TestCase):
         ])
         self.assertEqual(get_last_conv_layer_name(model), "conv2")
 
-        # Test with a model that contains no Conv2D layers, expecting a ValueError
+        # Test with a model that contains no Conv2D layers
         model = keras.Sequential([
             keras.layers.Dense(128, activation="relu", name="dense1"),
             keras.layers.Dense(64, activation="relu", name="dense2")

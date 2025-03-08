@@ -10,23 +10,23 @@ from model_class import CnnModel
 
 
 class MockData:
-    """Class to mock training and testing data for CNN_Model."""
+    """Class to mock training and testing data for CnnModel."""
     def __init__(self):
         self.X = np.random.rand(10, 64, 64, 3)
         self.X_gender = np.random.rand(10, 1)
         self.y = np.random.rand(10)
 
 
-class TestCNNModel(unittest.TestCase):
+class TestCnnModel(unittest.TestCase):
 
     def setUp(self):
-        """Initialize mock data and CNN_Model."""
+        """Initialize mock data and CnnModel."""
         data_train = MockData()
         data_test = MockData()
         self.model = CnnModel(data_train, data_test)
 
     def test_initialize_model(self):
-        """Test if CNN_Model is initialized with mock data correctly."""
+        """Test if CnnModel is initialized with mock data correctly."""
 
         # Check that training data has the correct shape
         self.assertEqual(self.model._X_train.shape, (10, 64, 64, 3))

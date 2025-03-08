@@ -154,6 +154,26 @@ def convert_and_resize(image_files, target_size):
     return images_rgb, ids
 
 
+def is_integer(s):
+    """
+    Check if a given value is a valid integer.
+
+    :param s: The value to verify. This can be a string or other types.
+    :type s: str, bool, float, list
+
+    :return: True if the value can be interpreted as an integer, False otherwise.
+    :rtype: bool
+    """
+    try:
+        # Attempt to convert to an integer
+        int(s)
+        return True
+    except ValueError:
+        # If conversion fails, log the error
+        logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
+        return False
+
+
 def hyperp_dict(
     conv_layers, conv_filters, dense_depth, dropout_rate
 ):
@@ -166,8 +186,6 @@ def hyperp_dict(
     :type conv_layers: list[int]
     :param conv_filters: List of possible numbers of filters per conv layer.
     :type conv_filters: list[int]
-    :param dense_units: List of possible numbers of units in dense layers.
-    :type dense_units: list[int]
     :param dense_depth: List of possible numbers of dense layers.
     :type dense_depth: list[int]
     :param dropout_rate: List of possible dropout rates.
@@ -184,31 +202,6 @@ def hyperp_dict(
     }
     set_hyperp(hyperp_dict)
     return hyperp_dict
-
-
-def is_numeric(s):
-    """
-    Check if a given value is a valid integer.
-
-    :param s: The value to verify. This can be a string or other types.
-    :type s: str, bool, float, list
-
-    :return: True if the value can be interpreted as an integer, False otherwise.
-    :rtype: bool
-    """
-    try:
-        # Check if the input is a boolean, float, or list
-        if isinstance(s, bool) or isinstance(s, float) or isinstance(s, list):
-            logger.warning(f"Invalid value '{s}'. It should be an integer.")
-            return False
-        
-        # Attempt to convert to an integer
-        int(s)
-        return True
-    except ValueError:
-        # If conversion fails, log the error
-        logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
-        return False
 
 
 def get_last_conv_layer_name(model):

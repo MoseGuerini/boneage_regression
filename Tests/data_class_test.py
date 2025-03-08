@@ -138,7 +138,7 @@ class TestDataLoader(unittest.TestCase):
             labels_path=valid_labels_path,
             target_size=valid_target_size
         )
-        self.assertEqual(loader.target_size, valid_target_size)
+        self.assertEqual(loader._target_size, valid_target_size)
 
         # Define invalid target sizes and test each case
         invalid_target_sizes = [

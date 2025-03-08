@@ -165,8 +165,7 @@ if __name__ == '__main__':
 
     space_size = hyperp_space_size(hyperp_dict)
 
-    #max_trials = np.rint(args.searching_fraction*space_size)
-    max_trials = 1
+    max_trials = np.rint(args.searching_fraction*space_size)
 
     # 3. Create and train the model
     model = CnnModel(

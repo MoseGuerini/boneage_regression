@@ -14,7 +14,53 @@ except ImportError:
 
 class DataLoader:
     """
-    Class for loading and preprocessing the BoneAge dataset.
+    A class for loading and preprocessing the BoneAge dataset.
+
+    This class is responsible for reading images from a specified directory, 
+    loading corresponding labels from a CSV file, resizing images to a target 
+    size, handling missing labels, and optionally performing preprocessing 
+    using MATLAB. The images and labels are stored as NumPy arrays, ready 
+    for use in machine learning models.
+
+    Attributes:
+        _image_path: Path to the directory containing the images.
+
+        _labels_path: Path to the CSV file containing image labels.
+
+        _target_size: Target size for image resizing (must be square).
+
+        _num_images: Number of images to load (None to load all).
+
+        _preprocessing: Boolean flag indicating whether MATLAB preprocessing
+        is applied.
+
+        _num_workers: Number of workers for parallel preprocessing in MATLAB.
+
+        X: NumPy array containing the preprocessed images.
+
+        ids: NumPy array containing the corresponding image IDs.
+
+        X_gender: NumPy array containing gender labels.
+
+        y: NumPy array containing bone age labels.
+
+    Methods:
+        __init__(image_path, labels_path, target_size=(256, 256), 
+                 num_images=None, preprocessing=False, num_workers=12):
+            Initializes the DataLoader instance and loads the images 
+            and labels.
+
+        preprocess_images():
+            Applies MATLAB-based preprocessing to the images, including 
+            intensity normalization, resizing, and padding.
+
+        load_images():
+            Loads images from the dataset directory, resizes them, 
+            filters missing labels, and applies preprocessing if enabled.
+
+        load_labels(image_ids):
+            Loads labels from the CSV file, ensuring that each image 
+            has a corresponding label and vice versa.
     """
 
     def __init__(

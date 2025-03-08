@@ -202,13 +202,13 @@ class DataLoader:
         eng.addpath(str(file_path.parent / 'Matlab_function'))
         eng.preprocessing(
             str(self._image_path),
-            str(file_path.parent.parent / 'Processed_images' / self._image_path.name ),
+            str(file_path.parent.parent / 'Preprocessed_images' / self._image_path.name ),
             self._num_workers, self._target_size[1], nargout=0
         )
 
-        self._image_path = str(file_path.parent.parent / 'processed_images'/ self._image_path.name)
+        self._image_path = str(file_path.parent.parent / 'Preprocessed_images'/ self._image_path.name)
         eng.quit()
-        logger.info(f"{self._image_path.name} processed images saved in processed_images/{self._image_path.name}")
+        logger.info(f"{self._image_path.name} processed images saved in Preprocessed_images/{self._image_path.name}")
 
 
     def load_images(self):

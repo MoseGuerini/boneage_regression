@@ -6,7 +6,7 @@ import numpy as np
 # Add the "boneage_regression" directory to sys.path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage_regression"))
 
-from boneage_regression.model_class import CnnModel
+from model_class import CnnModel
 
 
 class MockData:

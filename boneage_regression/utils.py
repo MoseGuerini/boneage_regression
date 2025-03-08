@@ -327,14 +327,14 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
 import pathlib
 
-def save_image(file_name, folder_name='Graphics'):
+def save_image(file_name, folder_name='Plots'):
     """
     Saves an image to a specified folder, creating the folder if it does not exist.
 
     :param file_name: The name of the image file to be saved.
     :type file_name: str
     :param folder_name: The name of the folder where the image should be saved. 
-                         Defaults to 'Graphics'. 
+                         Defaults to 'Plots'. 
     :type folder_name: str
     """
     

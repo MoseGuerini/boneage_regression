@@ -1,4 +1,5 @@
 import pathlib
+import sys
 
 import keras
 import keras_tuner as kt
@@ -10,8 +11,14 @@ from sklearn.model_selection import KFold
 
 from hyperparameters import build_model
 from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
-<<<<<<< HEAD
-from utils import  make_gradcam_heatmap, overlay_heatmap, save_image, get_last_conv_layer_name
+from utils import (
+    make_gradcam_heatmap,
+    overlay_heatmap,
+    save_image,
+    log_training_summary,
+    get_last_conv_layer_name,
+)
+
 
 # Setting logger configuration
 logger.remove()
@@ -19,14 +26,6 @@ logger.add(
     sys.stdout,
     format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
     level="INFO"
-=======
-from utils import (
-    make_gradcam_heatmap,
-    overlay_heatmap,
-    save_image,
-    log_training_summary,
-    get_last_conv_layer_name,
->>>>>>> e979c3c45e64dc2f418b64975aadcbcd7fedbcdb
 )
 
 
@@ -366,10 +365,6 @@ class CnnModel:
         """
         Trains the model using k-fold cross-validation.
 
-<<<<<<< HEAD
-        :param epochs: The number of epochs to train the model. Defaults to 300.
-        :type epochs: int
-=======
         The method performs k-fold cross-validation on the training data.
         It loops over each fold, calling the `train_on_fold` method for
         training and evaluation. The results, including the best
@@ -380,7 +375,6 @@ class CnnModel:
 
         :param k: The number of folds for cross-validation. Defaults to 5.
         :type k: int, optional
->>>>>>> e979c3c45e64dc2f418b64975aadcbcd7fedbcdb
 
         :return: None
             This method does not return anything. It trains the model and
@@ -403,32 +397,13 @@ class CnnModel:
 
             # Store the results
             best_hps_list.append(best_hps)
-<<<<<<< HEAD
-
-            # Training the best model
-            history = best_model.fit(
-                [X_train_fold, X_gender_train_fold], 
-                y_train_fold,
-                epochs=1,
-                batch_size=64,
-                validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
-                verbose=1
-            )
-
-            # Save the best model
-            self.model_list.append(best_model)
-
-            # Plot training metrics
-            plot_loss_metrics(history, fold=fold)
 
             # Evaluate the model on the test dataset and log the results
             loss, mae, r2 = best_model.evaluate(
                 [self._X_test, self._X_gender_test], self._y_test, verbose=2
             )
 
-=======
             loss_list.append(loss)
->>>>>>> e979c3c45e64dc2f418b64975aadcbcd7fedbcdb
             mae_list.append(mae)
             r2_list.append(r2)
             model_list.append(best_model)
@@ -570,7 +545,7 @@ class CnnModel:
         """
         model = model if model is not None else self._trained_model
         # Set model directory and path
-        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'models'
+        model_dir = pathlib.Path(__file__).resolve().parent.parent / 'Models'
         model_dir.mkdir(parents=True, exist_ok=True)
         model_path = model_dir / filename
 

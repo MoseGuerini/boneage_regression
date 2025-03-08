@@ -16,10 +16,10 @@ class DataLoader:
     """
     A class for loading and preprocessing the BoneAge dataset.
 
-    This class is responsible for reading images from a specified directory, 
-    loading corresponding labels from a CSV file, resizing images to a target 
-    size, handling missing labels, and optionally performing preprocessing 
-    using MATLAB. The images and labels are stored as NumPy arrays, ready 
+    This class is responsible for reading images from a specified directory,
+    loading corresponding labels from a CSV file, resizing images to a target
+    size, handling missing labels, and optionally performing preprocessing
+    using MATLAB. The images and labels are stored as NumPy arrays, ready
     for use in machine learning models.
 
     Attributes:
@@ -45,21 +45,21 @@ class DataLoader:
         y: NumPy array containing bone age labels.
 
     Methods:
-        __init__(image_path, labels_path, target_size=(256, 256), 
+        __init__(image_path, labels_path, target_size=(256, 256),
                  num_images=None, preprocessing=False, num_workers=12):
-            Initializes the DataLoader instance and loads the images 
+            Initializes the DataLoader instance and loads the images
             and labels.
 
         preprocess_images():
-            Applies MATLAB-based preprocessing to the images, including 
+            Applies MATLAB-based preprocessing to the images, including
             intensity normalization, resizing, and padding.
 
         load_images():
-            Loads images from the dataset directory, resizes them, 
+            Loads images from the dataset directory, resizes them,
             filters missing labels, and applies preprocessing if enabled.
 
         load_labels(image_ids):
-            Loads labels from the CSV file, ensuring that each image 
+            Loads labels from the CSV file, ensuring that each image
             has a corresponding label and vice versa.
     """
 
@@ -192,24 +192,32 @@ class DataLoader:
             of workers, the default value from your MATLAB environment will
             be used.
         """
-        
-        # Start a matlab process to augment contrast and center the images
-        file_path = pathlib.Path().resolve()
-        logger.info("Performing MATLAB preprocessing...")
 
+        # Start a matlab process to augment contrast and center the images
+        dir_path = pathlib.Path().resolve()
+
+        logger.info("Performing MATLAB preprocessing...")
         eng = matlab.engine.start_matlab()
 
-        eng.addpath(str(file_path.parent / 'Matlab_function'))
+        eng.addpath(str(dir_path / 'Matlab_function'))
+
         eng.preprocessing(
             str(self._image_path),
-            str(file_path.parent.parent / 'Preprocessed_images' / self._image_path.name ),
-            self._num_workers, self._target_size[1], nargout=0
+            str(dir_path.parent / 'Preprocessed_images' / self._image_path.name),
+            self.num_workers,
+            self.target_size[1],
+            nargout=0
         )
 
-        self._image_path = str(file_path.parent.parent / 'Preprocessed_images'/ self._image_path.name)
+        self._image_path = (
+            dir_path.parent / 'Preprocessed_images' / self._image_path.name
+        )
         eng.quit()
-        logger.info(f"{self._image_path.name} processed images saved in Preprocessed_images/{self._image_path.name}")
 
+        logger.info(
+            f"{self._image_path.name} processed images saved in "
+            f"Preprocessed_images/{self._image_path.name}"
+        )
 
     def load_images(self):
         """
@@ -252,7 +260,7 @@ class DataLoader:
             image_files = image_files[:self._num_images]
 
         images, ids = convert_and_resize(image_files,
-                                        self._target_size)
+                                         self._target_size)
 
         logger.info(f"{len(images)} images loaded.")
 
@@ -261,7 +269,7 @@ class DataLoader:
 
         # Filtering out images with missing labels
         filtered_images = [img for img, img_id in zip(images, ids) if
-                               img_id not in missing_ids]
+                           img_id not in missing_ids]
         filtered_ids = [img_id for img_id in ids if img_id not in missing_ids]
 
         logger.info(f"{len(filtered_images)} images are ready to be used.")
@@ -309,7 +317,7 @@ class DataLoader:
 
         if missing_columns:
             raise ValueError(f"Missing required columns: {missing_columns}")
-        
+
         # Searching for images with no corresponding labels
         missing_ids = [img_id for img_id in image_ids if
                        img_id not in df['id'].to_numpy()]

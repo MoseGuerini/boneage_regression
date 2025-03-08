@@ -29,23 +29,31 @@ def check_folder(value):
 
     # Check if the path exists and if it is a directory
     if not folder_path.exists() or not folder_path.is_dir():
-        raise argparse.ArgumentTypeError(f"Error: '{value}' is not a valid directory.")
+        raise argparse.ArgumentTypeError(
+            f"Error: '{value}' is not a valid directory."
+        )
 
     # Define required folders and CSV files
     required_folders = ['Training', 'Test']
     required_files = ['training.csv', 'test.csv']
 
     # Check for missing folders
-    missing_items = [item for item in required_folders if not (folder_path / item).is_dir()]
+    missing_items = [
+        item for item in required_folders if not (folder_path / item).is_dir()
+    ]
 
     # Check for missing files
-    missing_items += [item for item in required_files if not (folder_path / item).is_file()]
+    missing_items += [
+        item for item in required_files if not (folder_path / item).is_file()
+    ]
 
     # Log errors if any required items are missing
     if missing_items:
         for item in missing_items:
             logger.error(f"Missing required item: {item}")
-        raise argparse.ArgumentTypeError("Validation failed: missing required files or directories.")
+        raise argparse.ArgumentTypeError(
+            "Validation failed: missing required files or directories."
+        )
 
     return folder_path
 
@@ -54,8 +62,8 @@ def str2bool(value):
     """
     Convert a string representation of a boolean to an actual boolean value.
 
-    This function is useful for parsing boolean arguments from the command line.
-    It accepts common string representations of boolean values.
+    This function is useful for parsing boolean arguments from the command
+     line. It accepts common string representations of boolean values.
 
     :param value: The string to convert.
     :type value: str or bool
@@ -135,7 +143,7 @@ def convert_and_resize(image_files, target_size):
 
     for img_path in image_files:
         img = plt.imread(img_path)
-        img_id = int(img_path.stem) # drops file extension
+        img_id = int(img_path.stem)  # drops file extension
 
         # Add a third dimension
         if len(img.shape) == 2:  # BW images
@@ -161,7 +169,8 @@ def is_integer(s):
     :param s: The value to verify. This can be a string or other types.
     :type s: str, bool, float, list
 
-    :return: True if the value can be interpreted as an integer, False otherwise.
+    :return: True if the value can be interpreted as an integer,
+     False otherwise.
     :rtype: bool
     """
     try:
@@ -174,7 +183,10 @@ def is_integer(s):
         return True
 
     except (ValueError, TypeError):
-        logger.warning(f"Value '{s}' is not valid. The image file name must be an integer.")
+        logger.warning(
+            f"Value '{s}' is not valid."
+            "The image file name must be an integer."
+        )
         return False
 
 
@@ -246,7 +258,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name):
     :param model: The trained model used to generate the predictions.
     :type model: keras.Model
 
-    :param last_conv_layer_name: The name of the last convolutional layer in the model.
+    :param last_conv_layer_name: The name of the last convolutional layer.
     :type last_conv_layer_name: str
 
     :return: The Grad-CAM heatmap.
@@ -285,8 +297,8 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     This function resizes the heatmap to match the input image size, normalizes
     it to the range [0, 1], applies a specified colormap, and then combines
-    the heatmap with the original image using alpha blending. The resulting image
-    will highlight the important regions according to the heatmap.
+    the heatmap with the original image using alpha blending. The resulting
+    image will highlight the important regions according to the heatmap.
 
     :param img: The input image to overlay the heatmap on.
     :type img: np.ndarray
@@ -307,7 +319,8 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
     """
     # Resize the heatmap to adapt it to the original image size
     heatmap_resized = np.array(
-        Image.fromarray(heatmap).resize((img.shape[1], img.shape[0]), Image.BILINEAR)
+        Image.fromarray(heatmap)
+        .resize((img.shape[1], img.shape[0]), Image.BILINEAR)
     )
 
     # Normalizing heatmap between 0 and 1
@@ -317,7 +330,7 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
     # Apply Matplotlib colormap
     cmap = plt.get_cmap(colormap)
-    heatmap_colored = cmap(heatmap_resized)[:, :, :3]  # Consider only RGB channels
+    heatmap_colored = cmap(heatmap_resized)[:, :, :3]
 
     # If the image is in uint8, convert it to float32 for blending
     img = img.astype(np.float32) / 255.0 if img.dtype == np.uint8 else img
@@ -333,45 +346,48 @@ def overlay_heatmap(img, heatmap, alpha=0.4, colormap='jet'):
 
 def save_image(file_name, folder_name='Plots'):
     """
-    Saves an image to a specified folder, creating the folder if it does not exist.
+    Saves an image to a specified folder,creating the folder
+    if it does not exist.
 
     :param file_name: The name of the image file to be saved.
     :type file_name: str
-    :param folder_name: The name of the folder where the image should be saved. 
-                         Defaults to 'Plots'. 
+
+    :param folder_name: The name of the folder where the image should be saved.
+     Default: Plots.
     :type folder_name: str
     """
-    
+
     # Get the current working directory
     current_path = pathlib.Path.cwd()
-    
+
     # Move two levels up
     parent_folder = current_path.parent
-    
+
     # Construct the folder path
     folder_path = parent_folder / folder_name
-    
+
     # Create the folder if it does not exist
     folder_path.mkdir(exist_ok=True)
 
     # Construct the path for the image file
     image_path = folder_path / file_name
-    
+
     # If a file with the same name already exists, delete it
     if image_path.exists():
         image_path.unlink()
-    
+
     # Rename the file to save it in the destination folder
     pathlib.Path(file_name).rename(image_path)
 
 
 def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):
     """
-    Logs the summary of the training process, including the best hyperparameters,
-    loss values, mean absolute error (MAE), and R² score for each fold.
+    Logs the summary of the training process, including the best
+    hyperparameters, loss values, mean absolute error (MAE),
+    and R² score for each fold.
 
-    :param best_hps_list: List of dictionaries containing the best hyperparameters 
-                           for each fold.
+    :param best_hps_list: List of dictionaries containing the best
+    hyperparameters for each fold.
     :type best_hps_list: list[dict]
 
     :param loss_list: List of loss values for each fold.
@@ -383,16 +399,31 @@ def log_training_summary(best_hps_list, loss_list, mae_list, r2_list):
     :param r2_list: List of R² score values for each fold.
     :type r2_list: list[float]
     """
+    # Hyperparameters
     logger.info("Best hyperparameters for each fold:")
     for i, best_hps in enumerate(best_hps_list, 1):
-        params_str = ", ".join([f"{param}: {value}" for param, value in best_hps.values.items()])
+        params_str = ", ".join(
+            [f"{param}: {value}" for param, value in best_hps.values.items()]
+        )
         logger.info(f"Fold {i}: {params_str}")
 
+    # Loss
     logger.info(f"List of losses: {loss_list}")
-    logger.info(f"Mean loss: {np.mean(loss_list):.2f}+/- {np.std(loss_list, ddof=1):.2f}")
+    logger.info(
+        f"Mean loss: {np.mean(loss_list):.2f}+/-"
+        f"{np.std(loss_list, ddof=1):.2f}"
+    )
 
+    # Mae
     logger.info(f"List of MAE: {mae_list}")
-    logger.info(f"Mean MAE: {np.mean(mae_list):.2f}+/- {np.std(mae_list, ddof=1):.2f}")
+    logger.info(
+        f"Mean MAE: {np.mean(mae_list):.2f}+/-"
+        f"{np.std(mae_list, ddof=1):.2f}"
+    )
 
+    # R2 score
     logger.info(f"List of R2 score: {r2_list}")
-    logger.info(f"Mean R2 score: {np.mean(r2_list):.2f}+/- {np.std(r2_list, ddof=1):.2f}")
+    logger.info(
+        f"Mean R2 score: {np.mean(r2_list):.2f}+/- "
+        f"{np.std(r2_list, ddof=1):.2f}"
+    )

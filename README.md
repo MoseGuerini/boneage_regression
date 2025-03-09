@@ -28,14 +28,14 @@ You are able to download data yourself using the following link: https://www.rsn
 ## Preprocessing
 The image are on greyscale but the size and the pixels intensity are different from one image to another. To stardize the dataset we renormalize the images from 0 and 1 exploiting two features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
 Secondly we cut as much background as we can in order to center the hand. 
-Thirdly we padded images in order to make them squared.
-Lastly we resized them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
+Thirdly we pad images in order to make them squared.
+Lastly we resize them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
 The preprocessing was implemented using Matlab.
-Some examples of processed and unprocessed fotos follows.
+Some examples of processed and unprocessed photos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1378.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1378.png" alt="Preprocessing" width="200"> |
 
@@ -43,7 +43,7 @@ Some examples of processed and unprocessed fotos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1478.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1478.png" alt="Preprocessing" width="200"> |
 
@@ -51,7 +51,7 @@ Some examples of processed and unprocessed fotos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1399.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1399.png" alt="Preprocessing" width="200"> |
 
@@ -59,7 +59,7 @@ Some examples of processed and unprocessed fotos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1418.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1418.png" alt="Preprocessing" width="200"> |
 

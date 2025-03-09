@@ -116,7 +116,7 @@ def plot_predictions(y_true, y_pred):
     plt.close()
 
 
-def plot_accuracy_threshold(y_pred, y_test, threshold=5):
+def plot_error_distribution(y_pred, y_test, threshold=5):
     """
     Plots the distribution of prediction errors.
 
@@ -142,9 +142,9 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     # Compute accuracy within threshold
     correct_predictions = np.sum(errors <= threshold)
     total_predictions = len(y_test)
-    accuracy = (correct_predictions / total_predictions) * 100
+    percentage_below_th = (correct_predictions / total_predictions) * 100
 
-    print(f"Accuracy: {accuracy:.2f}%")
+    logger.info(f"Prediction below threshold: {percentage_below_th:.2f}%")
 
     # Plot error distribution
     plt.figure(figsize=(10, 6))
@@ -160,5 +160,5 @@ def plot_accuracy_threshold(y_pred, y_test, threshold=5):
     plt.grid(True)
 
     # Save the image
-    save_image('accuracy.png')
+    save_image('error_distribution.png')
     plt.close()

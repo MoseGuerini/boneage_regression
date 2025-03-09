@@ -73,11 +73,9 @@ Some examples of processed and unprocessed fotos follows.
 the model with the minimum MSE in the test set. <br>
 
 The splitting of the dataset is summarized in the following figure:
-
 <div align="center">
 <img src="Example_images/kfold.png" width="400"> <br>
 </div>
-
 ## Hypermodel
 The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
 
@@ -98,15 +96,19 @@ The default hyperparameters values are shown in the following table: <br>
 | `dropout_rate`    |  0.1, 0.2, 0.3  | 
 
 # Results 
-We conclude showing an exemple of the output images provided by our code.
+We conclude showing an example of the output images provided by our code.
 - Learning Curves recorded for one fold:
-<img src="docs/images/Fold_1.png" width="1500"> <br>
-- ROC curves and AUCs relative to the testing data for each fold:
-<img src="docs/images/ROC_-_Testing_new.png" width="1500"> <br>
-- Confusion Matrices for each of the 5 folds:
-<img src="docs/images/Confusion_Matrices_new.png" width="1500"> <br>
-- Learning and Testing curves for the models' ensamble:
-<img src="docs/images/ensemble_plot_new.png" width="1500"> <br>
+<div align="center">
+<img src="Example_images/fold5_andamento_loss_folder.png" width="1500">  
+</div>
+- Predictions on the test set:
+<div align="center">
+<img src="Example_images/predictions.png" width="500">  
+</div>
+- Predictions distribution, a reference error of 5 months is also shown:
+<div align="center">
+<img src="Example_images/boneage_distribution.png" width="500"> 
+</div>
 
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.

@@ -66,7 +66,7 @@ def plot_loss_metrics(history, fold):
     plt.tight_layout()
 
     # Save the image
-    image_name = f'fold{fold}_andamento_loss_folder.png'.format(fold)
+    image_name = f'fold{fold}_loss.png'
     save_image(image_name)
     plt.close()
 

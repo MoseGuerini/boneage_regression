@@ -5,7 +5,7 @@ import keras
 import keras_tuner as kt
 import numpy as np
 import matplotlib.pyplot as plt
-from keras import callbacks
+from keras import callbacks, models
 from loguru import logger
 from sklearn.model_selection import KFold
 
@@ -79,7 +79,9 @@ class CnnModel:
 
         max_trials: The maximum number of trials for hyperparameter tuning.
 
-        overwrite: Whether to overwrite existing tuner results.
+        overwrite_tuner: Whether to overwrite existing tuner results.
+
+        overwrite_model: Whether to overwrite existing trained models.
 
         model_builder: A function that builds the model.
 
@@ -128,7 +130,8 @@ class CnnModel:
             self,
             data_train,
             data_test,
-            overwrite=False,
+            overwrite_tuner=False,
+            overwrite_model=False,
             max_trials=10):
         """
         Initialize the CNN_Model instance with training and testing datasets.
@@ -142,7 +145,10 @@ class CnnModel:
         :param data_test: The testing data object containing the features
                         and labels for testing.
         :type data_test: DataLoader
-        :param overwrite: Whether to overwrite existing tuning results.
+        :param overwrite_tuner: Whether to overwrite existing tuning results.
+                        Default: False.
+        :type overwrite: bool, optional
+        :param overwrite_model: Whether to overwrite existing treained models.
                         Default: False.
         :type overwrite: bool, optional
         :param max_trials: The maximum number of trials for hyperparameter
@@ -158,7 +164,8 @@ class CnnModel:
         self._y_test = data_test.y
 
         self.max_trials = max_trials
-        self.overwrite = overwrite
+        self.overwrite_tuner = overwrite_tuner
+        self.overwrite_model = overwrite_model
         self.model_builder = build_model
         self._trained_model = None
 
@@ -256,7 +263,7 @@ class CnnModel:
         tuner_dir.mkdir(parents=True, exist_ok=True)
 
         # Set project name for the tuner
-        if self.overwrite:
+        if self.overwrite_tuner:
             project_name = 'new_tuner'
         else:
             project_name = 'new_tuner'    # change later to 'base_tuner'
@@ -266,7 +273,7 @@ class CnnModel:
             model_builder,
             objective='val_loss',
             max_trials=self.max_trials,
-            overwrite=self.overwrite,
+            overwrite=self.overwrite_tuner,
             directory=tuner_dir,
             project_name=project_name
         )
@@ -280,7 +287,7 @@ class CnnModel:
             epochs=epochs,
             validation_data=([X_val, X_gender_val], y_val),
             batch_size=batch_size,
-            verbose=1,
+            verbose=0,
             callbacks=[stop_early]
         )
 
@@ -338,10 +345,10 @@ class CnnModel:
         history = best_model.fit(
             [X_train_fold, X_gender_train_fold],
             y_train_fold,
-            epochs=300,
+            epochs=1,
             batch_size=64,
             validation_data=([X_val_fold, X_gender_val_fold], y_val_fold),
-            verbose=1
+            verbose=0
         )
 
         # Plot the training loss and metrics
@@ -391,22 +398,59 @@ class CnnModel:
         # Loop over each fold and train using the train_on_fold method
         for train_idx, val_idx in kf.split(self._X_train):
             logger.info(f"Training fold {fold}/{k}")
-            (best_hps, best_model, loss, mae, r2) = (
-                self.train_on_fold(fold, train_idx, val_idx)
+
+            model_filename = (
+                pathlib.Path(__file__).parent.parent / f"Models/model_fold{fold}.keras"
             )
 
-            # Store the results
-            best_hps_list.append(best_hps)
+            # If overwrite_model = False and model exist, skip training
+            if model_filename.exists() and not self.overwrite_model:
+                # Log and load pre-trained model
+                logger.info(
+                    f"Model for fold {fold} already exists. "
+                    "Skipping training."
+                )
+                best_model = models.load_model(model_filename, compile=True)
 
-            # Evaluate the model on the test dataset and log the results
-            loss, mae, r2 = best_model.evaluate(
-                [self._X_test, self._X_gender_test], self._y_test, verbose=2
-            )
+                # Evaluate the model on the test dataset
+                loss, mae, r2 = best_model.evaluate(
+                    [self._X_test, self._X_gender_test], self._y_test, verbose=2
+                )
 
-            loss_list.append(loss)
-            mae_list.append(mae)
-            r2_list.append(r2)
-            model_list.append(best_model)
+                # Store and log results
+                lists = [loss_list, mae_list, r2_list, model_list]
+                values = [loss, mae, r2, best_model]
+
+                for lst, val in zip(lists, values):
+                    lst.append(val)
+
+                logger.info(
+                    f"Evaluation on fold {fold}: "
+                    f"Loss = {loss:.4f}, MAE = {mae:.4f}, r2 = {r2:.4f}"
+                )
+            else:
+                # Log and train new model
+                logger.info(f"Training model for fold {fold}/{k}.")
+                (best_hps, best_model, loss, mae, r2) = (
+                    self.train_on_fold(fold, train_idx, val_idx)
+                )
+
+                # Evaluate the model on the test dataset
+                loss, mae, r2 = best_model.evaluate(
+                    [self._X_test, self._X_gender_test], self._y_test, verbose=2
+                )
+
+                # Store and log results
+                lists = [best_hps_list, loss_list, mae_list, r2_list, model_list]
+                values = [best_hps, loss, mae, r2, best_model]
+
+                for lst, val in zip(lists, values):
+                    lst.append(val)
+                logger.info(
+                    f"Evaluation on fold {fold}: "
+                    f"Loss = {loss:.4f}, MAE = {mae:.4f}, r2 = {r2:.4f}"
+                )
+
             fold += 1
 
         logger.info("Training completed for all folds, logging summary:")

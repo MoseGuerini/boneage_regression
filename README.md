@@ -37,7 +37,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="Example_images/No_preprocessing/1378.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1378.png" alt="Preprocessing" width="200"> |
+| <img src="Readme_images/No_preprocessing/1378.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1378.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -45,7 +45,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="Example_images/No_preprocessing/1478.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1478.png" alt="Preprocessing" width="200"> |
+| <img src="Readme_images/No_preprocessing/1478.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1478.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -53,7 +53,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="Example_images/No_preprocessing/1399.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1399.png" alt="Preprocessing" width="200"> |
+| <img src="Readme_images/No_preprocessing/1399.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1399.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -61,7 +61,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="Example_images/No_preprocessing/1418.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1418.png" alt="Preprocessing" width="200"> |
+| <img src="Readme_images/No_preprocessing/1418.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1418.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -74,7 +74,7 @@ the model with the minimum MSE in the test set. <br>
 
 The splitting of the dataset is summarized in the following figure:
 <div align="center">
-<img src="Example_images/kfold.png" width="400"> <br>
+<img src="Readme_images/kfold.png" width="400"> <br>
 </div>
 
 ## Hypermodel
@@ -104,24 +104,24 @@ The default hyperparameters values are shown in the following table: <br>
 We conclude showing an example of the output images provided by our code.
 - Learning Curves recorded for one fold:
 <div align="center">
-<img src="Example_images/fold5_andamento_loss_folder.png" width="1500">  
+<img src="Readme_images/fold5_andamento_loss_folder.png" width="1500">  
 </div>
 
 - Predictions on the test set:
 <div align="center">
-<img src="Example_images/predictions.png" width="500">  
+<img src="Readme_images/predictions.png" width="500">  
 </div>
 
 - Predictions distribution, a reference error of 5 months is also shown:
 <div align="center">
-<img src="Example_images/boneage_distribution.png" width="500"> 
+<img src="Readme_images/boneage_distribution.png" width="500"> 
 </div>
 
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:
 
-![The Heat Map indicate areas on which the NN focused before giving its predictions](Example_images/heat_map.png)
+![The Heat Map indicate areas on which the NN focused before giving its predictions](Readme_images/heat_map.png)
 
 # Usage
 Simply download this repository and run using default parameters.
@@ -149,7 +149,10 @@ options:
   -h, --help            show this help message and exit
   -fp , --folder_path   Path to the directory containing training and test images as well as csv files with the labels. Default: Preprocessed_images
   -p , --preprocessing  If False avoid image preprocessing. Default: False
-  -o , --overwrite      If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False
+  -ot , --overwrite_tuner 
+                        If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False
+  -om , --overwrite_model 
+                        If False skip training and load pre-trained models. Default: False
   -cl  [ ...], --conv_layers  [ ...]
                         List of values for the hypermodel number of conv2d layers Default [3, 4, 5]
   -cf  [ ...], --conv_filters  [ ...]
@@ -170,7 +173,9 @@ In order to pass a list of hyperparameters, separate them with a space like this
 python main.py -cl 2 3 -cf 32 -dd 1 2 -dr 0.2 0.3
 ```
 
-All the images produced by the code will be automatically saved in a folder named `Plots`.
+All the images produced by the code will be automatically saved in a folder named `Plots`. 
+
+If the code breaks of you want to interrupt the code and resume it later (even though we discourage doing so) re-run it  using default values for `overwrite_tuner` (`False`) and `overwrite_model` (`False`). By doing this the code will resume from where it left off.
 
 ## Attribution
 

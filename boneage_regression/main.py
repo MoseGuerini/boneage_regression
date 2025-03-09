@@ -68,12 +68,22 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        "-o",
-        "--overwrite",
+        "-ot",
+        "--overwrite_tuner",
         metavar="",
         type=str2bool,
         help="If False avoid hyperparameters search "
         "and use the pre-saved hyperpar. Default: False",
+        default=False,
+    )
+
+    parser.add_argument(
+        "-om",
+        "--overwrite_model",
+        metavar="",
+        type=str2bool,
+        help="If False skip training and load pre-trained "
+        "models. Default: False",
         default=False,
     )
 
@@ -166,7 +176,8 @@ if __name__ == '__main__':
     model = CnnModel(
         data_train=data_train,
         data_test=data_test,
-        overwrite=args.overwrite,
+        overwrite_tuner=args.overwrite_tuner,
+        overwrite_model=args.overwrite_model,
         max_trials=max_trials
         )
 

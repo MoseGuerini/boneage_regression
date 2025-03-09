@@ -259,14 +259,8 @@ class CnnModel:
         # Set directory for tuner results
         base_path = pathlib.Path(__file__).resolve().parent.parent
         tuner_subdir = f'tuner_{fold}'
-        tuner_dir = base_path / 'tuner' / tuner_subdir
+        tuner_dir = base_path / 'Tuner' / tuner_subdir
         tuner_dir.mkdir(parents=True, exist_ok=True)
-
-        # Set project name for the tuner
-        if self.overwrite_tuner:
-            project_name = 'new_tuner'
-        else:
-            project_name = 'new_tuner'    # change later to 'base_tuner'
 
         # Initialize the BayesianOptimization tuner
         tuner = kt.BayesianOptimization(
@@ -275,7 +269,7 @@ class CnnModel:
             max_trials=self.max_trials,
             overwrite=self.overwrite_tuner,
             directory=tuner_dir,
-            project_name=project_name
+            project_name='new_tuner'
         )
 
         # Set up early stop
@@ -335,6 +329,7 @@ class CnnModel:
         y_val_fold = self.y_train[val_idx]
 
         # Hyperparameter tuning for this fold
+        logger.info(f"Performing hyperparameter search for fold {fold}")
         best_hps, best_model = self.hyperparameter_tuning(
             X_train_fold, X_gender_train_fold, y_train_fold,
             X_val_fold, X_gender_val_fold, y_val_fold,
@@ -342,6 +337,7 @@ class CnnModel:
         )
 
         # Train the best model on this fold
+        logger.info(f"Performing training for fold {fold}")
         history = best_model.fit(
             [X_train_fold, X_gender_train_fold],
             y_train_fold,
@@ -397,7 +393,7 @@ class CnnModel:
 
         # Loop over each fold and train using the train_on_fold method
         for train_idx, val_idx in kf.split(self._X_train):
-            logger.info(f"Training fold {fold}/{k}")
+            logger.info(f"Entering fold {fold}/{k}")
 
             model_filename = (
                 pathlib.Path(__file__).parent.parent / f"Models/model_fold{fold}.keras"
@@ -429,8 +425,7 @@ class CnnModel:
                     f"Loss = {loss:.4f}, MAE = {mae:.4f}, r2 = {r2:.4f}"
                 )
             else:
-                # Log and train new model
-                logger.info(f"Training model for fold {fold}/{k}.")
+                # Train new model
                 (best_hps, best_model, loss, mae, r2) = (
                     self.train_on_fold(fold, train_idx, val_idx)
                 )

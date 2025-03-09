@@ -97,13 +97,11 @@ In order to improve readability by performing encapsulation we build up two clas
 # Results 
 We conclude showing an exemple of the output images provided by our code.
 - Learning Curves recorded for one fold:
-<img src="docs/images/Fold_1.png" width="1500"> <br>
-- ROC curves and AUCs relative to the testing data for each fold:
-<img src="docs/images/ROC_-_Testing_new.png" width="1500"> <br>
-- Confusion Matrices for each of the 5 folds:
-<img src="docs/images/Confusion_Matrices_new.png" width="1500"> <br>
-- Learning and Testing curves for the models' ensamble:
-<img src="docs/images/ensemble_plot_new.png" width="1500"> <br>
+<img src="Example_images/fold5_andamento_loss_folder.png" width="1500"> <br>
+- Predictions on the test set:
+<img src="Example_images/predictions.png" width="500"> <br>
+- Predictions distribution, a reference error of 5 month is also shown (results obtain in the mentioned challenge):
+<img src="Example_images/boneage_distribution.png" width="500"> <br>
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:

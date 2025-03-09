@@ -87,6 +87,8 @@ In order to improve readability by performing encapsulation we build up two clas
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:
 
+![Descrizione dell'immagine](Example_images/heat_map.png)
+
 # Usage
 Simply download this repository and run using default parameters.
 ```python

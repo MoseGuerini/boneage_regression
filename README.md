@@ -103,7 +103,7 @@ The default hyperparameters values are shown in the following table: <br>
 We conclude showing an example of the output images provided by our code.
 - Learning Curves recorded for one fold:
 <div align="center">
-<img src="Example_images/fold5_loss.png" width="1500">  
+<img src="Readme_images/fold5_loss.png" width="1500">  
 </div>
 
 - Predictions on the test set:
@@ -113,7 +113,7 @@ We conclude showing an example of the output images provided by our code.
 
 - Predictions distribution, a reference error of 5 months is also shown:
 <div align="center">
-<img src="Example_images/error_distribution.png" width="500"> 
+<img src="Readme_images/error_distribution.png" width="500"> 
 </div>
 
 ## Heat Map

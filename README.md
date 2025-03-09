@@ -66,9 +66,9 @@ Some examples of processed and unprocessed fotos follows.
 </div>
 
 # Model building and training
- The process of model building and model training follows three main steps: 
+ The process of model building and model training follows three main steps: <br>
  • First a k-fold validation is performed on the training set. <br>
- • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters' space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in `Tuner` folder without any new search. <br>
+ • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters' space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
  • At the end of this process we are left with 5 trained models, where each one is the best model in his fold. The final model is selected as
 the model with the minimum MSE in the test set. <br>
 
@@ -76,6 +76,7 @@ The splitting of the dataset is summarized in the following figure:
 <div align="center">
 <img src="Example_images/kfold.png" width="400"> <br>
 </div>
+
 ## Hypermodel
 The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
 
@@ -88,12 +89,14 @@ laye <br>
 
 The default hyperparameters values are shown in the following table: <br>
 
+<div align="center">
 | Hyperparameters   |     Values      | 
 | ----------------  | ----------------|
 | `conv_layers`     |  3, 4, 5        | 
 | `conv_filters`    |  8, 16, 32      | 
 | `dense_depth`     |  1, 3, 5        | 
 | `dropout_rate`    |  0.1, 0.2, 0.3  | 
+</div>
 
 # Results 
 We conclude showing an example of the output images provided by our code.
@@ -101,10 +104,12 @@ We conclude showing an example of the output images provided by our code.
 <div align="center">
 <img src="Example_images/fold5_andamento_loss_folder.png" width="1500">  
 </div>
+
 - Predictions on the test set:
 <div align="center">
 <img src="Example_images/predictions.png" width="500">  
 </div>
+
 - Predictions distribution, a reference error of 5 months is also shown:
 <div align="center">
 <img src="Example_images/boneage_distribution.png" width="500"> 

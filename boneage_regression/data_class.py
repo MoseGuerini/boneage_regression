@@ -257,10 +257,10 @@ class DataLoader:
             (those with a corresponding label).
 
             - `gender` (np.ndarray): Corresponding gender for the
-            images (or `None` if not available).
+            images.
 
             - `boneage` (np.ndarray): Corresponding age for the
-            images (or `None` if not available).
+            images.
         """
 
         path = self._image_path
@@ -312,8 +312,11 @@ class DataLoader:
 
         :return: A tuple containing:
 
-            - `label_pairs`: NumPy array of pairs (boneage, gender) for each
-            valid image.
+            - `gender` (np.ndarray): Corresponding gender for the
+            images.
+
+            - `boneage` (np.ndarray): Corresponding age for the
+            images.
 
             - `valid_ids`: list of image IDs that have a corresponding label
             in the CSV.

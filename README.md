@@ -13,7 +13,6 @@ The aim of this reporsitory is to build and train a convolutional neural network
 + [Results](#Results)
   + [Heat Map](#Heat_Map)
 + [Usage](#Usage)
-+ [Output Example](#Output_Example)
 
 
 # Data
@@ -84,6 +83,15 @@ In order to improve readability by performing encapsulation we build up two clas
 - Model: on the other hand this class takes input data and train a model (whose hyperparameters can also be searched).
 
 # Results 
+We conclude showing an exemple of the output images provided by our code.
+- Learning Curves recorded for one fold:
+<img src="docs/images/Fold_1.png" width="1500"> <br>
+- ROC curves and AUCs relative to the testing data for each fold:
+<img src="docs/images/ROC_-_Testing_new.png" width="1500"> <br>
+- Confusion Matrices for each of the 5 folds:
+<img src="docs/images/Confusion_Matrices_new.png" width="1500"> <br>
+- Learning and Testing curves for the models' ensamble:
+<img src="docs/images/ensemble_plot_new.png" width="1500"> <br>
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:
@@ -135,18 +143,6 @@ In order to pass a list of hyperparameters, separate them with a space like this
 ```python
 python main.py -cl 2 3 -cf 32 -dd 1 2 -dr 0.2 0.3
 ```
-
-# Output Example
-We conclude showing an exemple of the output images provided by our code.
-- Learning Curves recorded for one fold:
-<img src="docs/images/Fold_1.png" width="1500"> <br>
-- ROC curves and AUCs relative to the testing data for each fold:
-<img src="docs/images/ROC_-_Testing_new.png" width="1500"> <br>
-- Confusion Matrices for each of the 5 folds:
-<img src="docs/images/Confusion_Matrices_new.png" width="1500"> <br>
-- Learning and Testing curves for the models' ensamble:
-<img src="docs/images/ensemble_plot_new.png" width="1500"> <br>
-
 ## Attribution
 
 This work builds upon the research presented in the following paper:

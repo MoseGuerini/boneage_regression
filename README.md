@@ -162,13 +162,16 @@ options:
                         Fraction of the hyperparameters space explored during hypermodel search. Default: 0.25
 ```
 
-Plese note that in order to be able to preprocess the images you must have **`Matlab`** and the `Python` module **`matlabengine`** installed (they are **not** included in the project's requirements). 
-If you want to run the code without installing **`Matlab`** and **`matlabengine`**, simply run the script using the default values for `folder_path` (`Preprocessed_images`) and `preprocessing` (`False`), this will skip the preprocessing using already preprocessed images in the Preprocessed_images folder.
+Plese note that in order to be able to preprocess the images you must have **`Matlab`** and the `Python` module **`matlab.engine`** installed (they are **not** included in the project's requirements). 
+If you want to run the code without installing **`Matlab`** and **`matlab.engine`**, simply run the script using the default values for `folder_path` (`Preprocessed_images`) and `preprocessing` (`False`), this will skip the preprocessing using already preprocessed images in the `Preprocessed_images` folder.
 
 In order to pass a list of hyperparameters, separate them with a space like this:
 ```python
 python main.py -cl 2 3 -cf 32 -dd 1 2 -dr 0.2 0.3
 ```
+
+All the images produced by the code will be automatically saved in a folder named `Plots`.
+
 ## Attribution
 
 This work builds upon the research presented in the following paper:

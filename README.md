@@ -68,7 +68,7 @@ Some examples of processed and unprocessed photos follows.
 # Model building and training
  The process of model building and model training follows three main steps: <br>
  • First a k-fold splitting is performed on the training set. <br>
- • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite_tuner` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
+ • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters space) and the best model is trained for 300 epochs. Hyperparameters optimization can be skipped setting the parameter `overwrite_tuner` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
  • At the end of this process we are left with 5 trained models, where each one is the best model in his fold. The final model is selected as
 the model with the minimum MSE in the test set. <br>
 
@@ -90,7 +90,7 @@ The default hyperparameters values are shown in the following table: <br>
 
 <div align="center">
 
-| Hyperparameters   |     Values      | 
+| Hyperparameter    |     Values      | 
 | ----------------  | ----------------|
 | `conv_layers`     |  3, 4, 5        | 
 | `conv_filters`    |  8, 16, 32      | 
@@ -101,12 +101,12 @@ The default hyperparameters values are shown in the following table: <br>
 
 # Results 
 We conclude showing an example of the output images provided by our code.
-- Learning Curves recorded for one fold:
+- Learning curves recorded for one fold:
 <div align="center">
 <img src="Readme_images/fold5_loss.png" width="1500">  
 </div>
 
-- Predictions on the test set:
+- Predictions of selected model on the test set:
 <div align="center">
 <img src="Readme_images/predictions.png" width="500">  
 </div>

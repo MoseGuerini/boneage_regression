@@ -123,7 +123,7 @@ Here are some examples of the best and the worst predictions:
 ![The Heat Map indicate areas on which the NN focused before giving its predictions](Readme_images/heat_map.png)
 
 # Usage
-We warmly invite the user to run the code on a GPU because of its computational cost (our training took several hours on a GPU). <br>
+We warmly invite the user to run the code on a GPU, because of its computational cost (our training took several hours on a GPU). <br>
 
 Simply download this repository and run using default parameters.
 ```python
@@ -176,7 +176,7 @@ python main.py -cl 2 3 -cf 32 -dd 1 2 -dr 0.2 0.3
 
 All the images produced by the code will be automatically saved in a folder named `Plots`. 
 
-If the code breaks of you want to interrupt the code and resume it later (even though we discourage doing so) re-run it  using default values for `overwrite_tuner` (`False`) and `overwrite_model` (`False`). By doing this the code will resume from where it left off.
+If the code breaks or you want to interrupt the code and resume it later (even though we discourage doing so) re-run it  using default values for `overwrite_tuner` (`False`) and `overwrite_model` (`False`). By doing so the code will resume from where it left off.
 
 ## Attribution
 

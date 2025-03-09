@@ -67,9 +67,9 @@ Some examples of processed and unprocessed fotos follows.
 the model with the minimum MSE in the test set.
 
 The splitting of the dataset is summarized in the following figure:
-
+<div align="center">
 <img src="Example_images/kfold.png" width="400"> <br>
-
+</div>
 ## Hypermodel
 The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
 
@@ -95,13 +95,20 @@ In order to improve readability by performing encapsulation we build up two clas
 - Model: on the other hand this class takes input data and train a model (whose hyperparameters can also be searched).
 
 # Results 
-We conclude showing an exemple of the output images provided by our code.
+We conclude showing an example of the output images provided by our code.
 - Learning Curves recorded for one fold:
-<img src="Example_images/fold5_andamento_loss_folder.png" width="1500"> <br>
+<div align="center">
+<img src="Example_images/fold5_andamento_loss_folder.png" width="1500">  
+</div>
 - Predictions on the test set:
-<img src="Example_images/predictions.png" width="500"> <br>
-- Predictions distribution, a reference error of 5 month is also shown (results obtain in the mentioned challenge):
-<img src="Example_images/boneage_distribution.png" width="500"> <br>
+<div align="center">
+<img src="Example_images/predictions.png" width="500">  
+</div>
+- Predictions distribution, a reference error of 5 months is also shown:
+<div align="center">
+<img src="Example_images/boneage_distribution.png" width="500"> 
+</div>
+
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:

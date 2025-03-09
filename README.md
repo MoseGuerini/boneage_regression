@@ -28,7 +28,7 @@ You are able to download data yourself using the following link: https://www.rsn
 ## Preprocessing
 The image are on greyscale but the size and the pixels intensity are different from one image to another. To stardize the dataset we renormalize the images from 0 and 1 exploiting two features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
 Secondly we cut as much background as we can in order to center the hand. 
-Thirdly we padded images in order to obtain squared ones.
+Thirdly we padded images in order to make them squared.
 Lastly we resized them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
 The preprocessing was implemented using Matlab.
 Some examples of processed and unprocessed fotos follows.

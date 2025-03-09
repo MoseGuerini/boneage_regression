@@ -60,13 +60,22 @@ Some examples of processed and unprocessed fotos follows.
 </div>
 
 # Neural Network
-
+The hypermodel consists of a variable number of convolutional blocks (Conv2D, BatchNormalization and MaxPooling), followed by a Flatten and a Dense (plus BatchNormalization) layer. The output is then concatenated with the gender features. Following there are a variable number of Dense plus Dropout layers and a final Dense layer with linear activation.
 ## Hypermodel
 The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
 • `Conv. layers`: number of convolutional layers of the network. <br>
-• `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters doubles with each successive layer.<br>
+• `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters grows linearly each successive layer.<br>
 • `Dense depth`: number of dense layer(s) after feature concatenation. <br>
 • `Dropout rate`: dropout rate of the final dense layer(s). <br>
+
+The default hyperparameters values are shown in the following table: <br>
+
+| Hyperparameters   |     Values      | 
+| ----------------  | ----------------|
+| `conv_layers`     |  3, 4, 5        | 
+| `conv_filters`    |  8, 16, 32      | 
+| `dense_depth`     |  1, 3, 5        | 
+| `dropout_rate`    |  0.1, 0.2, 0.3  | 
 
 ## Classes
 In order to improve readability by performing encapsulation we build up two classes: one to handle data and another to handle the model.
@@ -89,7 +98,7 @@ In case you are running this code for the first time remember to install the req
 pip install -r requirements.txt
 ```
 
-In order to select custom parameters, refer to the help
+In order to select custom parameters, refer to the help:
 ```python
 python main.py -h
 
@@ -118,6 +127,12 @@ options:
                         Fraction of the hyperparameters space explored during hypermodel search. Default: 0.25
 ```
 
+Plese note that in order to be able to preprocess the images you must have **`Matlab`** and the `Python` module **`matlabengine`** installed (they are **not** included in the project's requirements). If you want to run the code without installing **`Matlab`** and **`matlabengine`**, simply run the script using the default values for `folder_path` (`Preprocessed_images`) and `preprocessing` (`False`), this will skip the preprocessing using already preprocessed images in the Preprocessed_images folder.
+
+In order to pass a list of hyperparameters, separate them with a space like this:
+```python
+python main.py -cl 2 3 -cf 32 -dd 1 2 -dr 0.2 0.3
+```
 ## Attribution
 
 This work builds upon the research presented in the following paper:

@@ -62,7 +62,7 @@ def plot_loss_metrics(history, fold):
     plt.legend()
     plt.grid(True)
 
-    # Show the figure
+    # Adjust layout
     plt.tight_layout()
 
     # Save the image
@@ -109,10 +109,7 @@ def plot_predictions(y_true, y_pred):
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
     plt.grid(True)
-
-    # Show the legend and adjust the layout
     plt.legend(fontsize=14)
-    plt.tight_layout()
 
     # Save the image
     save_image('predictions.png')

@@ -90,12 +90,14 @@ laye <br>
 The default hyperparameters values are shown in the following table: <br>
 
 <div align="center">
+
 | Hyperparameters   |     Values      | 
 | ----------------  | ----------------|
 | `conv_layers`     |  3, 4, 5        | 
 | `conv_filters`    |  8, 16, 32      | 
 | `dense_depth`     |  1, 3, 5        | 
 | `dropout_rate`    |  0.1, 0.2, 0.3  | 
+
 </div>
 
 # Results 

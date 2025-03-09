@@ -59,13 +59,25 @@ Some examples of processed and unprocessed fotos follows.
 
 </div>
 
-# Neural Network
-The hypermodel consists of a variable number of convolutional blocks (Conv2D, BatchNormalization and MaxPooling), followed by a Flatten and a Dense (plus BatchNormalization) layer. The output is then concatenated with the gender features. Following there are a variable number of Dense plus Dropout layers and a final Dense layer with linear activation.
+# Model building and training
+ The process of model building and model training follows three main steps: 
+ • First a k-fold validation is performed on the training set.
+ • Inside each fold hyperparameters optimization is performed and the best model is trained for 300 epochs. 
+ • At the end of this process we are left with 5 trained models, where each one is the best model in his fold. The final model is selected as
+the model with the minimum MSE in the test set.
+
+The splitting of the dataset is summarized in the following figure:
+
+<img src="Example_images/kfold.png" width="400"> <br>
+
 ## Hypermodel
+The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
+
 The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
 • `Conv. layers`: number of convolutional layers of the network. <br>
 • `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters grows linearly each successive layer.<br>
-• `Dense depth`: number of dense layer(s) after feature concatenation. <br>
+• `Dense depth`: number of dense layer(s) after feature concatenation. The number of neurons in the first layer is set to 256 and is halved for each subsequent dense layer.
+laye <br>
 • `Dropout rate`: dropout rate of the final dense layer(s). <br>
 
 The default hyperparameters values are shown in the following table: <br>
@@ -127,7 +139,8 @@ options:
                         Fraction of the hyperparameters space explored during hypermodel search. Default: 0.25
 ```
 
-Plese note that in order to be able to preprocess the images you must have **`Matlab`** and the `Python` module **`matlabengine`** installed (they are **not** included in the project's requirements). If you want to run the code without installing **`Matlab`** and **`matlabengine`**, simply run the script using the default values for `folder_path` (`Preprocessed_images`) and `preprocessing` (`False`), this will skip the preprocessing using already preprocessed images in the Preprocessed_images folder.
+Plese note that in order to be able to preprocess the images you must have **`Matlab`** and the `Python` module **`matlabengine`** installed (they are **not** included in the project's requirements). 
+If you want to run the code without installing **`Matlab`** and **`matlabengine`**, simply run the script using the default values for `folder_path` (`Preprocessed_images`) and `preprocessing` (`False`), this will skip the preprocessing using already preprocessed images in the Preprocessed_images folder.
 
 In order to pass a list of hyperparameters, separate them with a space like this:
 ```python

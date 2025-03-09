@@ -9,7 +9,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent / "boneage
 
 from data_class import DataLoader
 
-# Obtain script folder and parent folder
+# Obtain script and parent folder
 current_dir = pathlib.Path(__file__).parent
 parent_dir = current_dir.parent
 

@@ -78,7 +78,7 @@ The splitting of the dataset is summarized in the following figure:
 </div>
 
 ## Hypermodel
-The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
+The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layers. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
 
 The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
 • `Conv. layers`: number of convolutional layers of the network. <br>

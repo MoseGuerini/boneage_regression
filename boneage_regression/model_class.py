@@ -10,7 +10,7 @@ from loguru import logger
 from sklearn.model_selection import KFold
 
 from hyperparameters import build_model
-from plots import plot_loss_metrics, plot_predictions, plot_accuracy_threshold
+from plots import plot_loss_metrics, plot_predictions, plot_error_distribution
 from utils import (
     make_gradcam_heatmap,
     overlay_heatmap,
@@ -448,7 +448,7 @@ class CnnModel:
 
         # Plot prediction and error distribution
         plot_predictions(self._y_test, y_pred)
-        plot_accuracy_threshold(y_pred, self._y_test)
+        plot_error_distribution(y_pred, self._y_test)
 
         return y_pred
 

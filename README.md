@@ -103,7 +103,7 @@ The default hyperparameters values are shown in the following table: <br>
 We conclude showing an example of the output images provided by our code.
 - Learning Curves recorded for one fold:
 <div align="center">
-<img src="Example_images/fold5_andamento_loss_folder.png" width="1500">  
+<img src="Example_images/fold5_loss.png" width="1500">  
 </div>
 
 - Predictions on the test set:

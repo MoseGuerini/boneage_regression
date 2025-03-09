@@ -5,8 +5,6 @@ import pathlib
 
 import numpy as np
 from loguru import logger
-import matplotlib.pyplot as plt
-from tensorflow.keras import mixed_precision
 
 from hyperparameters import hyperp_space_size
 from model_class import CnnModel
@@ -27,9 +25,6 @@ data_dir = (
 )
 
 if __name__ == '__main__':
-
-    policy = mixed_precision.Policy('mixed_float16')
-    mixed_precision.set_global_policy(policy)
 
     parser = argparse.ArgumentParser(
         description=(
@@ -176,5 +171,3 @@ if __name__ == '__main__':
         )
 
     model.train()
-
-    plt.show()

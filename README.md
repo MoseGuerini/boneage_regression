@@ -4,16 +4,22 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/MoseGuerini/boneage_regression)
 ![CircleCI](https://circleci.com/gh/MoseGuerini/boneage_regression/tree/main.svg?style=shield)
 
-The aim of this reporsitory is to build and train a convolutional neural network (CNN) for a deep learning based regression. Starting from hands x-rays the CNN will be able to infer patiences' ages. This neaural network will be developed using both Python and Matlab.
+The aim of this reporsitory is to build and train a convolutional neural network (CNN) for a deep learning based regression. Starting from hands x-rays the CNN will be able to infer patiences' ages. This project is developed using both Python and Matlab scripts.
+
 # Table of contents
++ [Classes](#Classes)
 + [Data](#Data)
   + [Preprocessing](#Preprocessing)
-+ [Neural Network](#Neural_Network)
-  + [Classes](#Classes)
++ [Model building and training](#Model_building_and_training)
+  + [Hypermodel](#Hypermodel)
 + [Results](#Results)
   + [Heat Map](#Heat_Map)
 + [Usage](#Usage)
 
+# Classes
+In order to improve readability by performing encapsulation we build up two classes: one to handle data and another to handle the model. <br>
+- `Data`: this class is designed to combine each image with its label, discard images without labels and viceversa and perform preprocessing (this function could be deactivated); <br>
+- `Model`: on the other hand this class takes input data, trains the model and plots precidctions.
 
 # Data
 The dataset is composed of 14233 images, coming from patiences whose age range from 0 to 216 months. The 46% of the patinces are female (label "0") and 54% are male (label "1") and the mean age is 127 months.
@@ -61,14 +67,16 @@ Some examples of processed and unprocessed fotos follows.
 
 # Model building and training
  The process of model building and model training follows three main steps: 
- • First a k-fold validation is performed on the training set.
- • Inside each fold hyperparameters optimization is performed and the best model is trained for 300 epochs. 
+ • First a k-fold validation is performed on the training set. <br>
+ • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters' space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in `Tuner` folder without any new search. <br>
  • At the end of this process we are left with 5 trained models, where each one is the best model in his fold. The final model is selected as
-the model with the minimum MSE in the test set.
+the model with the minimum MSE in the test set. <br>
 
 The splitting of the dataset is summarized in the following figure:
 
+<div align="center">
 <img src="Example_images/kfold.png" width="400"> <br>
+</div>
 
 ## Hypermodel
 The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
@@ -89,11 +97,6 @@ The default hyperparameters values are shown in the following table: <br>
 | `dense_depth`     |  1, 3, 5        | 
 | `dropout_rate`    |  0.1, 0.2, 0.3  | 
 
-## Classes
-In order to improve readability by performing encapsulation we build up two classes: one to handle data and another to handle the model.
-- Data: this class is designed to combine each image with its label, discard images without labels and viceversa and perform preprocessing (this function could be deactivated);
-- Model: on the other hand this class takes input data and train a model (whose hyperparameters can also be searched).
-
 # Results 
 We conclude showing an exemple of the output images provided by our code.
 - Learning Curves recorded for one fold:
@@ -104,6 +107,7 @@ We conclude showing an exemple of the output images provided by our code.
 <img src="docs/images/Confusion_Matrices_new.png" width="1500"> <br>
 - Learning and Testing curves for the models' ensamble:
 <img src="docs/images/ensemble_plot_new.png" width="1500"> <br>
+
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:

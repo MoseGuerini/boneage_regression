@@ -114,8 +114,7 @@ and 'Test'. 2) Two .csv files with the corresponding labels named 'training.csv'
 options:
   -h, --help            show this help message and exit
   -fp , --folder_path   Path to the directory containing training and test images as well as csv files with the labels. Default: Preprocessed_images
-  -p , --preprocessing 
-                        If False avoid image preprocessing. Default: False
+  -p , --preprocessing  If False avoid image preprocessing. Default: False
   -o , --overwrite      If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False
   -cl  [ ...], --conv_layers  [ ...]
                         List of values for the hypermodel number of conv2d layers Default [3, 4, 5]

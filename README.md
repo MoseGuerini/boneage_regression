@@ -125,6 +125,9 @@ Here are some examples of the best and the worst predictions:
 # Usage
 We warmly invite the user to run the code on a GPU, because of its computational cost (our training took several hours on a GPU). <br>
 
+Due to the dimension of Tuner and Model folders we were not able to upload them on github. To avoid the problem and make the user able to test the code using our tuning results we upload them at the following link https://drive.google.com/drive/folders/1rpcxS-QmwQeXi2xOJ0TFizjVwslrCufR?usp=share_link.
+The user has to move the folders to the root directory of the project.
+
 Simply download this repository and run using default parameters.
 ```python
 cd boneage_regression\boneage_regression

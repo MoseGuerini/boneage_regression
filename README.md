@@ -68,7 +68,7 @@ Some examples of processed and unprocessed fotos follows.
 # Model building and training
  The process of model building and model training follows three main steps: <br>
  • First a k-fold validation is performed on the training set. <br>
- • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters' space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
+ • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters' space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite_tuner` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
  • At the end of this process we are left with 5 trained models, where each one is the best model in his fold. The final model is selected as
 the model with the minimum MSE in the test set. <br>
 
@@ -123,6 +123,8 @@ Here are some examples:
 ![The Heat Map indicate areas on which the NN focused before giving its predictions](Readme_images/heat_map.png)
 
 # Usage
+We warmly invite the user to run the code on a GPU because of its computational cost (our training took several hours on a GPU). <br>
+
 Simply download this repository and run using default parameters.
 ```python
 cd boneage_regression\boneage_regression

@@ -12,7 +12,7 @@ The aim of this reporsitory is to build and train a convolutional neural network
   + [Classes](#Classes)
 + [Results](#Results)
   + [Heat Map](#Heat_Map)
-+ [Usage](#Usage)  
++ [Usage](#Usage)
 
 
 # Data
@@ -95,9 +95,20 @@ In order to improve readability by performing encapsulation we build up two clas
 - Model: on the other hand this class takes input data and train a model (whose hyperparameters can also be searched).
 
 # Results 
+We conclude showing an exemple of the output images provided by our code.
+- Learning Curves recorded for one fold:
+<img src="docs/images/Fold_1.png" width="1500"> <br>
+- ROC curves and AUCs relative to the testing data for each fold:
+<img src="docs/images/ROC_-_Testing_new.png" width="1500"> <br>
+- Confusion Matrices for each of the 5 folds:
+<img src="docs/images/Confusion_Matrices_new.png" width="1500"> <br>
+- Learning and Testing curves for the models' ensamble:
+<img src="docs/images/ensemble_plot_new.png" width="1500"> <br>
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:
+
+![The Heat Map indicate areas on which the NN focused before giving its predictions](Example_images/heat_map.png)
 
 # Usage
 Simply download this repository and run using default parameters.
@@ -124,8 +135,7 @@ and 'Test'. 2) Two .csv files with the corresponding labels named 'training.csv'
 options:
   -h, --help            show this help message and exit
   -fp , --folder_path   Path to the directory containing training and test images as well as csv files with the labels. Default: Preprocessed_images
-  -p , --preprocessing 
-                        If False avoid image preprocessing. Default: False
+  -p , --preprocessing  If False avoid image preprocessing. Default: False
   -o , --overwrite      If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False
   -cl  [ ...], --conv_layers  [ ...]
                         List of values for the hypermodel number of conv2d layers Default [3, 4, 5]

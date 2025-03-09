@@ -10,10 +10,10 @@ The aim of this reporsitory is to build and train a convolutional neural network
 + [Classes](#Classes)
 + [Data](#Data)
   + [Preprocessing](#Preprocessing)
-+ [Model building and training](#Model)
++ [Model building and training](#Model-building-and-training)
   + [Hypermodel](#Hypermodel)
 + [Results](#Results)
-  + [Heat_Map](#Heat-Map)
+  + [Heat Map](#Heat-Map)
 + [Usage](#Usage)
 
 # Classes

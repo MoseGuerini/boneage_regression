@@ -1,4 +1,4 @@
-# Boneage Regression
+# Bone age Regression
 
 [![Documentation Status](https://readthedocs.org/projects/boneage-regression/badge/?version=latest)](https://boneage-regression.readthedocs.io/en/latest/?badge=latest)
 ![GitHub repo size](https://img.shields.io/github/repo-size/MoseGuerini/boneage_regression)
@@ -20,8 +20,8 @@ The dataset is composed of 14233 images, coming from patiences whose age range f
 You are able to download data yourself using the following link: https://www.rsna.org/rsnai/ai-image-challenge/RSNA-Pediatric-Bone-Age-Challenge-2017
 
 ## Preprocessing
-The image are on greyscale but the size and the pixels intensity change according to the image. To stardize the dataset we renormalize the images from 0 and 1 exploiting to features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
-Secondly we cut as much background as we can in order to center and point out the hand respect to the background. 
+The image are on greyscale but the size and the pixels intensity are different from one image to another. To stardize the dataset we renormalize the images from 0 and 1 exploiting to features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
+Secondly we cut as much background as we can in order to center the hand. 
 Thirdly we padded images in order to obtain squared ones.
 Lastly we resized them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
 The preprocessing was implemented using Matlab.
@@ -31,7 +31,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="example_images/no_preprocessing/1378.png" alt="No Preprocessing" width="200"> | <img src="example_images/preprocessing/1378.png" alt="Preprocessing" width="200"> |
+| <img src="Example_images/No_preprocessing/1378.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1378.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -39,7 +39,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="example_images/no_preprocessing/1478.png" alt="No Preprocessing" width="200"> | <img src="example_images/preprocessing/1478.png" alt="Preprocessing" width="200"> |
+| <img src="Example_images/No_preprocessing/1478.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1478.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -47,7 +47,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="example_images/no_preprocessing/1399.png" alt="No Preprocessing" width="200"> | <img src="example_images/preprocessing/1399.png" alt="Preprocessing" width="200"> |
+| <img src="Example_images/No_preprocessing/1399.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1399.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -55,7 +55,7 @@ Some examples of processed and unprocessed fotos follows.
 
 | **Unpreprocessed** | **Preprocessed** |
 |--------------------|------------------|
-| <img src="example_images/no_preprocessing/1418.png" alt="No Preprocessing" width="200"> | <img src="example_images/preprocessing/1418.png" alt="Preprocessing" width="200"> |
+| <img src="Example_images/No_preprocessing/1418.png" alt="No Preprocessing" width="200"> | <img src="Example_images/Preprocessing/1418.png" alt="Preprocessing" width="200"> |
 
 </div>
 
@@ -71,11 +71,11 @@ The user can insert custom values for the hyperparameters tuning. Namely the hyp
 ## Classes
 In order to improve readability by performing encapsulation we build up two classes: one to handle data and another to handle the model.
 - Data: this class is designed to combine each image with its label, discard images without labels and viceversa and perform preprocessing (this function could be deactivated);
-- Model: on the other hand this class takes input data and train a model (whose hyperparameter can also be searched).
+- Model: on the other hand this class takes input data and train a model (whose hyperparameters can also be searched).
 
 # Results 
 ## Heat Map
-As part of the analysis, we included the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of an input image  which are relevant in the decision making process.
+As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
 Here are some examples:
 
 # Usage

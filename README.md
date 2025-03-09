@@ -28,14 +28,14 @@ You are able to download data yourself using the following link: https://www.rsn
 ## Preprocessing
 The image are on greyscale but the size and the pixels intensity are different from one image to another. To stardize the dataset we renormalize the images from 0 and 1 exploiting two features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
 Secondly we cut as much background as we can in order to center the hand. 
-Thirdly we padded images in order to make them squared.
-Lastly we resized them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
+Thirdly we pad images in order to make them squared.
+Lastly we resize them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
 The preprocessing was implemented using Matlab.
-Some examples of processed and unprocessed fotos follows.
+Some examples of processed and unprocessed photos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1378.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1378.png" alt="Preprocessing" width="200"> |
 
@@ -43,7 +43,7 @@ Some examples of processed and unprocessed fotos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1478.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1478.png" alt="Preprocessing" width="200"> |
 
@@ -51,7 +51,7 @@ Some examples of processed and unprocessed fotos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1399.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1399.png" alt="Preprocessing" width="200"> |
 
@@ -59,7 +59,7 @@ Some examples of processed and unprocessed fotos follows.
 
 <div align="center">
 
-| **Unpreprocessed** | **Preprocessed** |
+| **Unprocessed** | **Preprocessed** |
 |--------------------|------------------|
 | <img src="Readme_images/No_preprocessing/1418.png" alt="No Preprocessing" width="200"> | <img src="Readme_images/Preprocessing/1418.png" alt="Preprocessing" width="200"> |
 
@@ -67,8 +67,8 @@ Some examples of processed and unprocessed fotos follows.
 
 # Model building and training
  The process of model building and model training follows three main steps: <br>
- • First a k-fold validation is performed on the training set. <br>
- • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters' space) and the best model is trained for 300 epochs. Hyperparameter optimization can be skipped setting the parameter `overwrite_tuner` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
+ • First a k-fold splitting is performed on the training set. <br>
+ • Inside each fold hyperparameters optimization is performed  using Bayesian search of `Keras Tuner` (exploring the user-selected `searching_fraction` of the hyperparameters space) and the best model is trained for 300 epochs. Hyperparameters optimization can be skipped setting the parameter `overwrite_tuner` to `False`.  By doing so, the hyperparameters for each fold will be set to pre-saved values contained in the `Tuner` folder without any new search. <br>
  • At the end of this process we are left with 5 trained models, where each one is the best model in his fold. The final model is selected as
 the model with the minimum MSE in the test set. <br>
 
@@ -90,7 +90,7 @@ The default hyperparameters values are shown in the following table: <br>
 
 <div align="center">
 
-| Hyperparameters   |     Values      | 
+| Hyperparameter    |     Values      | 
 | ----------------  | ----------------|
 | `conv_layers`     |  3, 4, 5        | 
 | `conv_filters`    |  8, 16, 32      | 
@@ -101,12 +101,12 @@ The default hyperparameters values are shown in the following table: <br>
 
 # Results 
 We conclude showing an example of the output images provided by our code.
-- Learning Curves recorded for one fold:
+- Learning curves recorded for one fold:
 <div align="center">
 <img src="Readme_images/fold5_loss.png" width="1500">  
 </div>
 
-- Predictions on the test set:
+- Predictions of selected model on the test set:
 <div align="center">
 <img src="Readme_images/predictions.png" width="500">  
 </div>
@@ -118,14 +118,17 @@ We conclude showing an example of the output images provided by our code.
 
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
-Here are some examples:
+Here are some examples of the best and the worst predictions:
 
 ![The Heat Map indicate areas on which the NN focused before giving its predictions](Readme_images/heat_map.png)
 
 # Usage
-We warmly invite the user to run the code on a GPU because of its computational cost (our training took several hours on a GPU). <br>
+We warmly invite the user to run the code on a GPU, because of its computational cost (our training took several hours on a GPU). <br>
 
-Simply download this repository and run using default parameters.
+Due to the dimension of Tuner and Model folders we were not able to upload them on github. To avoid the problem and make the user able to test the code using our tuning results we upload them at the following links: [Tuner](https://drive.google.com/drive/folders/1rpcxS-QmwQeXi2xOJ0TFizjVwslrCufR?usp=share_link), [Models](https://drive.google.com/drive/folders/1wTIVdet_ftD11VRD54KiJNrNVZPyKsss?usp=share_link ).
+The user has to move the folders to the root directory of the project before running the code.
+
+Done that simply download this repository and run using default parameters.
 ```python
 cd boneage_regression\boneage_regression
 python main.py
@@ -176,7 +179,7 @@ python main.py -cl 2 3 -cf 32 -dd 1 2 -dr 0.2 0.3
 
 All the images produced by the code will be automatically saved in a folder named `Plots`. 
 
-If the code breaks of you want to interrupt the code and resume it later (even though we discourage doing so) re-run it  using default values for `overwrite_tuner` (`False`) and `overwrite_model` (`False`). By doing this the code will resume from where it left off.
+If the code breaks or you want to interrupt the code and resume it later (even though we discourage doing so) re-run it  using default values for `overwrite_tuner` (`False`) and `overwrite_model` (`False`). By doing so the code will resume from where it left off.
 
 ## Attribution
 

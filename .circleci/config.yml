@@ -1,4 +1,4 @@
-version: 2.1  # Defines the CircleCI configuration version
+version: 2.1  # Defines CircleCI configuration version
 
 orbs:
   python: circleci/python@2.1.1  # Uses the Python orb

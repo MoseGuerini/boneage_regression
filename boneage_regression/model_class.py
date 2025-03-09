@@ -62,7 +62,7 @@ class CnnModel:
     perform hyperparameter tuning, generate predictions, and visualize results
     such as Grad-CAM heatmaps. The model is trained using k-fold
     cross-validation, and the best model is selected based on performance
-    metrics like mean absolute error (MAE) and R-squared (R²).
+    metrics like MSE, MAE and R-squared (R²).
 
     Attributes:
         _X_train: The feature data for training.
@@ -370,7 +370,7 @@ class CnnModel:
         training and evaluation. The results, including the best
         hyperparameters, model, loss, mean absolute error (MAE), and
         R-squared (R²) for each fold, are stored.
-        After training on all folds, the model with the lowest MAE
+        After training on all folds, the model with the lowest loss (MSE)
         is selected as the final model.
 
         :param k: The number of folds for cross-validation. Defaults to 5.

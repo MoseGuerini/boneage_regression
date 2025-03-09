@@ -138,7 +138,7 @@ def convert_and_resize(image_files, target_size):
     :return: Images and their corresponding IDs.
     :rtype: tuple[list[np.ndarray], list[int]]
     """
-    images_rgb = []
+    images = []
     ids = []
 
     for img_path in image_files:
@@ -156,10 +156,10 @@ def convert_and_resize(image_files, target_size):
         # Resize the image to the target size
         img_resized = tf.image.resize(img, target_size).numpy()
 
-        images_rgb.append(img_resized)
+        images.append(img_resized)
         ids.append(img_id)
 
-    return images_rgb, ids
+    return images, ids
 
 
 def is_integer(s):

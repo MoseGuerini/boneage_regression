@@ -257,10 +257,10 @@ class DataLoader:
             (those with a corresponding label).
 
             - `gender` (np.ndarray): Corresponding gender for the
-            images (or `None` if not available).
+            images.
 
             - `boneage` (np.ndarray): Corresponding age for the
-            images (or `None` if not available).
+            images.
         """
 
         path = self._image_path
@@ -282,7 +282,7 @@ class DataLoader:
         logger.info(f"{len(images)} images loaded.")
 
         # Loading labels and identifying missing ones
-        labels, missing_ids = self.load_labels(ids)
+        boneage, gender, missing_ids = self.load_labels(ids)
 
         # Filtering out images with missing labels
         filtered_images = [img for img, img_id in zip(images, ids) if
@@ -290,8 +290,6 @@ class DataLoader:
         filtered_ids = [img_id for img_id in ids if img_id not in missing_ids]
 
         logger.info(f"{len(filtered_images)} images are ready to be used.")
-
-        boneage, gender = zip(*labels)  # Spiltting boneage and gender
 
         return (
             np.array(filtered_images, dtype=np.float32)/255,
@@ -314,8 +312,11 @@ class DataLoader:
 
         :return: A tuple containing:
 
-            - `label_pairs`: NumPy array of pairs (boneage, gender) for each
-            valid image.
+            - `gender` (np.ndarray): Corresponding gender for the
+            images.
+
+            - `boneage` (np.ndarray): Corresponding age for the
+            images.
 
             - `valid_ids`: list of image IDs that have a corresponding label
             in the CSV.
@@ -358,7 +359,4 @@ class DataLoader:
         boneage = label_df['boneage'].to_numpy()
         gender = label_df['male'].astype(int).to_numpy()
 
-        # Creating array of couples (boneage, gender)
-        label_pairs = np.array(list(zip(boneage, gender)))
-
-        return label_pairs, missing_ids
+        return boneage, gender, missing_ids

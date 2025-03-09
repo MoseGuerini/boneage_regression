@@ -10,10 +10,10 @@ The aim of this reporsitory is to build and train a convolutional neural network
 + [Classes](#Classes)
 + [Data](#Data)
   + [Preprocessing](#Preprocessing)
-+ [Model building and training](#Model_building_and_training)
++ [Model building and training](#Model-building-and-training)
   + [Hypermodel](#Hypermodel)
 + [Results](#Results)
-  + [Heat Map](#Heat_Map)
+  + [Heat Map](#Heat-Map)
 + [Usage](#Usage)
 
 # Classes
@@ -26,9 +26,9 @@ The dataset is composed of 14233 images, coming from patiences whose age range f
 You are able to download data yourself using the following link: https://www.rsna.org/rsnai/ai-image-challenge/RSNA-Pediatric-Bone-Age-Challenge-2017
 
 ## Preprocessing
-The image are on greyscale but the size and the pixels intensity are different from one image to another. To stardize the dataset we renormalize the images from 0 and 1 exploiting to features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
+The image are on greyscale but the size and the pixels intensity are different from one image to another. To stardize the dataset we renormalize the images from 0 and 1 exploiting two features which are always present in the images: the background, darker than the hand (and then set to "0"); a white letter, lighter than the hand (and then set to "1"). 
 Secondly we cut as much background as we can in order to center the hand. 
-Thirdly we padded images in order to obtain squared ones.
+Thirdly we padded images in order to make them squared.
 Lastly we resized them from whatever their dimension was to 256x256 in order to be able to pass them to the CNN.
 The preprocessing was implemented using Matlab.
 Some examples of processed and unprocessed fotos follows.
@@ -78,13 +78,12 @@ The splitting of the dataset is summarized in the following figure:
 </div>
 
 ## Hypermodel
-The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layer. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
+The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, `BatchNormalization` and `MaxPooling`), followed by a `Flatten` and a `Dense` (plus `BatchNormalization`) layers. The output is then concatenated with the gender features. Following there are a variable number of `Dense` plus `Dropout` layers and a final `Dense` layer with linear activation. <br>
 
 The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
 • `Conv. layers`: number of convolutional layers of the network. <br>
 • `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters grows linearly each successive layer.<br>
-• `Dense depth`: number of dense layer(s) after feature concatenation. The number of neurons in the first layer is set to 256 and is halved for each subsequent dense layer.
-laye <br>
+• `Dense depth`: number of dense layer(s) after feature concatenation. The number of neurons in the first layer is set to 256 and is halved for each subsequent dense layer. <br>
 • `Dropout rate`: dropout rate of the final dense layer(s). <br>
 
 The default hyperparameters values are shown in the following table: <br>
@@ -104,7 +103,7 @@ The default hyperparameters values are shown in the following table: <br>
 We conclude showing an example of the output images provided by our code.
 - Learning Curves recorded for one fold:
 <div align="center">
-<img src="Readme_images/fold5_andamento_loss_folder.png" width="1500">  
+<img src="Example_images/fold5_loss.png" width="1500">  
 </div>
 
 - Predictions on the test set:
@@ -114,7 +113,7 @@ We conclude showing an example of the output images provided by our code.
 
 - Predictions distribution, a reference error of 5 months is also shown:
 <div align="center">
-<img src="Readme_images/boneage_distribution.png" width="500"> 
+<img src="Example_images/error_distribution.png" width="500"> 
 </div>
 
 ## Heat Map

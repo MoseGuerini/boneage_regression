@@ -89,6 +89,35 @@ In case you are running this code for the first time remember to install the req
 pip install -r requirements.txt
 ```
 
+In order to select custom parameters, refer to the help
+```python
+python main.py -h
+
+usage: main.py [-h] [-fp] [-p] [-o] [-cl  [...]] [-cf  [...]] [-dd  [...]] [-dr  [...]] [-sf]
+
+This script performs bone age prediction using a machine learning regression model. It accepts input parameters for model configuration and the
+dataset folder path. If you pass a dataset folder remember that it must contain: 1) Two separate folders for training and test images named 'Training'
+and 'Test'. 2) Two .csv files with the corresponding labels named 'training.csv' and 'test.csv'. Each CSV file must contain three columns named 'ID',
+'boneage', 'male'.
+
+options:
+  -h, --help            show this help message and exit
+  -fp , --folder_path   Path to the directory containing training and test images as well as csv files with the labels. Default: Preprocessed_images
+  -p , --preprocessing 
+                        If False avoid image preprocessing. Default: False
+  -o , --overwrite      If False avoid hyperparameters search and use the pre-saved hyperpar. Default: False
+  -cl  [ ...], --conv_layers  [ ...]
+                        List of values for the hypermodel number of conv2d layers Default [3, 4, 5]
+  -cf  [ ...], --conv_filters  [ ...]
+                        List of values for the hypermodel first conv2d number of filters. Default [8, 16, 32]
+  -dd  [ ...], --dense_depth  [ ...]
+                        List of values for the hypermodel depth of final dense layers Default [1, 2, 3]
+  -dr  [ ...], --dropout_rate  [ ...]
+                        List of values for the dropout rate of the final dense layers Default [0.1, 0.2, 0.3]
+  -sf , --searching_fraction 
+                        Fraction of the hyperparameters space explored during hypermodel search. Default: 0.25
+```
+
 ## Attribution
 
 This work builds upon the research presented in the following paper:

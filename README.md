@@ -83,8 +83,7 @@ The hypermodel consists of a variable number of convolutional blocks (`Conv2D`, 
 The user can insert custom values for the hyperparameters tuning. Namely the hyperparameters are: <br>
 • `Conv. layers`: number of convolutional layers of the network. <br>
 • `Conv. filters`: number of convolutional filters in the first conv. layer. The number of conv. filters grows linearly each successive layer.<br>
-• `Dense depth`: number of dense layer(s) after feature concatenation. The number of neurons in the first layer is set to 256 and is halved for each subsequent dense layer.
-laye <br>
+• `Dense depth`: number of dense layer(s) after feature concatenation. The number of neurons in the first layer is set to 256 and is halved for each subsequent dense layer. <br>
 • `Dropout rate`: dropout rate of the final dense layer(s). <br>
 
 The default hyperparameters values are shown in the following table: <br>

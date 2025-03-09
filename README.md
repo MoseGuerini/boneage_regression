@@ -113,7 +113,7 @@ We conclude showing an example of the output images provided by our code.
 
 - Predictions distribution, a reference error of 5 months is also shown:
 <div align="center">
-<img src="Example_images/boneage_distribution.png" width="500"> 
+<img src="Example_images/error_distribution.png" width="500"> 
 </div>
 
 ## Heat Map

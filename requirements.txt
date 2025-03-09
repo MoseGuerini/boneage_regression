@@ -2,12 +2,10 @@ loguru
 matplotlib
 numpy
 pandas
-pathlib
 sphinx
 sphinx-rtd-theme
 keras_tuner
 keras
 tensorflow
-argparse
 scikit-learn
 pillow

@@ -118,7 +118,7 @@ We conclude showing an example of the output images provided by our code.
 
 ## Heat Map
 As part of the analysis, we include the possibility to "visualize" what the model has learnt using a heat map, which highlights the regions of input images which are relevant in the decision making process.
-Here are some examples:
+Here are some examples of the best and the worst predictions:
 
 ![The Heat Map indicate areas on which the NN focused before giving its predictions](Readme_images/heat_map.png)
 

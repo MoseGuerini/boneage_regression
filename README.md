@@ -125,7 +125,7 @@ Here are some examples of the best and the worst predictions:
 # Usage
 We warmly invite the user to run the code on a GPU, because of its computational cost (our training took several hours on a GPU). <br>
 
-Due to the dimension of Tuner and Model folders we were not able to upload them on github. To avoid the problem and make the user able to test the code using our tuning results we upload them at the following links: [Tuner](https://drive.google.com/drive/folders/1rpcxS-QmwQeXi2xOJ0TFizjVwslrCufR?usp=share_link), [Models](https://drive.google.com/drive/folders/1wTIVdet_ftD11VRD54KiJNrNVZPyKsss?usp=share_link ).
+Due to the dimension of Tuner and Models folders we were not able to upload them on github. To avoid the problem and make the user able to test the code using our tuning results we upload them at the following links: [Tuner](https://drive.google.com/drive/folders/1rpcxS-QmwQeXi2xOJ0TFizjVwslrCufR?usp=share_link), [Models](https://drive.google.com/drive/folders/1wTIVdet_ftD11VRD54KiJNrNVZPyKsss?usp=share_link ).
 The user has to move the folders to the root directory of the project before running the code.
 
 Done that simply download this repository and run using default parameters.
